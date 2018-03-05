@@ -1,0 +1,16 @@
+-R . RegLang
+-install none
+COQDOCFLAGS = "-R . RegLang -s --external 'http://math-comp.github.io/math-comp/htmldoc/' mathcomp \
+--with-header ../extra/header.html --with-footer ../extra/footer.html --index indexpage --parse-comments"
+misc.v
+setoid_leq.v
+languages.v
+dfa.v
+nfa.v
+regexp.v
+minimization.v
+myhill_nerode.v
+two_way.v
+vardi.v
+shepherdson.v
+wmso.v
