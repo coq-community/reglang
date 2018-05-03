@@ -740,9 +740,11 @@ Proof.
   - have agr Ns N X : cat (rcons Ns N) I X =i cat Ns (cons N I) X.
       { rewrite /cat /= !size_rcons ltnS. 
         case: (ltngtP X (size Ns)) => B.
-        * by rewrite (ltnW B) nth_rcons B.
-        * rewrite leqNgt B /=. by rewrite -[X - size Ns]prednK ?subn_gt0 //= subnS.
-        * by rewrite B leqnn subnn nth_rcons ltnn eqxx. }
+        (* use ? and try to preserve compatibility with mathcomp-1.6.x *)
+        * by rewrite ?(ltnW B) nth_rcons B.
+        * try rewrite leqNgt B /=. 
+          by rewrite -[X - size Ns]prednK ?subn_gt0 //= subnS.
+        * by rewrite ?B ?leqnn ?subnn nth_rcons ltnn eqxx. }
     rewrite /=. split => [[N] /IH [Ns A]|].
     + exists [tuple of rcons Ns N]. apply: weak_coincidence A => X k. by rewrite agr.
     + case. case => Ns /=. elim/last_ind : Ns => // Ns N _. 

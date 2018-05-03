@@ -6,10 +6,11 @@ This repository contains the coq development accompanying the paper:
 
 ## Prerequisites 
 
-```
-coq-8.7 + mathcomp-1.6.4 (the ssreflect component) or
-coq-8.6 + mathcomp-1.6.1 (the ssreflect component)
-```
+One of the following:
+
+* coq-8.8 + mathcomp-1.7.0 (the ssreflect component)
+* coq-8.7 + mathcomp-1.6.4 (the ssreflect component)
+* coq-8.6 + mathcomp-1.6.1 (the ssreflect component)
 
 ## HTML Documentation
 
