@@ -1,6 +1,6 @@
 opam-version: "1.2"
-version: "dev"
-maintainer: "palmskog@gmail.com"
+version: "1.0"
+maintainer: "Christian Doczkal <christian.doczkal@ens-lyon.fr>"
 
 homepage: "https://github.com/chdoc/coq-reglang"
 dev-repo: "https://github.com/chdoc/coq-reglang.git"
@@ -18,11 +18,13 @@ depends: [
 tags: [
   "keyword:regular languages"
   "keyword:regular expressions"
-  "keyword:kleene algebra"
+  "keyword:finite automata"
+  "keyword:two-way automata"
+  "keyword:monadic second-order logic"
   "category:Computer Science/Formal Languages Theory and Automata"
 ]
 
 authors: [
-  "Christian Doczkal <>"
+  "Christian Doczkal <christian.doczkal@ens-lyon.fr>"
   "Gert Smolka <>"
 ]
