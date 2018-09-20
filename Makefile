@@ -1,4 +1,4 @@
-.PHONY : all coq html website clean
+.PHONY : all coq html install website clean
 
 all: coq
 
@@ -7,6 +7,9 @@ html: coq
 
 coq:
 	$(MAKE) -C theories
+
+install:
+	$(MAKE) -C theories install
 
 website: html
 	test -d website || mkdir website

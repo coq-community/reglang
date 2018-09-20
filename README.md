@@ -1,6 +1,6 @@
 # Regular Language Representations in the Constructive Type Theory of Coq #
 
-This repository contains the coq development accompanying the paper: 
+This repository contains the Coq development accompanying the paper:
 
 [Christian Doczkal](https://perso.ens-lyon.fr/christian.doczkal/) and [Gert Smolka](https://www.ps.uni-saarland.de/~smolka/), _Regular Language Representations in the Constructive Type Theory of Coq_, J. Autom. Reason. - Special Issue on Milestones in Interactive Theorem Proving, Springer, 2018. 
 
@@ -8,9 +8,19 @@ This repository contains the coq development accompanying the paper:
 
 One of the following:
 
-* coq-8.8 + mathcomp-1.7.0 (the ssreflect component)
-* coq-8.7 + mathcomp-1.6.4 (the ssreflect component)
-* coq-8.6 + mathcomp-1.6.1 (the ssreflect component)
+* [coq-8.8](https://github.com/coq/coq/releases/tag/V8.8.1) + [mathcomp-1.7.0](https://github.com/math-comp/math-comp/releases/tag/mathcomp-1.7.0) (the ssreflect component)
+* [coq-8.7](https://coq.inria.fr/coq-87) + [mathcomp-1.6.4](https://github.com/math-comp/math-comp/releases/tag/mathcomp-1.6.4) (the ssreflect component)
+* [coq-8.6](https://coq.inria.fr/coq-86) + [mathcomp-1.6.1](https://github.com/math-comp/math-comp/releases/tag/mathcomp-1.6.1) (the ssreflect component)
+
+## Building and Installation
+
+The easiest way to install the library is via [OPAM](https://opam.ocaml.org/):
+```
+opam repo add coq-released https://coq.inria.fr/opam/released
+opam install coq-reglang
+```
+
+To instead build and install the library manually, run `make` followed by `make install`.
 
 ## HTML Documentation
 
