@@ -1,17 +1,17 @@
 opam-version: "1.2"
-version: "1.0"
+version: "dev"
 maintainer: "Christian Doczkal <christian.doczkal@ens-lyon.fr>"
 
 homepage: "https://github.com/chdoc/coq-reglang"
 dev-repo: "https://github.com/chdoc/coq-reglang.git"
 bug-reports: "https://github.com/chdoc/coq-reglang/issues"
-license: "CeCILL-B"
+license: "CECILL-B"
 
 build: [ make "-j%{jobs}%" "-C" "theories" ]
 install: [ make "-C" "theories" "install" ]
 remove: [ "sh" "-c" "rm -rf '%{lib}%/coq/user-contrib/RegLang'" ]
 depends: [
-  "coq" {>= "8.6" & < "8.9~"}
+  "coq" {>= "8.6" & < "8.10~"}
   "coq-mathcomp-ssreflect" {>= "1.6" & < "1.8~"}
 ]
 

@@ -8,7 +8,8 @@ This repository contains the Coq development accompanying the paper:
 
 One of the following:
 
-* [coq-8.8](https://github.com/coq/coq/releases/tag/V8.8.1) + [mathcomp-1.7.0](https://github.com/math-comp/math-comp/releases/tag/mathcomp-1.7.0) (the ssreflect component)
+* [coq-8.9](https://github.com/coq/coq/releases/tag/V8.9.0) + [mathcomp-1.7.0](https://github.com/math-comp/math-comp/releases/tag/mathcomp-1.7.0) (the ssreflect component)
+* [coq-8.8](https://github.com/coq/coq/releases/tag/V8.8.2) + [mathcomp-1.7.0](https://github.com/math-comp/math-comp/releases/tag/mathcomp-1.7.0) (the ssreflect component)
 * [coq-8.7](https://coq.inria.fr/coq-87) + [mathcomp-1.6.4](https://github.com/math-comp/math-comp/releases/tag/mathcomp-1.6.4) (the ssreflect component)
 * [coq-8.6](https://coq.inria.fr/coq-86) + [mathcomp-1.6.1](https://github.com/math-comp/math-comp/releases/tag/mathcomp-1.6.1) (the ssreflect component)
 
