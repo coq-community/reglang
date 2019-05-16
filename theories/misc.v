@@ -162,7 +162,7 @@ Proof. rewrite -!cardsT -powersetT. exact: card_powerset. Qed.
 (** Miscellaneous *)
 
 Lemma Sub_eq (T : Type) (P : pred T) (sT : subType P) (x y : T) (Px : P x) (Py : P y) : 
-  Sub (s := sT) x Px = Sub y Py <-> x = y.
+  (@Sub _ _ sT) x Px = Sub y Py <-> x = y.
 Proof. 
   split => [|e]. 
   - by rewrite -{2}[x](SubK sT) -{2}[y](SubK sT) => ->. 
