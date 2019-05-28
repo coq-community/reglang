@@ -51,7 +51,7 @@ Fixpoint re_lang (char: eqType) (e : regexp char) : dlang char :=
   | Conc e1 e2 => conc (re_lang e1) (re_lang e2)
   end.
 
-Canonical Structure regexp_predType (char: eqType) := mkPredType (@re_lang char).
+Canonical Structure regexp_predType (char: eqType) := PredType (@re_lang char).
 
 (** We instantiate Ssreflects Canonical Big Operators *)
 Notation "\sigma_( i <- r )  F" := (\big[Plus/Void]_(i <- r) F) (at level 50).

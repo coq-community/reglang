@@ -438,7 +438,10 @@ Section NonRegular.
 
   Lemma count_nseq (T : eqType) (c d : T) n :
     count (pred1 c) (nseq n d) = (c == d) * n.
-  Proof. elim: n => //= n. rewrite [d == c]eq_sym. by case e: (c == d) => /= ->. Qed.
+  Proof.
+    elim: n => [|n] /=; first by rewrite muln0.
+    rewrite [d == c]eq_sym. by case e: (c == d) => /= ->.
+  Qed.
 
   Lemma countL n1 n2 : count (pred1 a) (nseq n1 a ++ nseq n2 b) = n1.
   Proof. by rewrite count_cat !count_nseq (negbTE Hab) eqxx //= mul1n mul0n addn0. Qed.
