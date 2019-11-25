@@ -24,12 +24,13 @@ Record classifier := Classifier {
   classifier_classes : finType;
   classifier_fun :> word -> classifier_classes }.
 
-(** We register an additional coercion. So we can write
-    - [x:E]  =>  x is a class of E
-    - [E w]  =>  the class of w
-    - [#|E|] =>  the cardinality of the index type *)
+Notation classes_of := classifier_classes.
 
-Coercion classifier_classes : classifier >-> finType.
+(** It would be desirable to have classifiers also coerce to [finType]
+(to be able to write #|E| for the number of classes). However, this
+introduces an ambiguity since [finType] already coerces to Funclass
+(as the universally true predicate). *)
+
 
 Definition right_congruent (X : eqType) (E : word -> X) :=
   forall u v a, E u = E v -> E (u ++ [::a]) = E (v ++ [::a]).
@@ -66,7 +67,7 @@ Section DFAtoClassifier.
        cf_congruent := delta_s_right_congruent;
        cf_refines := delta_s_refines |}.
 
-  Lemma dfa_to_cf_size : #|A| = #|dfa_to_cf|. by []. Qed.
+  Lemma dfa_to_cf_size : #|A| = #|classes_of dfa_to_cf|. by []. Qed.
 End DFAtoClassifier.
 
 
