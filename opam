@@ -1,19 +1,26 @@
-opam-version: "1.2"
+opam-version: "2.0"
 version: "dev"
 maintainer: "Christian Doczkal <christian.doczkal@ens-lyon.fr>"
 
 homepage: "https://github.com/chdoc/coq-reglang"
-dev-repo: "https://github.com/chdoc/coq-reglang.git"
+dev-repo: "git+https://github.com/chdoc/coq-reglang.git"
 bug-reports: "https://github.com/chdoc/coq-reglang/issues"
 license: "CECILL-B"
 
-build: [ make "-j%{jobs}%" "-C" "theories" ]
-install: [ make "-C" "theories" "install" ]
-remove: [ "sh" "-c" "rm -rf '%{lib}%/coq/user-contrib/RegLang'" ]
+build: [make "-j%{jobs}%"]
+install: [make "install"]
 depends: [
-  "coq" {>= "8.6" & < "8.10~"}
-  "coq-mathcomp-ssreflect" {>= "1.6" & < "1.8~"}
+  "coq" {>= "8.7" & < "8.11~"}
+  "coq-mathcomp-ssreflect" {>= "1.9" & < "1.10~"}
 ]
+
+synopsis: "Regular language representations in the constructive type theory of Coq"
+description: """
+We verify translations between different representations of regular
+languages: various forms of automata (deterministic, nondeterministic,
+one-way, two-way), regular expressions, and the logic WS1S. We also
+show various decidability results and closure properties.
+"""
 
 tags: [
   "keyword:regular languages"
