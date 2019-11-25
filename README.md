@@ -1,17 +1,17 @@
-# Regular Language Representations in the Constructive Type Theory of Coq #
+# Regular Language Representations in the Constructive Type Theory of Coq
 
 This repository contains the Coq development accompanying the paper:
 
-[Christian Doczkal](https://perso.ens-lyon.fr/christian.doczkal/) and [Gert Smolka](https://www.ps.uni-saarland.de/~smolka/), _Regular Language Representations in the Constructive Type Theory of Coq_, J. Autom. Reason. - Special Issue on Milestones in Interactive Theorem Proving, Springer, 2018. 
+[Christian Doczkal](https://perso.ens-lyon.fr/christian.doczkal/) and [Gert Smolka](https://www.ps.uni-saarland.de/~smolka/), _Regular Language Representations in the Constructive Type Theory of Coq_, J. Autom. Reason. - Special Issue on Milestones in Interactive Theorem Proving, Springer, 2018.
 
-## Prerequisites 
+## Prerequisites
 
 One of the following:
 
-* [coq-8.9](https://github.com/coq/coq/releases/tag/V8.9.0) + [mathcomp-1.7.0](https://github.com/math-comp/math-comp/releases/tag/mathcomp-1.7.0) (the ssreflect component)
-* [coq-8.8](https://github.com/coq/coq/releases/tag/V8.8.2) + [mathcomp-1.7.0](https://github.com/math-comp/math-comp/releases/tag/mathcomp-1.7.0) (the ssreflect component)
-* [coq-8.7](https://coq.inria.fr/coq-87) + [mathcomp-1.6.4](https://github.com/math-comp/math-comp/releases/tag/mathcomp-1.6.4) (the ssreflect component)
-* [coq-8.6](https://coq.inria.fr/coq-86) + [mathcomp-1.6.1](https://github.com/math-comp/math-comp/releases/tag/mathcomp-1.6.1) (the ssreflect component)
+* [coq-8.10](https://github.com/coq/coq/releases/tag/V8.10.1) + [mathcomp-1.9.0](https://github.com/math-comp/math-comp/releases/tag/mathcomp-1.9.0) (the ssreflect component)
+* [coq-8.9](https://github.com/coq/coq/releases/tag/V8.9.1) + [mathcomp-1.9.0](https://github.com/math-comp/math-comp/releases/tag/mathcomp-1.9.0) (the ssreflect component)
+* [coq-8.8](https://github.com/coq/coq/releases/tag/V8.8.2) + [mathcomp-1.9.0](https://github.com/math-comp/math-comp/releases/tag/mathcomp-1.9.0) (the ssreflect component)
+* [coq-8.7](https://coq.inria.fr/coq-87) + [mathcomp-1.9.0](https://github.com/math-comp/math-comp/releases/tag/mathcomp-1.9.0) (the ssreflect component)
 
 ## Building and Installation
 
