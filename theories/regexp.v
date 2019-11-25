@@ -34,7 +34,7 @@ End RegExp.
 Arguments void : clear implicits.
 Arguments eps : clear implicits.
 Prenex Implicits Plus.
-Arguments plusP [char r s w].
+Arguments plusP {char r s w}.
 
 Notation "'Void'" := (@Void _).
 Notation "'Eps'" := (@Eps _).
