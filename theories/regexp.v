@@ -71,9 +71,9 @@ Qed.
 Lemma big_plusP (T char: finType) (P:pred T) w (F : T -> regexp char) :
   reflect (exists2 i, P i  & w \in F i) (w \in \sigma_(i | P i) F i).
 Proof.
-  rewrite -big_filter filter_index_enum.
-  apply: (iffP (big_plus_seqP _ _ _)) => [|] [x] H1 H2; exists x => //;
-    move: H1; by rewrite mem_enum.
+  rewrite -big_filter. apply: (iffP (big_plus_seqP _ _ _)) => [[x]|[x] H1 H2]. 
+  - rewrite mem_filter => /andP [? ?]; by exists x.
+  - by exists x; rewrite // mem_filter H1 mem_index_enum.
 Qed.
 
 Fixpoint re_size (char: eqType) (e : regexp char) := 
