@@ -4,12 +4,11 @@ shortname: reglang
 organization: coq-community
 community: true
 travis: true
-coqdoc: true
 doi: 10.1007/s10817-018-9460-x
 
 synopsis: >-
   Representations of regular languages (i.e., regexps, various types
-  of automata, and WS1S) with equivalence proofs in Coq+MathComp.
+  of automata, and WS1S) with equivalence proofs, in Coq and MathComp.
 
 description: |-
   This library provides definitions and verified translations between
@@ -42,19 +41,20 @@ opam-file-maintainer: palmskog@gmail.com
 opam-file-version: dev
 
 license:
-  fullname: CEA CNRS INRIA Logiciel Libre - B
-  identifier: CeCILL-B
-  file: LICENSE
+  fullname: CeCILL-B
+  identifier: CECILL-B
 
 supported_coq_versions:
-  text: 8.10.2 or later (use releases for other Coq versions)
-  opam: '{(>= "8.10.2" & < "8.12~") | (= "dev")}'
+  text: 8.10 or later (use releases for other Coq versions)
+  opam: '{(>= "8.10" & < "8.12~") | (= "dev")}'
 
 tested_coq_nix_versions:
 - version_or_url: https://github.com/coq/coq-on-cachix/tarball/master
 
 tested_coq_opam_versions:
-- version: '8.10.2'
+- version: dev
+- version: '8.11'
+- version: '8.10'
 
 dependencies:
 - opam:
@@ -85,20 +85,20 @@ documentation: |-
   
   ## File Contents
 
-  * misc.v, setoid_leq.v: basic infrastructure independent of regular languages
-  * languages.v: languages and decidable languages
-  * dfa.v: 
+  * `misc.v`, `setoid_leq.v`: basic infrastructure independent of regular languages
+  * `languages.v`: languages and decidable languages
+  * `dfa.v`:
     * results on deterministic one-way automata
     * definition of regularity
     * criteria for nonregularity
-  * nfa.v: Results on nondeterministic one-way automata
-  * regexp.v: Regular expressions and Kleene Theorem
-  * minimization.v: minimization and uniqueness of minimal DFAs
-  * myhill_nerode.v: classifiers and the constructive Myhill-Nerode theorem
-  * two_way.v: deterministic and nondeterministic two-way automata
-  * vardi.v: translation from 2NFAs to NFAs for the complement language
-  * shepherdson.v: translation from 2NFAs and 2DFAs to DFAs (via classifiers)
-  * wmso.v: 
+  * `nfa.v`: Results on nondeterministic one-way automata
+  * `regexp.v`: Regular expressions and Kleene Theorem
+  * `minimization.v`: minimization and uniqueness of minimal DFAs
+  * `myhill_nerode.v`: classifiers and the constructive Myhill-Nerode theorem
+  * `two_way.v`: deterministic and nondeterministic two-way automata
+  * `vardi.v`: translation from 2NFAs to NFAs for the complement language
+  * `shepherdson.v`: translation from 2NFAs and 2DFAs to DFAs (via classifiers)
+  * `wmso.v`:
     * decidability of WS1S
     * WS1S as representation of regular languages
 ---
