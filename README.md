@@ -1,27 +1,72 @@
-# Regular Language Representations in the Constructive Type Theory of Coq
+# Regular Language Representations in Coq
 
-This repository contains the Coq development accompanying the paper:
+[![Travis][travis-shield]][travis-link]
+[![Contributing][contributing-shield]][contributing-link]
+[![Code of Conduct][conduct-shield]][conduct-link]
+[![Gitter][gitter-shield]][gitter-link]
+[![coqdoc][coqdoc-shield]][coqdoc-link]
+[![DOI][doi-shield]][doi-link]
 
-[Christian Doczkal](https://perso.ens-lyon.fr/christian.doczkal/) and [Gert Smolka](https://www.ps.uni-saarland.de/~smolka/), _Regular Language Representations in the Constructive Type Theory of Coq_, J. Autom. Reason. - Special Issue on Milestones in Interactive Theorem Proving, Springer, 2018.
+[travis-shield]: https://travis-ci.com/coq-community/reglang.svg?branch=master
+[travis-link]: https://travis-ci.com/coq-community/reglang/builds
 
-## Prerequisites
+[contributing-shield]: https://img.shields.io/badge/contributions-welcome-%23f7931e.svg
+[contributing-link]: https://github.com/coq-community/manifesto/blob/master/CONTRIBUTING.md
 
-One of the following:
+[conduct-shield]: https://img.shields.io/badge/%E2%9D%A4-code%20of%20conduct-%23f15a24.svg
+[conduct-link]: https://github.com/coq-community/manifesto/blob/master/CODE_OF_CONDUCT.md
 
-* [coq-8.10](https://github.com/coq/coq/releases/tag/V8.10.1) + [mathcomp-1.9.0](https://github.com/math-comp/math-comp/releases/tag/mathcomp-1.9.0) (the ssreflect component)
-* [coq-8.9](https://github.com/coq/coq/releases/tag/V8.9.1) + [mathcomp-1.9.0](https://github.com/math-comp/math-comp/releases/tag/mathcomp-1.9.0) (the ssreflect component)
-* [coq-8.8](https://github.com/coq/coq/releases/tag/V8.8.2) + [mathcomp-1.9.0](https://github.com/math-comp/math-comp/releases/tag/mathcomp-1.9.0) (the ssreflect component)
-* [coq-8.7](https://coq.inria.fr/coq-87) + [mathcomp-1.9.0](https://github.com/math-comp/math-comp/releases/tag/mathcomp-1.9.0) (the ssreflect component)
+[gitter-shield]: https://img.shields.io/badge/chat-on%20gitter-%23c1272d.svg
+[gitter-link]: https://gitter.im/coq-community/Lobby
 
-## Building and Installation
+[coqdoc-shield]: https://img.shields.io/badge/docs-coqdoc-blue.svg
+[coqdoc-link]: https://coq-community.github.io/reglang/docs/latest/coqdoc/toc.html
 
-The easiest way to install the library is via [OPAM](https://opam.ocaml.org/):
-```
+[doi-shield]: https://zenodo.org/badge/DOI/10.1007/s10817-018-9460-x.svg
+[doi-link]: https://doi.org/10.1007/s10817-018-9460-x
+
+This library provides definitions and verified translations between
+different representations of regular languages: various forms of
+automata (deterministic, nondeterministic, one-way, two-way),
+regular expressions, and the logic WS1S. It also contains various
+decidability results and closure properties of regular languages.
+
+## Meta
+
+- Author(s):
+  - Christian Doczkal (initial)
+  - Jan-Oliver Kaiser (initial)
+  - Gert Smolka (initial)
+- Coq-community maintainer(s):
+  - Christian Doczkal ([**@chdoc**](https://github.com/chdoc))
+  - Karl Palmskog ([**@palmskog**](https://github.com/palmskog))
+- License: [CeCILL-B](LICENSE)
+- Compatible Coq versions: 8.10.2 or later (use releases for other Coq versions)
+- Additional dependencies:
+  - [MathComp](https://math-comp.github.io) 1.9.0 or later (`ssreflect` suffices)
+- Coq namespace: `RegLang`
+- Related publication(s):
+  - [Regular Language Representations in the Constructive Type Theory of Coq](https://hal.archives-ouvertes.fr/hal-01832031/document) doi:[10.1007/s10817-018-9460-x](https://doi.org/10.1007/s10817-018-9460-x)
+
+## Building and installation instructions
+
+The easiest way to install the latest released version of Regular Language Representations in Coq
+is via [OPAM](https://opam.ocaml.org/doc/Install.html):
+
+```shell
 opam repo add coq-released https://coq.inria.fr/opam/released
 opam install coq-reglang
 ```
 
-To instead build and install the library manually, run `make` followed by `make install`.
+To instead build and install manually, do:
+
+``` shell
+git clone https://github.com/coq-community/reglang
+cd reglang
+make   # or make -j <number-of-cores-on-your-machine>
+make install
+```
+
 
 ## HTML Documentation
 
@@ -31,7 +76,7 @@ Pregenerated HTML documentation (and a pre-print of the paper) can be found at: 
 
 ## File Contents
 
-* misc.v, setoid_leq.v:	basic infrastructure independent of regular languages
+* misc.v, setoid_leq.v: basic infrastructure independent of regular languages
 * languages.v: languages and decidable languages
 * dfa.v: 
   * results on deterministic one-way automata

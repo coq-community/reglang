@@ -1,0 +1,104 @@
+---
+fullname: Regular Language Representations in Coq
+shortname: reglang
+organization: coq-community
+community: true
+travis: true
+coqdoc: true
+doi: 10.1007/s10817-018-9460-x
+
+synopsis: >-
+  Representations of regular languages (i.e., regexps, various types
+  of automata, and WS1S) with equivalence proofs in Coq+MathComp.
+
+description: |-
+  This library provides definitions and verified translations between
+  different representations of regular languages: various forms of
+  automata (deterministic, nondeterministic, one-way, two-way),
+  regular expressions, and the logic WS1S. It also contains various
+  decidability results and closure properties of regular languages.
+
+publications:
+- pub_url: https://hal.archives-ouvertes.fr/hal-01832031/document
+  pub_title: Regular Language Representations in the Constructive Type Theory of Coq
+  pub_doi: 10.1007/s10817-018-9460-x
+
+authors:
+- name: Christian Doczkal
+  initial: true
+- name: Jan-Oliver Kaiser
+  initial: true
+- name: Gert Smolka
+  initial: true
+
+maintainers:
+- name: Christian Doczkal
+  nickname: chdoc
+- name: Karl Palmskog
+  nickname: palmskog
+
+opam-file-maintainer: palmskog@gmail.com
+
+opam-file-version: dev
+
+license:
+  fullname: CEA CNRS INRIA Logiciel Libre - B
+  identifier: CeCILL-B
+  file: LICENSE
+
+supported_coq_versions:
+  text: 8.10.2 or later (use releases for other Coq versions)
+  opam: '{(>= "8.10.2" & < "8.12~") | (= "dev")}'
+
+tested_coq_nix_versions:
+- version_or_url: https://github.com/coq/coq-on-cachix/tarball/master
+
+tested_coq_opam_versions:
+- version: '8.10.2'
+
+dependencies:
+- opam:
+    name: coq-mathcomp-ssreflect
+    version: '{(>= "1.9" & < "1.11~") | (= "dev")}'
+  nix: ssreflect
+  description: |-
+    [MathComp](https://math-comp.github.io) 1.9.0 or later (`ssreflect` suffices)
+
+namespace: RegLang
+
+keywords:
+- name: regular languages
+- name: regular expressions
+- name: finite automata
+- name: two-way automata
+- name: monadic second-order logic
+
+categories:
+- name: Computer Science/Formal Languages Theory and Automata
+
+documentation: |-
+  ## HTML Documentation
+
+  To generate the HTML documentation, run `make website` and point your browser at `website/toc.html`
+
+  Pregenerated HTML documentation (and a pre-print of the paper) can be found at: https://www.ps.uni-saarland.de/extras/RLR-Coq
+  
+  ## File Contents
+
+  * misc.v, setoid_leq.v: basic infrastructure independent of regular languages
+  * languages.v: languages and decidable languages
+  * dfa.v: 
+    * results on deterministic one-way automata
+    * definition of regularity
+    * criteria for nonregularity
+  * nfa.v: Results on nondeterministic one-way automata
+  * regexp.v: Regular expressions and Kleene Theorem
+  * minimization.v: minimization and uniqueness of minimal DFAs
+  * myhill_nerode.v: classifiers and the constructive Myhill-Nerode theorem
+  * two_way.v: deterministic and nondeterministic two-way automata
+  * vardi.v: translation from 2NFAs to NFAs for the complement language
+  * shepherdson.v: translation from 2NFAs and 2DFAs to DFAs (via classifiers)
+  * wmso.v: 
+    * decidability of WS1S
+    * WS1S as representation of regular languages
+---
