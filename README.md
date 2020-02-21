@@ -4,7 +4,6 @@
 [![Contributing][contributing-shield]][contributing-link]
 [![Code of Conduct][conduct-shield]][conduct-link]
 [![Gitter][gitter-shield]][gitter-link]
-[![coqdoc][coqdoc-shield]][coqdoc-link]
 [![DOI][doi-shield]][doi-link]
 
 [travis-shield]: https://travis-ci.com/coq-community/reglang.svg?branch=master
@@ -19,8 +18,6 @@
 [gitter-shield]: https://img.shields.io/badge/chat-on%20gitter-%23c1272d.svg
 [gitter-link]: https://gitter.im/coq-community/Lobby
 
-[coqdoc-shield]: https://img.shields.io/badge/docs-coqdoc-blue.svg
-[coqdoc-link]: https://coq-community.github.io/reglang/docs/latest/coqdoc/toc.html
 
 [doi-shield]: https://zenodo.org/badge/DOI/10.1007/s10817-018-9460-x.svg
 [doi-link]: https://doi.org/10.1007/s10817-018-9460-x
@@ -41,7 +38,7 @@ decidability results and closure properties of regular languages.
   - Christian Doczkal ([**@chdoc**](https://github.com/chdoc))
   - Karl Palmskog ([**@palmskog**](https://github.com/palmskog))
 - License: [CeCILL-B](LICENSE)
-- Compatible Coq versions: 8.10.2 or later (use releases for other Coq versions)
+- Compatible Coq versions: 8.10 or later (use releases for other Coq versions)
 - Additional dependencies:
   - [MathComp](https://math-comp.github.io) 1.9.0 or later (`ssreflect` suffices)
 - Coq namespace: `RegLang`
@@ -76,19 +73,19 @@ Pregenerated HTML documentation (and a pre-print of the paper) can be found at: 
 
 ## File Contents
 
-* misc.v, setoid_leq.v: basic infrastructure independent of regular languages
-* languages.v: languages and decidable languages
-* dfa.v: 
+* `misc.v`, `setoid_leq.v`: basic infrastructure independent of regular languages
+* `languages.v`: languages and decidable languages
+* `dfa.v`:
   * results on deterministic one-way automata
   * definition of regularity
   * criteria for nonregularity
-* nfa.v: Results on nondeterministic one-way automata
-* regexp.v: Regular expressions and Kleene Theorem
-* minimization.v: minimization and uniqueness of minimal DFAs
-* myhill_nerode.v: classifiers and the constructive Myhill-Nerode theorem
-* two_way.v: deterministic and nondeterministic two-way automata
-* vardi.v: translation from 2NFAs to NFAs for the complement language
-* shepherdson.v: translation from 2NFAs and 2DFAs to DFAs (via classifiers)
-* wmso.v: 
+* `nfa.v`: Results on nondeterministic one-way automata
+* `regexp.v`: Regular expressions and Kleene Theorem
+* `minimization.v`: minimization and uniqueness of minimal DFAs
+* `myhill_nerode.v`: classifiers and the constructive Myhill-Nerode theorem
+* `two_way.v`: deterministic and nondeterministic two-way automata
+* `vardi.v`: translation from 2NFAs to NFAs for the complement language
+* `shepherdson.v`: translation from 2NFAs and 2DFAs to DFAs (via classifiers)
+* `wmso.v`:
   * decidability of WS1S
   * WS1S as representation of regular languages
