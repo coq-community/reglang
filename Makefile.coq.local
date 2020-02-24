@@ -16,5 +16,8 @@ coqdoc: $(GLOBFILES) $(VFILES) $(CSSFILES) $(JSFILES) $(HTMLFILES)
 	$(HIDE)cp $(CSSFILES) $(JSFILES) $(COQDOCDIR)
 .PHONY: coqdoc
 
+extra/index.html: extra/index.md
+	pandoc -s -o $@ $<
+
 clean::
 	$(HIDE)rm -rf $(DOCDIR)

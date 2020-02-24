@@ -4,6 +4,7 @@
 [![Contributing][contributing-shield]][contributing-link]
 [![Code of Conduct][conduct-shield]][conduct-link]
 [![Gitter][gitter-shield]][gitter-link]
+[![coqdoc][coqdoc-shield]][coqdoc-link]
 [![DOI][doi-shield]][doi-link]
 
 [travis-shield]: https://travis-ci.com/coq-community/reglang.svg?branch=master
@@ -18,6 +19,8 @@
 [gitter-shield]: https://img.shields.io/badge/chat-on%20gitter-%23c1272d.svg
 [gitter-link]: https://gitter.im/coq-community/Lobby
 
+[coqdoc-shield]: https://img.shields.io/badge/docs-coqdoc-blue.svg
+[coqdoc-link]: https://coq-community.github.io/reglang/docs/latest/coqdoc/toc.html
 
 [doi-shield]: https://zenodo.org/badge/DOI/10.1007/s10817-018-9460-x.svg
 [doi-link]: https://doi.org/10.1007/s10817-018-9460-x
@@ -69,7 +72,7 @@ make install
 
 To generate HTML documentation, run `make coqdoc` and point your browser at `docs/coqdoc/toc.html`.
 
-Pregenerated HTML documentation can be found at: https://www.ps.uni-saarland.de/extras/RLR-Coq
+See also the pregenerated HTML documentation for the [latest release](https://coq-community.github.io/reglang/docs/latest/coqdoc/toc.html).
 
 ## File Contents
 
