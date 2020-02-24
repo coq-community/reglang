@@ -5,6 +5,7 @@ version: "dev"
 homepage: "https://github.com/coq-community/reglang"
 dev-repo: "git+https://github.com/coq-community/reglang.git"
 bug-reports: "https://github.com/coq-community/reglang/issues"
+doc: "https://coq-community.github.io/reglang/"
 license: "CECILL-B"
 
 synopsis: "Representations of regular languages (i.e., regexps, various types of automata, and WS1S) with equivalence proofs, in Coq and MathComp"

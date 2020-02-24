@@ -4,6 +4,7 @@ shortname: reglang
 organization: coq-community
 community: true
 travis: true
+coqdoc: true
 doi: 10.1007/s10817-018-9460-x
 
 synopsis: >-
@@ -81,7 +82,7 @@ documentation: |-
 
   To generate HTML documentation, run `make coqdoc` and point your browser at `docs/coqdoc/toc.html`.
 
-  Pregenerated HTML documentation can be found at: https://www.ps.uni-saarland.de/extras/RLR-Coq
+  See also the pregenerated HTML documentation for the [latest release](https://coq-community.github.io/reglang/docs/latest/coqdoc/toc.html).
 
   ## File Contents
 
