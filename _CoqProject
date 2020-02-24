@@ -1,0 +1,15 @@
+-R theories RegLang
+-arg -w -arg -notation-overridden
+-arg -w -arg -duplicate-clear
+theories/misc.v
+theories/setoid_leq.v
+theories/languages.v
+theories/dfa.v
+theories/nfa.v
+theories/regexp.v
+theories/minimization.v
+theories/myhill_nerode.v
+theories/two_way.v
+theories/vardi.v
+theories/shepherdson.v
+theories/wmso.v

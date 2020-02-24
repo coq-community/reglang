@@ -8,7 +8,7 @@ doi: 10.1007/s10817-018-9460-x
 
 synopsis: >-
   Representations of regular languages (i.e., regexps, various types
-  of automata, and WS1S) with equivalence proofs, in Coq and MathComp.
+  of automata, and WS1S) with equivalence proofs, in Coq and MathComp
 
 description: |-
   This library provides definitions and verified translations between
@@ -79,10 +79,10 @@ categories:
 documentation: |-
   ## HTML Documentation
 
-  To generate the HTML documentation, run `make website` and point your browser at `website/toc.html`
+  To generate HTML documentation, run `make coqdoc` and point your browser at `docs/coqdoc/toc.html`.
 
-  Pregenerated HTML documentation (and a pre-print of the paper) can be found at: https://www.ps.uni-saarland.de/extras/RLR-Coq
-  
+  Pregenerated HTML documentation can be found at: https://www.ps.uni-saarland.de/extras/RLR-Coq
+
   ## File Contents
 
   * `misc.v`, `setoid_leq.v`: basic infrastructure independent of regular languages

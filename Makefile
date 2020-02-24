@@ -1,21 +1,16 @@
-.PHONY : all coq html install website clean
+all: Makefile.coq
+	@+$(MAKE) -f Makefile.coq all
 
-all: coq
+clean: Makefile.coq
+	@+$(MAKE) -f Makefile.coq cleanall
+	@rm -f Makefile.coq Makefile.coq.conf
 
-html: coq
-	$(MAKE) -C theories html
+Makefile.coq: _CoqProject
+	$(COQBIN)coq_makefile -f _CoqProject -o Makefile.coq
 
-coq:
-	$(MAKE) -C theories
+force _CoqProject Makefile: ;
 
-install:
-	$(MAKE) -C theories install
+%: Makefile.coq force
+	@+$(MAKE) -f Makefile.coq $@
 
-website: html
-	test -d website || mkdir website
-	cp theories/html/* website/
-	cp extra/*.css extra/*.js website/
-
-clean:
-	$(MAKE) -C theories clean
-	rm -rf website
+.PHONY: all clean force

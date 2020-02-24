@@ -67,9 +67,9 @@ make install
 
 ## HTML Documentation
 
-To generate the HTML documentation, run `make website` and point your browser at `website/toc.html`
+To generate HTML documentation, run `make coqdoc` and point your browser at `docs/coqdoc/toc.html`.
 
-Pregenerated HTML documentation (and a pre-print of the paper) can be found at: https://www.ps.uni-saarland.de/extras/RLR-Coq
+Pregenerated HTML documentation can be found at: https://www.ps.uni-saarland.de/extras/RLR-Coq
 
 ## File Contents
 

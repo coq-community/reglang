@@ -1,0 +1,7 @@
+(coq.theory
+ (name RegLang)
+ (package coq-reglang)
+ (synopsis "Representations of regular languages (i.e., regexps, various types of automata, and WS1S) with equivalence proofs, in Coq and MathComp")
+ (flags
+   -w -notation-overridden
+   -w -duplicate-clear))
