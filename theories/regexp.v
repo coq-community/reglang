@@ -1,7 +1,7 @@
 (* Authors: Christian Doczkal and Jan-Oliver Kaiser *)
 (* Distributed under the terms of CeCILL-B. *)
 From mathcomp Require Import all_ssreflect.
-Require Import setoid_leq misc languages dfa nfa.
+From RegLang Require Import setoid_leq misc languages dfa nfa.
 
 Set Implicit Arguments.
 Unset Strict Implicit.

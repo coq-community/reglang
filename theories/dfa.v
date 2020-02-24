@@ -1,7 +1,7 @@
 (* Authors: Christian Doczkal and Jan-Oliver Kaiser *)
 (* Distributed under the terms of CeCILL-B. *)
 From mathcomp Require Import all_ssreflect.
-Require Import misc languages.
+From RegLang Require Import misc languages.
 
 Set Implicit Arguments.
 Unset Printing Implicit Defensive.

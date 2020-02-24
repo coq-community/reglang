@@ -2,7 +2,7 @@
 (* Distributed under the terms of CeCILL-B. *)
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq choice.
 From mathcomp Require Import fintype path fingraph finfun finset generic_quotient.
-Require Import misc languages dfa.
+From RegLang Require Import misc languages dfa.
 
 Set Implicit Arguments.
 Unset Printing Implicit Defensive.

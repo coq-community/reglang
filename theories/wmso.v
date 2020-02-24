@@ -1,7 +1,7 @@
 (* Author: Christian Doczkal *)
 (* Distributed under the terms of CeCILL-B. *)
 From mathcomp Require Import all_ssreflect.
-Require Import misc languages dfa nfa regexp.
+From RegLang Require Import misc languages dfa nfa regexp.
 
 Set Implicit Arguments.
 Unset Printing Implicit Defensive.
