@@ -2,7 +2,7 @@
 (* Distributed under the terms of CeCILL-B. *)
 From Coq Require Import Omega.
 From mathcomp Require Import all_ssreflect.
-Require Import misc setoid_leq languages dfa myhill_nerode two_way.
+From RegLang Require Import misc setoid_leq languages dfa myhill_nerode two_way.
 
 Set Implicit Arguments.
 Unset Strict Implicit.

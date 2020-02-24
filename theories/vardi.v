@@ -1,7 +1,7 @@
 (* Author: Christian Doczkal *)
 (* Distributed under the terms of CeCILL-B. *)
 From mathcomp Require Import all_ssreflect.
-Require Import misc languages nfa two_way.
+From RegLang Require Import misc languages nfa two_way.
 
 Set Implicit Arguments.
 Unset Strict Implicit.

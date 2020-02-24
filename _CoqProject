@@ -1,4 +1,4 @@
--R theories RegLang
+-Q theories RegLang
 -arg -w -arg -notation-overridden
 -arg -w -arg -duplicate-clear
 theories/misc.v
