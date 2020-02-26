@@ -40,15 +40,10 @@ matrix:
 
   # Test supported versions of Coq via Nix
   - env:
-    - COQ=https://github.com/coq/coq-on-cachix/tarball/master
+    - COQ=8.11
     <<: *NIX
 
   # Test supported versions of Coq via OPAM
-  - env:
-    - COQ_IMAGE=coqorg/coq:dev
-    - PACKAGE=coq-reglang.dev
-    - NJOBS=2
-    <<: *OPAM
   - env:
     - COQ_IMAGE=coqorg/coq:8.11
     - PACKAGE=coq-reglang.dev

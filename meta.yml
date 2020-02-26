@@ -46,14 +46,13 @@ license:
   identifier: CECILL-B
 
 supported_coq_versions:
-  text: 8.11 or later (use releases for other Coq versions)
-  opam: '{(>= "8.11" & < "8.12~") | (= "dev")}'
+  text: 8.11 (use releases for other Coq versions)
+  opam: '{>= "8.11" & < "8.12~"}'
 
 tested_coq_nix_versions:
-- version_or_url: https://github.com/coq/coq-on-cachix/tarball/master
+- version_or_url: '8.11'
 
 tested_coq_opam_versions:
-- version: dev
 - version: '8.11'
 
 dependencies:
