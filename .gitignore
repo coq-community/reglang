@@ -15,3 +15,4 @@ Makefile.coq.conf
 _build/
 docs/
 .lia.cache
+.nia.cache

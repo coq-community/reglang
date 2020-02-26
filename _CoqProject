@@ -13,3 +13,4 @@ theories/two_way.v
 theories/vardi.v
 theories/shepherdson.v
 theories/wmso.v
+theories/zify.v

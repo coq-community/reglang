@@ -41,7 +41,7 @@ decidability results and closure properties of regular languages.
   - Christian Doczkal ([**@chdoc**](https://github.com/chdoc))
   - Karl Palmskog ([**@palmskog**](https://github.com/palmskog))
 - License: [CeCILL-B](LICENSE)
-- Compatible Coq versions: 8.10 or later (use releases for other Coq versions)
+- Compatible Coq versions: 8.11 or later (use releases for other Coq versions)
 - Additional dependencies:
   - [MathComp](https://math-comp.github.io) 1.9.0 or later (`ssreflect` suffices)
 - Coq namespace: `RegLang`

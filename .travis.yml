@@ -54,9 +54,4 @@ matrix:
     - PACKAGE=coq-reglang.dev
     - NJOBS=2
     <<: *OPAM
-  - env:
-    - COQ_IMAGE=coqorg/coq:8.10
-    - PACKAGE=coq-reglang.dev
-    - NJOBS=2
-    <<: *OPAM
 

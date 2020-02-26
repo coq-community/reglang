@@ -1,7 +1,7 @@
 (* Author: Christian Doczkal  *)
 (* Distributed under the terms of CeCILL-B. *)
 From mathcomp Require Import all_ssreflect zify.
-From RegLang Require Import misc setoid_leq languages dfa myhill_nerode two_way.
+From RegLang Require Import misc setoid_leq languages dfa myhill_nerode two_way zify.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
