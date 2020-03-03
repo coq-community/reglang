@@ -32,10 +32,10 @@ Fixpoint delta (p : A) x :=
   if x is a :: x' then delta (dfa_trans p a) x' else p.
 
 Lemma delta_cons p a x : delta (dfa_trans p a) x = delta p (a :: x). 
-Proof. by []. Qed.
+Proof using. by []. Qed.
 
 Lemma delta_cat p x y : delta p (x ++ y) = delta (delta p x) y.
-Proof. elim: x p => // a x /= IH p. by rewrite IH. Qed.
+Proof using. elim: x p => // a x /= IH p. by rewrite IH. Qed.
 
 Definition dfa_accept (p : A) x := delta p x \in dfa_fin A.
 
@@ -43,14 +43,14 @@ Definition delta_s w := delta (dfa_s A) w.
 Definition dfa_lang := [pred x | dfa_accept (dfa_s A) x].
 
 Lemma accept_nil p : dfa_accept p [::] = (p \in dfa_fin A). 
-Proof. by []. Qed.
+Proof using. by []. Qed.
 
 Lemma accept_cons (x : A) a w : 
   dfa_accept x (a :: w) = dfa_accept (dfa_trans x a) w.
-Proof. by []. Qed.
+Proof using. by []. Qed.
 
 Lemma delta_lang x : (delta_s x \in dfa_fin A) = (x \in dfa_lang).
-Proof. by []. Qed.
+Proof using. by []. Qed.
 
 Definition accE := (accept_nil,accept_cons).
 
@@ -66,7 +66,7 @@ the propositional variant of regularity is obtained as [inhabited (regular L)]. 
 Definition regular (L : lang char) := { A : dfa | forall x, L x <-> x \in dfa_lang A }.
 
 Lemma regular_ext L1 L2 : regular L2 -> L1 =p L2 -> regular L1.
-Proof. case => A HA B. exists A => w. by rewrite B. Qed.
+Proof using. case => A HA B. exists A => w. by rewrite B. Qed.
 
 (** ** Operations on DFAs 
 
@@ -79,7 +79,7 @@ Definition dfa_void :=
   {| dfa_s := tt; dfa_fin := set0 ; dfa_trans x a := tt |}.
 
 Lemma dfa_void_correct (x: dfa_void) w: ~~ dfa_accept x w.
-Proof. by rewrite /dfa_accept inE. Qed.
+Proof using. by rewrite /dfa_accept inE. Qed.
 
 Section DFAOps.
 
@@ -94,7 +94,7 @@ Definition dfa_compl :=
 
 Lemma dfa_compl_correct w :
   w \in dfa_lang dfa_compl = (w \notin dfa_lang A1).
-Proof.
+Proof using.
   rewrite /dfa_lang !inE {2}/dfa_compl /=.
   by rewrite /dfa_accept inE.
 Qed.
@@ -108,7 +108,7 @@ Definition dfa_op  :=
 
 Lemma dfa_op_correct w :
   w \in dfa_lang dfa_op = op (w \in dfa_lang A1) (w \in dfa_lang A2).
-Proof.
+Proof using.
   rewrite !inE {2}/dfa_op /=. 
   elim: w (dfa_s A1) (dfa_s A2) => [| a w IHw] x y; by rewrite !accE ?inE /=.
 Qed.
@@ -116,30 +116,30 @@ Qed.
 Definition dfa0 := {| dfa_s := tt; dfa_trans q a := tt; dfa_fin := set0 |}.
 
 Lemma dfa0_correct x : x \in dfa_lang dfa0 = false.
-Proof. by rewrite -delta_lang inE. Qed.
+Proof using. by rewrite -delta_lang inE. Qed.
 
 End DFAOps.
 
 Lemma regular_inter (L1 L2 : lang char) :
   regular L1 -> regular L2 -> regular (fun x => L1 x /\ L2 x).
-Proof.
+Proof using.
   move => [A LA] [B LB]. exists (dfa_op andb A B) => x.
   by rewrite dfa_op_correct LA LB (rwP andP).
 Qed.
 
 Lemma regular0 : regular (fun _ : word => False).
-Proof. exists (dfa0) => x. by rewrite dfa0_correct. Qed.
+Proof using. exists (dfa0) => x. by rewrite dfa0_correct. Qed.
 
 Lemma regularU (L1 L2 : lang char) :
   regular L1 -> regular L2 -> regular (fun x => L1 x \/ L2 x).
-Proof.
+Proof using.
   move => [A1 acc_L1] [A2 acc_L2]. exists (dfa_op orb A1 A2) => x.  
   by rewrite dfa_op_correct -(rwP orP) -acc_L1 -acc_L2. 
 Qed.
 
 Lemma regular_bigU (T : eqType) (L : T -> lang char) (s : seq T) : 
   (forall a, a \in s -> regular (L a)) -> regular (fun x => exists2 a, a \in s & L a x). 
-Proof.
+Proof using.
   elim: s => //. 
   - move => _. apply: regular_ext regular0 _. by split => // [[a]]. 
   - move => a s IH /all1sT [H1 H2]. 
@@ -157,21 +157,21 @@ Section CutOff.
   Hypothesis RC_f : forall x y a, f x = f y -> f (x++[::a]) = f (y++[::a]).
 
   Lemma RC_seq x y z : f x = f y -> f (x++z) = f (y++z).
-  Proof.
+  Proof using RC_f.
     elim: z x y => [|a z IHz] x y; first by rewrite !cats0.
     rewrite -(cat1s a) (catA x [::a]) (catA y [::a]). move/(RC_f a). exact: IHz.
   Qed.
 
   Lemma RC_rep x (i j : 'I_(size x)) :
     i < j -> f (take i x) = f (take j x) -> f (take i x ++ drop j x) = f x.
-  Proof. move => Hij Hfij. rewrite -{5}(cat_take_drop j x). exact: RC_seq. Qed.
+  Proof using RC_f. move => Hij Hfij. rewrite -{5}(cat_take_drop j x). exact: RC_seq. Qed.
 
 
   Definition exseqb (p : pred rT) :=
     [exists n : 'I_#|rT|.+1, exists x : n.-tuple aT, p (f x)].
 
   Lemma exseqP (p : pred rT) : reflect (exists x, p (f x)) (exseqb p).
-  Proof.
+  Proof using RC_f.
     apply: (iffP idP); last case.
     - case/existsP => n. case/existsP => x Hx. by exists x.
     - apply: (size_induction (measure := size)) => x IHx px.
@@ -187,10 +187,10 @@ Section CutOff.
   Qed.
     
   Lemma exseq_dec (p : pred rT) : decidable (exists x, p (f x)).
-  Proof. apply: decP. exact: exseqP. Qed.
+  Proof using RC_f. apply: decP. exact: exseqP. Qed.
 
   Lemma allseq_dec (p : pred rT) : decidable (forall x, p (f x)).
-  Proof.
+  Proof using RC_f.
     case: (exseq_dec (predC p)) => H;[right|left].
     - move => A. case: H => [x /= Hx]. by rewrite A in Hx.
     - move => x. apply/negPn/negP => C. apply: H. by exists x.
@@ -201,12 +201,12 @@ Section CutOff.
   Definition image_type := { a : rT | exseq_dec (pred1 a) }.
 
   Lemma image_fun_proof (x : seq aT) : exseq_dec (pred1 (f x)).
-  Proof. apply/dec_eq. by exists x => /=. Qed.
+  Proof using. apply/dec_eq. by exists x => /=. Qed.
 
   Definition image_fun (x : seq aT) : image_type := Sub (f x) (image_fun_proof x).
 
   Lemma surjective_image_fun : surjective (image_fun).
-  Proof. move => [y Py]. case/dec_eq : (Py) => /= x ?. by exists x. Qed.
+  Proof using. move => [y Py]. case/dec_eq : (Py) => /= x ?. by exists x. Qed.
   
 End CutOff.
 
@@ -220,18 +220,18 @@ Section Emptyness.
 
   Lemma delta_rc x y a : let s := dfa_s A in
     delta s x = delta s y -> delta s (x ++ [::a]) = delta s (y ++ [::a]).
-  Proof. by rewrite /= !delta_cat => <-. Qed.
+  Proof using. by rewrite /= !delta_cat => <-. Qed.
 
   Definition dfa_inhab : decidable (exists x, x \in dfa_lang A) := 
     exseq_dec delta_rc (fun x => x \in dfa_fin A).
   
   Lemma dfa_inhabP : reflect (exists x, x \in dfa_lang A) (dfa_inhab).
-  Proof. apply: (iffP idP); by rewrite dec_eq. Qed.
+  Proof using. apply: (iffP idP); by rewrite dec_eq. Qed.
 
   Definition dfa_empty := allseq_dec delta_rc (fun x => x \notin dfa_fin A).
   
   Lemma dfa_emptyP : reflect (dfa_lang A =i pred0) (dfa_empty).
-  Proof. 
+  Proof using.
     apply: (iffP idP) => [/dec_eq H x|H]; first by rewrite inE /dfa_accept (negbTE (H _)).
     apply/dec_eq => x. by rewrite -[_ \notin _]/(x \notin dfa_lang A) H.
   Qed.
@@ -244,7 +244,7 @@ Definition dfa_equiv A1 A2 := dfa_empty (dfa_op addb A1 A2).
 
 Lemma dfa_equiv_correct A1 A2 :
   reflect (dfa_lang A1 =i dfa_lang A2) (dfa_equiv A1 A2).
-Proof.
+Proof using.
   apply: (iffP (dfa_emptyP _)) => H w.
   - move/negbT: (H w). rewrite !dfa_op_correct -addNb.
     move/addbP. by rewrite negbK.
@@ -255,7 +255,7 @@ Definition dfa_incl A1 A2 := dfa_empty (dfa_op (fun a b => a && ~~ b) A1 A2).
 
 Lemma dfa_incl_correct A1 A2 : 
   reflect {subset dfa_lang A1 <= dfa_lang A2} (dfa_incl A1 A2).
-Proof.
+Proof using.
   apply: (iffP (dfa_emptyP _)) => H w.
   - move/negbT: (H w). rewrite dfa_op_correct -negb_imply negbK.
     by move/implyP.
@@ -279,7 +279,7 @@ Section Preimage.
      dfa_trans x a := delta x (h [:: a]) |}.
 
   Lemma dfa_preimP A : dfa_lang (dfa_preim A) =i preim h (dfa_lang A).
-  Proof. 
+  Proof using h_hom.
     move => w. rewrite !inE /dfa_accept /dfa_preim /=. 
     elim: w (dfa_s A) => [|a w IHw] x /= ; first by rewrite h0.
     by rewrite -[a :: w]cat1s h_hom !delta_cat -IHw.
@@ -316,7 +316,7 @@ Section RightQuotient.
        dfa_fin := [set q | dec_L2 q] |}.
 
   Lemma dfa_quotP x : reflect (quotR x) (x \in dfa_lang dfa_quot).
-  Proof.
+  Proof using acc_L1.
     apply: (iffP idP).
     - rewrite inE /dfa_accept inE. case/dec_eq => y inL2.
       rewrite -delta_cat => H. exists y => //. by rewrite -acc_L1.
@@ -360,10 +360,10 @@ Section LeftQuotient.
 
 
   Lemma A_start_cat x y : (x ++ y \in dfa_lang A) = (y \in dfa_lang (A_start (delta_s A x))).
-  Proof. rewrite inE /delta_s. elim: x (dfa_s A)=> //= a x IH q. by rewrite accE IH. Qed.
+  Proof using. rewrite inE /delta_s. elim: x (dfa_s A)=> //= a x IH q. by rewrite accE IH. Qed.
 
   Lemma regular_quotL_aux : regular quotL.
-  Proof.
+  Proof using A_start acc_L2 dec_L1.
     pose S := [seq q | q <- enum A & dec_L1 q].
     pose L (q:A) := mem (dfa_lang (A_start q)).
     pose R x := exists2 a, a \in S & L a x.
@@ -423,7 +423,7 @@ Section NonRegular.
   Lemma residualP (f : nat -> word char) (L : lang char) :
     (forall n1 n2, residual L (f n1) =p residual L (f n2) -> n1 = n2) ->
     ~ inhabited (regular L).
-  Proof.
+  Proof using.
     move => f_spec [[A E]].
     pose f' (n : 'I_#|A|.+1) := delta_s A (f n).
     suff: injective f' by move/card_leq_inj ; rewrite card_ord ltnn.
@@ -438,25 +438,25 @@ Section NonRegular.
 
   Lemma count_nseq (T : eqType) (c d : T) n :
     count (pred1 c) (nseq n d) = (c == d) * n.
-  Proof.
+  Proof using.
     elim: n => [|n] /=; first by rewrite muln0.
     rewrite [d == c]eq_sym. by case e: (c == d) => /= ->.
   Qed.
 
   Lemma countL n1 n2 : count (pred1 a) (nseq n1 a ++ nseq n2 b) = n1.
-  Proof. by rewrite count_cat !count_nseq (negbTE Hab) eqxx //= mul1n mul0n addn0. Qed.
+  Proof using Hab. by rewrite count_cat !count_nseq (negbTE Hab) eqxx //= mul1n mul0n addn0. Qed.
 
   Lemma countR n1 n2 : count (pred1 b) (nseq n1 a ++ nseq n2 b) = n2.
-  Proof. by rewrite count_cat !count_nseq eq_sym (negbTE Hab) eqxx //= mul1n mul0n. Qed.
+  Proof using Hab. by rewrite count_cat !count_nseq eq_sym (negbTE Hab) eqxx //= mul1n mul0n. Qed.
 
   Lemma Lab_eq n1 n2 : Lab (nseq n1 a ++ nseq n2 b) -> n1 = n2.
-  Proof.
+  Proof using Hab.
     move => [n H].
     by rewrite -[n1](countL _ n2) -{2}[n2](countR n1 n2) H countL countR.
   Qed.
 
   Lemma Lab_not_regular : ~ inhabited (regular Lab).
-  Proof.
+  Proof using Hab.
     pose f n := nseq n a.
     apply: (@residualP f) => n1 n2. move/(_ (nseq n2 b)) => H.
     apply: Lab_eq. apply/H. by exists n2.
@@ -474,13 +474,13 @@ Section Pumping.
   Variable char : finType.
 
   Lemma delta_rep (A : dfa char) (p : A) x i : delta p x = p -> delta p (rep x i) = p.
-  Proof. elim: i => //= i IH H. by rewrite delta_cat H IH. Qed.
+  Proof using. elim: i => //= i IH H. by rewrite delta_cat H IH. Qed.
 
   Lemma pump_dfa (A : dfa char) x y z :
     x ++ y ++ z \in dfa_lang A -> #|A| < size y ->
     exists u v w,
       [/\ ~~ nilp v, y = u ++ v ++ w & forall i, (x ++ u ++ rep v i ++ w ++ z) \in dfa_lang A].
-  Proof.
+  Proof using.
     rewrite -delta_lang => H1 H2.
     have/injectivePn : ~~ injectiveb (fun i : 'I_(size y) => delta (delta_s A x) (take i y)).
       apply: contraL H2 => /injectiveP/card_leq_inj. by rewrite leqNgt card_ord.
@@ -500,7 +500,7 @@ Section Pumping.
       (forall u v w, y = u ++ v ++ w -> ~~ nilp v ->
          exists i, L (x ++ u ++ rep v i ++ w ++ z) -> False))
      -> ~ inhabited (regular L).
-  Proof.
+  Proof using.
     move => H [[A LA]].
     move/(_ #|A|.+1) : H => [x] [y] [z] [size_y [/LA Lxyz]].
     move: (pump_dfa Lxyz size_y) => [u] [v] [w] [Hn Hy Hv] /(_ u v w Hy Hn).
@@ -509,10 +509,10 @@ Section Pumping.
 
   Lemma cat_nseq_eq n1 n2 (a : char) :
     nseq n1 a ++ nseq n2 a = nseq (n1+n2) a.
-  Proof. elim: n1 => [|n1 IHn1] //=. by rewrite -cat1s IHn1. Qed.
+  Proof using. elim: n1 => [|n1 IHn1] //=. by rewrite -cat1s IHn1. Qed.
 
   Example pump_Lab (a b : char) : a != b -> ~ inhabited (regular (Lab a b)).
-  Proof.
+  Proof using.
     move => neq. apply: pumping => k.
     exists [::]. exists (nseq k a). exists (nseq k b). repeat split.
     - by rewrite size_nseq.

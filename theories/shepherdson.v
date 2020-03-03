@@ -64,10 +64,10 @@ Section NFA2toAFA.
   Arguments srel : clear implicits.
 
   Lemma srel_step k w : subrel (srel k w) (step M w).
-  Proof. by move => c d /= => /andP[->]. Qed.
+  Proof using. by move => c d /= => /andP[->]. Qed.
 
   Lemma srel_step_max x : srel (size x).+2 x =2 step M x.
-  Proof. move => c d /=. by rewrite /srel neq_ltn ltn_ord orbT andbT. Qed.
+  Proof using. move => c d /=. by rewrite /srel neq_ltn ltn_ord orbT andbT. Qed.
 
   Definition Tab x : table := 
     ([set q | connect (srel (size x).+1 x) (nfa2_s M, ord1) (q,ord_max)], 
@@ -80,18 +80,18 @@ Section NFA2toAFA.
 
   Lemma srelLR k x p i q j : srel k x (p,i) (q,j) -> 
     j.+1 = i :> nat \/ j = i.+1 :> nat.
-  Proof. move/srel_step. case/orP => /andP [_ /eqP ->]; tauto. Qed.
+  Proof using. move/srel_step. case/orP => /andP [_ /eqP ->]; tauto. Qed.
 
   Lemma srel1 k x c d : srel k x c d -> d.2 <= c.2.+1.
-  Proof. move: c d => [p i] [q j] /srelLR [<-|->] //=. by somega. Qed.
+  Proof using. move: c d => [p i] [q j] /srelLR [<-|->] //=. by somega. Qed.
 
   Lemma srelSr k' k x (c d : nfa2_config M x) : c.2 < k ->
     srel k x c d = srel (k+k') x c d. 
-  Proof. move => lt_k. by rewrite /srel !neq_ltn ltn_addr lt_k ?orbT. Qed.
+  Proof using. move => lt_k. by rewrite /srel !neq_ltn ltn_addr lt_k ?orbT. Qed.
 
   Lemma srelS k x p q (i j : pos x) m : i <= k ->
      connect (srel k x) (p,i) (q,j) -> connect (srel (k+m) x) (p,i) (q,j).
-  Proof. 
+  Proof using.
     move => H /connectP [cs]. 
     elim: cs p i H => [/= p i H _ [-> ->] //|[p' i'] cs IH p i H /= /andP [s pth] l].
     have Hk: i < k. case/andP : s => _ /= s. by rewrite ltn_neqAle H eq_sym s.
@@ -102,7 +102,7 @@ Section NFA2toAFA.
   Lemma srel_mid_path (k k' : nat) x (i j : pos x) (p q : M) cs : 
     i <= k <= j -> path (srel k' x) (p,i) cs -> (q,j) = last (p,i) cs -> 
     exists p' cl cr, [/\ cs = cl ++ cr, (p',inord k) = last (p,i) cl & path (srel k x) (p,i) cl].
-  Proof.  
+  Proof using.
     move: cs p i. apply: (size_induction (measure := size)) => cs IH p i /andP [H1 H2].
     case: (boolP (i == k :> nat)) => Ei.
     - exists p. exists [::]. exists cs. by rewrite -[i]inord_val (eqP Ei).
@@ -119,7 +119,7 @@ Section NFA2toAFA.
   Lemma srel_mid (k k' : nat) x (i j : pos x) (p q : M) : i <= k <= j -> k <= k' ->
     reflect (exists2 p', connect (srel k x) (p,i) (p',inord k) & connect (srel k' x) (p',inord k) (q,j))
             (connect (srel k' x) (p,i) (q,j)).
-  Proof.
+  Proof using.
     move => H X. apply: (iffP idP).
     - case/connectP => cs c1 c2. case: (srel_mid_path H c1 c2) => [p'] [cl] [cr] [Ecs L C].
       subst cs. rewrite cat_path last_cat -L in c1 c2. case/andP : c1 => ? c1. exists p'.
@@ -130,7 +130,7 @@ Section NFA2toAFA.
 
   Lemma readL x z (p:M) (k : pos x) : k != (size x).+1 :> nat -> 
     read p (inord k : pos (x++z)) = read p k. 
-  Proof.
+  Proof using.
     move => Hk. rewrite /read. case: (ord2P k) => [/eqP->|E|i Hi].
     - by rewrite /= -inord0 ord2P0.
     - apply: contraN Hk. by rewrite (eqP E). 
@@ -147,7 +147,7 @@ Section NFA2toAFA.
 
     Lemma srelL (i j : pos x) p q : 
       srel (size x).+1 x (p,i) (q,j) = srel (size x).+1 (x++z) (p,inord i) (q,inord j).
-    Proof.
+    Proof using.
       case: (boolP (i == (size x).+1 :> nat)) => Hi. 
       - rewrite /srel (eqP Hi) /= inordK ?eqxx //= ?andbF //; somega.
       - have Hi' : i < (size x).+1. by rewrite ltn_neqAle Hi -ltnS ltn_ord.
@@ -158,7 +158,7 @@ Section NFA2toAFA.
     Lemma runL (i j : pos x) p q :
       connect (srel (size x).+1 x) (p,i) (q,j) =
       connect (srel (size x).+1 (x++z)) (p,inord i) (q,inord j).
-    Proof.
+    Proof using.
       pose f (c : nfa2_config M x) : nfa2_config M (x ++ z) := (c.1, inord c.2).
       rewrite -[(p,inord i)]/(f (p,i)) -[(q,inord j)]/(f (q,j)).
       apply: connect_transfer => //.
@@ -177,18 +177,18 @@ Section NFA2toAFA.
 
     Lemma Tab1P q : q \in (Tab x).1 
         <-> connect (srel (size x).+1 (x++z)) (nfa2_s M,ord1) (q,inord (size x).+1).
-    Proof. by rewrite /Tab inE runL /= -[ord1]inord_val. Qed.
+    Proof using. by rewrite /Tab inE runL /= -[ord1]inord_val. Qed.
 
     Lemma Tab2P p q : (p,q) \in (Tab x).2
         <-> connect (srel (size x).+1 (x++z)) (p,inord (size x)) (q,inord (size x).+1). 
-    Proof. by rewrite inE runL /= inordK. Qed.
+    Proof using. by rewrite inE runL /= inordK. Qed.
 
     (** Dually, steps on the right of [x++z] do not depend on [x], if they do not
     cross the boundary between [x] and [z]. *)
 
     Lemma readR (q:M) k : k != 0 -> k < (size z).+2 ->
        read q (inord k : pos z) = read q (inord (size x + k) : pos (x++z)).
-    Proof.
+    Proof using.
       move => Hk0 Hk. rewrite /read. case: (ord2P _) => [H|H|i Hi].
       - apply: contraN Hk0. 
         move/eqP/(f_equal (@nat_of_ord _)) : H => /=. by rewrite inordK // => ->.
@@ -202,7 +202,7 @@ Section NFA2toAFA.
     Lemma srelR (m k k' : nat) p p' : k != 0 -> k < (size z).+2 -> k' < (size z).+2 ->
         srel ((size x).+1 + m) (x++z) (p,inord (size x + k)) (p',inord (size x + k'))
       = srel m.+1 z (p,inord k) (p',inord k').
-    Proof.
+    Proof using.
       move => Hk0 Hk Hk'. rewrite /srel /= !inordK ?addSnnS ?eqn_add2l //; somega.
       case: (_ != _); rewrite ?andbT ?andbF // /step -?readR //. 
       rewrite !inordK //; somega. by rewrite -!addnS !eqn_add2l.
@@ -211,7 +211,7 @@ Section NFA2toAFA.
     Lemma srelRE m k p c : k < (size z).+2 -> k != 0 -> 
       srel m (x++z) (p,inord (size x + k)) c -> 
       exists q k', k' < (size z).+2 /\ c = (q,inord (size x + k')).
-    Proof.
+    Proof using.
       move: k c => [//|k] [q j] Hk _ /srelLR [/eqP C|/eqP C];
         exists q; rewrite inordK addnS ?eqSS in C; somega.
       - exists k. by rewrite ltnW // -[j]inord_val (eqP C).
@@ -232,7 +232,7 @@ Section NFA2toAFA.
     Tab x = Tab y -> i <= (size z).+1 -> 0 < j <= (size z).+1 ->
     connect (srel ((size x).+1 + k) (x++z)) (p,inord (size x + i)) (q,inord (size x + j)) ->
     connect (srel ((size y).+1 + k) (y++z)) (p,inord (size y + i)) (q,inord (size y + j)).
-  Proof.
+  Proof using.
     move => Tab_eq Hi /andP [Hj0 Hj]. case/connectP => cs. move: cs i Hi p.
     apply: (size_induction (measure := size)) => /= cs IH i Hi p.
     case: (boolP (i == 0)) => Hi0.
@@ -264,10 +264,10 @@ Section NFA2toAFA.
     yk = (size y).+1 + k -> yi = size y + i -> yj = size y + j ->
     connect (srel xk (x++z)) (p,inord xi) (q,inord xj) ->
     connect (srel yk (y++z)) (p,inord yi) (q,inord yj).
-  Proof. move => ? ? ? ? ? ? ? ? ?. subst. exact: runR. Qed.
+  Proof using. move => ? ? ? ? ? ? ? ? ?. subst. exact: runR. Qed.
 
   Lemma Tab_refines : refines (nfa2_lang M) Tab.
-  Proof.
+  Proof using.
     move => x y E.
     wlog suff W: x y E / (x \in nfa2_lang M) -> (y \in nfa2_lang M).
     { by apply/idP/idP; exact: W. }
@@ -281,7 +281,7 @@ Section NFA2toAFA.
   Qed.
 
   Lemma Tab_rc : right_congruent Tab.
-  Proof.
+  Proof using.
     move => x y a E. 
     have Tab2 : (Tab (x ++ [:: a])).2 = (Tab (y ++ [:: a])).2.
     { apply/setP => [[p q]]. rewrite /Tab !inE /= !inord_max.
@@ -302,7 +302,7 @@ Section NFA2toAFA.
 
   Theorem nfa2_to_dfa : 
     { A : dfa char | dfa_lang A =i nfa2_lang M & #|A| <= 2 ^ (#|M| ^ 2 + #|M|) }.
-  Proof.
+  Proof using.
     exists (classifier_to_dfa (nfa2_to_classifier)); first exact: classifier_to_dfa_correct.
     rewrite card_sub (leqRW (max_card _)) [#|_|]/=.
     by rewrite card_prod expnD mulnC leq_mul //= card_set // card_prod -mulnn. 
@@ -321,19 +321,19 @@ Section DFA2toAFA.
   Variables (char : finType) (M : dfa2 char).
 
   Lemma functional_srel k w : functional (srel M k w).
-  Proof. apply: functional_sub (@srel_step _ _ k w). exact: step_fun. Qed.
+  Proof using. apply: functional_sub (@srel_step _ _ k w). exact: step_fun. Qed.
 
   Lemma term_srel k x q (H: k < (size x).+2) : terminal (srel M k x) (q,inord k).
-  Proof. move => c /=. by rewrite /srel inordK // ?eqxx /= andbF. Qed.
+  Proof using. move => c /=. by rewrite /srel inordK // ?eqxx /= andbF. Qed.
 
   Lemma Tab1_uniq x p q : p \in (Tab M x).1 -> q \in (Tab M x).1 -> p = q.
-  Proof.
+  Proof using.
     rewrite !inE => H1 H2. suff: (p,@ord_max (size x).+1) = (q,ord_max) by case.
     apply: term_uniq H1 H2; rewrite ?inord_max; auto using term_srel, functional_srel.
   Qed.
 
   Lemma Tab2_functional x p q r : (p,q) \in (Tab M x).2 -> (p,r) \in (Tab M x).2 -> q = r.
-  Proof.
+  Proof using.
     rewrite !inE => /= H1 H2. suff: (q,@ord_max (size x).+1) = (r,ord_max) by case.
     apply: term_uniq H1 H2; rewrite ?inord_max; auto using term_srel, functional_srel.
   Qed.
@@ -341,10 +341,10 @@ Section DFA2toAFA.
   Definition Tab' := image_fun (@Tab_rc _ M).
 
   Lemma image_rc : right_congruent Tab'.
-  Proof. move => x y a /Sub_eq E. apply/Sub_eq. exact: Tab_rc. Qed.
+  Proof using. move => x y a /Sub_eq E. apply/Sub_eq. exact: Tab_rc. Qed.
 
   Lemma image_refines : refines (nfa2_lang M) Tab'.
-  Proof. move => x y /Sub_eq E. exact: Tab_refines. Qed.
+  Proof using. move => x y /Sub_eq E. exact: Tab_refines. Qed.
 
   Definition dfa2_to_myhill :=
     {| cf_classifier := Classifier Tab'; 
@@ -352,7 +352,7 @@ Section DFA2toAFA.
        cf_refines := image_refines |}.
 
   Lemma det_range : #|{:image_type (@Tab_rc _ M)}| <= (#|M|.+1)^(#|M|.+1).
-  Proof.
+  Proof using.
     pose table' := (option M * {ffun M -> option M})%type.
     apply: (@leq_trans #|{: table'}|); last by rewrite card_prod card_ffun !card_option expnS.
     pose f (x : image_type (@Tab_rc _ M)) : table' := 
@@ -376,7 +376,7 @@ Section DFA2toAFA.
 
   Theorem dfa2_to_dfa : 
     { A : dfa char | dfa_lang A =i dfa2_lang M & #|A| <= (#|M|.+1)^(#|M|.+1) }.
-  Proof.
+  Proof using.
     exists (classifier_to_dfa (dfa2_to_myhill)); first exact: classifier_to_dfa_correct.
     rewrite card_sub (leqRW (max_card _)). exact: det_range.
   Qed.

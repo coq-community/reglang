@@ -57,7 +57,7 @@ Section EpsilonNFA.
   Definition eps_reach (p : N) := [set q | connect (enfa_trans None) p q].
 
   Lemma lift_accept p q x : q \in eps_reach p -> enfa_accept q x -> enfa_accept p x.
-  Proof.
+  Proof using.
     rewrite inE => /connectP [s]. elim: s p x q => //= [p x q _ -> //| q s IHs p x q'].
     case/andP => pq ? ? H. apply: EnfaNone pq _. exact: IHs H.
   Qed.
@@ -69,7 +69,7 @@ Section EpsilonNFA.
 
   Lemma enfaE x p :
     (enfa_accept p x) <-> (exists2 q : nfa_of, q \in eps_reach p & nfa_accept q x).
-  Proof. split.
+  Proof using. split.
     - elim => {p x} [q H|p a q x H _ [q' Hq1 Hq2]|p p' x].
       + exists q => //. by rewrite inE connect0.
       + exists p => /=; first by rewrite inE connect0.
@@ -82,7 +82,7 @@ Section EpsilonNFA.
   Qed.
 
   Lemma nfa_ofP x : reflect (enfa_lang x) (x \in nfa_lang nfa_of).
-  Proof.
+  Proof using.
     apply: (iffP exists_inP) => [[p Hp1 Hp2]|[s Hs1 /enfaE [p Hp1 Hp2]]].
     - case/bigcupP : Hp1 => s Hs H. exists s => //. by apply/enfaE; exists p.
     - exists p => //. by apply/bigcupP; exists s.
@@ -103,7 +103,7 @@ Definition nfa_to_dfa := {|
 |}.
 
 Lemma nfa_to_dfa_correct : nfa_lang A =i dfa_lang nfa_to_dfa.
-Proof.
+Proof using.
   move => w. rewrite !inE {2}/nfa_to_dfa /=. 
   elim: w (nfa_s _) => [|a x IH] X; rewrite /= accE ?inE.
   - apply/existsP/set0Pn => [] [p] H; exists p; by rewrite inE in H *.
@@ -128,7 +128,7 @@ Definition dfa_to_nfa : nfa := {|
   nfa_trans x a y := dfa_trans x a == y |}.
 
 Lemma dfa_to_nfa_correct : dfa_lang A =i nfa_lang dfa_to_nfa.
-Proof.
+Proof using.
   move => w. rewrite !inE /nfa_s /=. 
   elim: w (dfa_s A) => [|b w IHw] x; rewrite accE /=.
   - apply/idP/existsP => [Fx|[y /andP [/set1P ->]]//]. 
@@ -155,7 +155,7 @@ Definition nfa_char (a:char) :=
      nfa_trans p b q := if (p,q) is (false,true) then (b == a) else false |}.
 
 Lemma nfa_char_correct (a : char) : nfa_lang (nfa_char a) =1 pred1 [:: a].
-Proof. 
+Proof using.
   move => w /=. apply/exists_inP/eqP => [[p]|]. 
   - rewrite inE => /eqP->. case: w => [|b [|c w]] /=; first by rewrite inE.
     + by case/exists_inP => [[/eqP->|//]].
@@ -175,7 +175,7 @@ Definition nfa_plus (N M : nfa) :=
 
 Lemma nfa_plus_correct (N M : nfa) : 
   nfa_lang (nfa_plus N M) =i plus (nfa_lang N) (nfa_lang M).
-Proof.
+Proof using.
   move => w. apply/idP/idP.
   - case/exists_inP => [[s|s]]; rewrite !inE => A B;
     apply/orP;[left|right];apply/exists_inP; exists s => //.
@@ -195,7 +195,7 @@ Definition nfa_eps : nfa :=
   {| nfa_s := [set tt]; nfa_fin := [set tt]; nfa_trans p a q := false |}.
 
 Lemma nfa_eps_correct: nfa_lang (nfa_eps) =i pred1 [::].
-Proof. 
+Proof using.
   move => w. apply/exists_inP/idP. 
   + move => [[]]. case: w => [|a w] //= _. by case/exists_inP.
   + move => /=. rewrite inE=>/eqP->. exists tt; by rewrite /= inE. 
@@ -225,7 +225,7 @@ Lemma enfa_concE (p : enfa_conc) x : enfa_accept p x ->
     | inr p' => nfa_accept p' x
     | inl p' => exists x1 x2, [/\ x = x1 ++ x2, nfa_accept p' x1 & x2 \in nfa_lang A2]
   end.
-Proof.
+Proof using.
   elim => {p x} [[?|?] /imsetP [q] // ? [->] //||].
   - move => [p|p] a [q|q] x //.
     + move => pq _ [x1] [x2] [X1 X2 X3]. exists (a::x1); exists x2; subst; split => //.
@@ -236,7 +236,7 @@ Proof.
 Qed.
 
 Lemma enfa_concIr (p : A2) x : nfa_accept p x -> @enfa_accept enfa_conc (inr p) x.
-Proof.
+Proof using.
   elim: x p => [p Hp|a x IH p /= /exists_inP [q q1 q2]].
   - by constructor; rewrite mem_imset.
   - apply: (@EnfaSome enfa_conc _ _ (inr q)) => //. exact: IH.
@@ -244,14 +244,14 @@ Qed.
 
 Lemma enfa_concIl (p : A1) x1 x2 :
   nfa_accept p x1 -> x2 \in nfa_lang A2 -> @enfa_accept enfa_conc (inl p) (x1++x2).
-Proof.
+Proof using.
   elim: x1 p => /= [p Hp /exists_inP [q q1 q2]|a x1 IH p /exists_inP [q q1 q2] H].
   - apply: (@EnfaNone enfa_conc _ (inr q)). by rewrite /= Hp. exact: enfa_concIr.
   - apply: (@EnfaSome enfa_conc _ _ (inl q)). by rewrite /= q1. exact: IH.
 Qed.
 
 Lemma enfa_concP x : reflect (enfa_lang enfa_conc x) (conc (nfa_lang A1) (nfa_lang A2) x).
-Proof.
+Proof using.
   apply: (iffP (@concP _ _ _ _)) => [[x1] [x2] [X1 [X2 X3]] |].
   - case/exists_inP : X2 => s ? ?. exists (inl s); first by rewrite /enfa_conc /= mem_imset.
     subst. exact: enfa_concIl.
@@ -271,16 +271,16 @@ Definition enfa_star : enfa :=
        end |}.
 
 Lemma enfa_s_None : None \in enfa_s enfa_star.
-Proof. by rewrite inE. Qed.
+Proof using. by rewrite inE. Qed.
 
 Lemma enfa_f_None : None \in enfa_f enfa_star.
-Proof. by rewrite inE. Qed.
+Proof using. by rewrite inE. Qed.
 
 Hint Resolve enfa_s_None enfa_f_None : core.
 
 Lemma enfa_star_cat x1 x2 (p : enfa_star) :
   enfa_accept p x1 -> enfa_lang enfa_star x2 -> enfa_accept p (x1 ++ x2).
-Proof.
+Proof using.
   elim => {p x1}.
   - move => p. rewrite inE => /eqP->. case => q. by rewrite inE => /eqP->.
   - move => p a q x /=. case: p => // p. case: q => // q pq ? IH H. exact: EnfaSome (IH H).
@@ -288,14 +288,14 @@ Proof.
 Qed.
 
 Lemma enfa_starI x (p : A1) : nfa_accept p x -> @enfa_accept enfa_star (Some p) x.
-Proof.
+Proof using.
   elim: x p => /= [p H|a x IH p].
   - apply: (@EnfaNone enfa_star _ None) => //. exact: EnfaFin.
   - case/exists_inP => q q1 /IH. exact: EnfaSome.
 Qed.
 
 Lemma enfa_star_langI x : x \in nfa_lang A1 -> @enfa_accept enfa_star None x.
-Proof.
+Proof using.
   case/exists_inP => s s1 s2.
   apply: (@EnfaNone enfa_star _ (Some s)) => //. exact: enfa_starI.
 Qed.
@@ -304,7 +304,7 @@ Lemma enfa_starE (o : enfa_star) x : enfa_accept o x ->
   if o is Some p
   then exists x1 x2, [/\ x = x1 ++ x2, nfa_accept p x1 & star (nfa_lang A1) x2]
   else star (nfa_lang A1) x.
-Proof.
+Proof using.
   elim => {x o}.
   - move => [q|//]. by rewrite inE; move/eqP.
   - move => [p|] a [q|] x // H acc [x1] [x2] [H1 H2 H3]. exists (a::x1); exists x2.
@@ -316,7 +316,7 @@ Proof.
 Qed.
 
 Lemma enfa_starP x : reflect (enfa_lang enfa_star x) (star (nfa_lang A1) x).
-Proof. apply: (iffP idP).
+Proof using. apply: (iffP idP).
   - case/starP => vv H ->. elim: vv H => /= [_|v vv].
     + exists None => //. exact: EnfaFin.
     + move => IH /andP[/andP [H1 H2] H3]. exists None => //.
@@ -328,11 +328,11 @@ Qed.
 Definition nfa_conc := nfa_of (enfa_conc).
 
 Lemma nfa_conc_correct : nfa_lang nfa_conc =i conc (nfa_lang A1) (nfa_lang A2).
-Proof. move => x. apply/nfa_ofP/idP => ?;exact/enfa_concP. Qed.
+Proof using. move => x. apply/nfa_ofP/idP => ?;exact/enfa_concP. Qed.
 
 Definition nfa_star := nfa_of (enfa_star).
 Lemma nfa_star_correct : nfa_lang nfa_star =i star (nfa_lang A1).
-Proof. move => x. apply/nfa_ofP/idP => ?;exact/enfa_starP. Qed.
+Proof using. move => x. apply/nfa_ofP/idP => ?;exact/enfa_starP. Qed.
 
 End eNFAOps.
 
@@ -346,7 +346,7 @@ Section NFARun.
     | runS a p q x r & q \in nfa_trans p a : nfa_run x q r -> nfa_run (a::x) p (q::r).
 
   Lemma nfa_acceptP x p : reflect (exists r, nfa_run x p r) (nfa_accept p x).
-  Proof.
+  Proof using.
     apply: (iffP idP) => [|[r]].
     - elim: x p => [|a x IHx] p /=; first by exists [::]; constructor.
       case/exists_inP => q p1 p2. case (IHx q p2) => r ?. by exists (q::r); constructor.
@@ -355,21 +355,21 @@ Section NFARun.
   Qed.
 
   Lemma run_size x r p : nfa_run x p r -> size x = size r.
-  Proof. by elim => // {r p x} a p q r x _ _ /= ->. Qed.
+  Proof using. by elim => // {r p x} a p q r x _ _ /= ->. Qed.
 
   Lemma nfaP x : reflect (exists s r, s \in nfa_s M /\ nfa_run x s r) (x \in nfa_lang M).
-  Proof. 
+  Proof using.
     apply: (iffP exists_inP). 
     - case => s ? /nfa_acceptP [r] ?. by exists s; exists r.
     - case => s [r] [? ?]. exists s => //. apply/nfa_acceptP. by exists r.
   Qed.
 
   Lemma run_last x p r : nfa_run x p r -> last p r \in nfa_fin M.
-  Proof. by elim. Qed.
+  Proof using. by elim. Qed.
 
   Lemma run_trans x p r i (Hi : i < size x) : nfa_run x p r -> 
     nth p (p::r) i.+1 \in nfa_trans (nth p (p::r) i) (tnth (in_tuple x) (Ordinal Hi)).
-  Proof.
+  Proof using.
     move => H. elim: H i Hi => {x p r} // a p q x r tr run IH /= [|i] Hi //. 
     rewrite !(set_nth_default q); try by rewrite /= -(run_size run) // ltnW. 
     rewrite {1}[nth]lock (tnth_nth a) /=. rewrite ltnS in Hi. 
@@ -385,7 +385,7 @@ Section NFARun.
     (forall i : 'I_(size x), 
        nth s (s::r) i.+1 \in nfa_trans (nth s (s::r) i) (tnth (in_tuple x) i)) ->
     nfa_run x s r.
-  Proof. 
+  Proof using.
     elim: x s r => [|a x IHx ] s r /=.
     - move/eqP => e inF _. rewrite size_eq0 in e. rewrite (eqP e) in inF *. exact: run0.
     - case: r => // p r /eqP /=. rewrite eqSS => /eqP R1 R2 I. 
@@ -402,7 +402,7 @@ End NFARun.
 Definition nfa_inhab (N : nfa) := dfa_inhab (nfa_to_dfa N).
 
 Lemma nfa_inhabP N : reflect (exists w, w \in nfa_lang N) (nfa_inhab N).
-Proof.
+Proof using.
   apply: (iffP (dfa_inhabP _)).
   - move => [x]. rewrite -nfa_to_dfa_correct. by exists x.
   - move => [x ?]. exists x. by rewrite -nfa_to_dfa_correct.
@@ -410,7 +410,7 @@ Qed.
 
 Lemma nfa_regular L :
   regular L <-T->  { N : nfa  | forall x, L x <-> x \in nfa_lang N }.
-Proof.
+Proof using.
   split => [[A]|[N]] H. 
   exists (dfa_to_nfa A) => x. by rewrite -dfa_to_nfa_correct.
   exists (nfa_to_dfa N) => x. by rewrite -nfa_to_dfa_correct.

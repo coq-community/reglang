@@ -198,7 +198,7 @@ Section Functional.
 
   Lemma term_uniq x y z : functional ->
     terminal y -> terminal z -> connect e x y -> connect e x z -> y = z.
-  Proof. 
+  Proof using.
     move => fun_e Ty Tz /connectP [p] p1 p2 /connectP [q]. 
     elim: p q x p1 p2 => [|a p IH] [|b q] x /=; first congruence.
     - move => _ <-. by rewrite Ty.
@@ -212,7 +212,7 @@ Section Functional.
   Hypothesis f_inv: forall x z, e' (f x) z -> exists y, z = f y. 
 
   Lemma connect_transfer x y : connect e x y = connect e' (f x) (f y).
-  Proof. apply/idP/idP.
+  Proof using T T' e e' f f_eq f_inj f_inv. apply/idP/idP.
     - case/connectP => s.
       elim: s x => //= [x _ -> |z s IH x]; first exact: connect0.
       case/andP => xz pth Hy. rewrite f_eq in xz.

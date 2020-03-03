@@ -26,7 +26,7 @@ Section Vardi.
   Arguments run_table x i : clear implicits.
 
   Lemma sub_run x C (i : pos x) : reject_cert C -> {subset run_table x i <= C i}.
-  Proof.
+  Proof using.
     case => T1 T2 T3 p. rewrite inE. case/connectP => cs. 
     elim/last_ind: cs p i => /= [p i _|cs c IH p i]; first by case => -> ->. 
     rewrite rcons_path last_rcons [last _ _]surjective_pairing => /andP [pth stp] E. subst.
@@ -34,7 +34,7 @@ Section Vardi.
   Qed.
 
   Lemma dfa2Pn x : reflect (exists T, @reject_cert x T) (x \notin nfa2_lang M).
-  Proof. apply: introP => [H|].
+  Proof using. apply: introP => [H|].
     - exists (run_table x) ; split; first by rewrite inE ?connect0.
       + apply/pred0P => q. rewrite !inE. apply: contraNF H => C.
         by apply/existsP; exists q.
@@ -62,7 +62,7 @@ Section Vardi.
        nfa_trans X a Y := (X.2 == Y.1) && comp a X.1 X.2 Y.2 |}.
 
   Lemma nfa_ofP x : reflect (exists T, @reject_cert x T) (x \in nfa_lang nfa_of). 
-  Proof. apply: (iffP nfaP). 
+  Proof using. apply: (iffP nfaP).
     - move => [s] [r] [Hp Hr].
       pose T (i : pos x) := if i:nat is i'.+1 then (nth s (s::r) i').2 else (nth s (s::r) 0).1.
       have T_comp (j : 'I_(size x)) :  
@@ -120,6 +120,6 @@ Section Vardi.
   Qed.
         
   Lemma nfa_of_correct : nfa_lang nfa_of =i [predC (nfa2_lang M) ].
-  Proof. move => w. rewrite !inE. apply/idP/dfa2Pn; by move/nfa_ofP. Qed.
+  Proof using. move => w. rewrite !inE. apply/idP/dfa2Pn; by move/nfa_ofP. Qed.
 End Vardi.
 

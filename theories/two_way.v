@@ -118,21 +118,21 @@ Section DFA2.
   Variable M : dfa2.
 
   Lemma cards_lt1 (T : finType) (A : {set T}) : #|A| <= 1 -> A = set0 \/ exists x, A = [set x].
-  Proof.
+  Proof using.
     move => H. case (posnP #|A|) => H'.
     - left. exact:cards0_eq.
     - right. apply/cards1P. by rewrite eqn_leq H H'.
   Qed.
 
   Lemma read1 x (p:M) (j:pos x) : read p j = set0 \/ exists s : M * dir, read p j = [set s].
-  Proof.
+  Proof using.
     rewrite /read.
     case: (ord2P _) => [||i] _;apply cards_lt1; rewrite ?cardsX ?cards1 ?muln1; 
       by auto using detL, detC, detR, dfa2_det.
   Qed.
 
   Lemma step_fun x : functional (step M x).
-  Proof.
+  Proof using.
     have lr: ((R == L = false)*(L == R = false))%type by done.
     move => [p i] [q j] [r k]. rewrite /step.
     case: (read1 p i) => [ -> |[[q' [|]] -> ]]; first by rewrite !inE.
@@ -175,7 +175,7 @@ Section DFAtoDFA2.
   Lemma nfa2_of_aux (q:A) i : i < (size w).+1 ->
       ((drop i w) \in dfa_accept q) -> 
       [exists f in nfa2_f nfa2_of_dfa, connect (step nfa2_of_dfa w) (q,inord i.+1) (f,ord_max)].
-  Proof.
+  Proof using.
     move eq_m : (n - i) => m. elim: m q i eq_m => [|m IHm] q i /eqP H1 H2.
     - have/eqP -> : i == (size w). by rewrite eqn_leq -ltnS H2 -subn_eq0 H1.
       rewrite drop_size unfold_in -inord_max /= => F. apply/existsP;exists q. rewrite inE F. exact: connect0.
@@ -192,7 +192,7 @@ Section DFAtoDFA2.
   Lemma nfa2_of_aux2 (q f:A) (i : pos w) : i != ord0 ->
     f \in nfa2_f nfa2_of_dfa -> connect (step nfa2_of_dfa w) (q,i) (f,ord_max) -> 
     ((drop i.-1 w) \in dfa_accept q).
-  Proof.
+  Proof using.
   Proof.
     move => H fin_f. case/connectP => p. elim: p i H q => //= [|[q' j] p IHp i Hi q].
     - move => i Hi q _ [<- <-]. rewrite drop_size -topredE /= accept_nil. by rewrite inE in fin_f.
@@ -204,18 +204,18 @@ Section DFAtoDFA2.
   Qed.
 
   Lemma nfa2_of_correct : (w \in dfa_lang A) = (w \in nfa2_lang nfa2_of_dfa).
-  Proof.
+  Proof using.
     apply/idP/idP; rewrite -![_ \in _ A]topredE /=.
     - rewrite -{1}[w]drop0 /nfa2_lang -topredE /= inord1 => H. exact: nfa2_of_aux.
     - rewrite -{2}[w]drop0 -[0]/((@ord1 n).-1). case/exists_inP => p. exact: nfa2_of_aux2.
   Qed.
 
   Lemma nfa2_of_dfa_det : deterministic (nfa2_of_dfa).
-  Proof. split => [p a|p|p]; by rewrite ?cards1 ?cards0. Qed.
+  Proof using. split => [p a|p|p]; by rewrite ?cards1 ?cards0. Qed.
 
   Definition dfa2_of_dfa := DFA2 nfa2_of_dfa_det.
 
   Lemma dfa2_of_correct : (w \in dfa_lang A) = (w \in dfa2_lang dfa2_of_dfa).
-  Proof. exact: nfa2_of_correct. Qed.
+  Proof using. exact: nfa2_of_correct. Qed.
 
 End DFAtoDFA2.

@@ -41,16 +41,16 @@ Section HomDef.
   Hypothesis h_hom : homomorphism.
 
   Lemma h0 : h [::] = [::].
-  Proof.
+  Proof using h_hom.
     apply: size0nil. apply/eqP.
     by rewrite -(eqn_add2r (size (h [::]))) -size_cat -h_hom /=.
   Qed.
 
   Lemma h_seq w : h w = flatten [seq h [:: a] | a <- w].
-  Proof. elim: w => [|a w IHw] /= ; by rewrite ?h0 // -cat1s h_hom IHw. Qed.
+  Proof using h_hom. elim: w => [|a w IHw] /= ; by rewrite ?h0 // -cat1s h_hom IHw. Qed.
 
   Lemma h_flatten vv : h (flatten vv) = flatten (map h vv).
-  Proof.
+  Proof using h_hom.
     elim: vv => //= [|v vv IHvv]; first exact: h0.
     by rewrite h_hom IHvv.
   Qed.
@@ -59,7 +59,7 @@ Section HomDef.
 
   Lemma image_ext L1 L2  w :
     (forall v, L1 v <-> L2 v) -> (image L1 w <-> image L2 w).
-  Proof. by move => H; split; move => [v] [] /H; exists v. Qed.
+  Proof using. by move => H; split; move => [v] [] /H; exists v. Qed.
 
   Definition preimage (L : word char' -> Prop) v :=  L (h v).
 
@@ -104,11 +104,11 @@ Definition star L : dlang char :=
 
 Lemma plusP r s w :
   reflect (w \in r \/ w \in s) (w \in plus r s).
-Proof. rewrite !inE. exact: orP. Qed.
+Proof using. rewrite !inE. exact: orP. Qed.
 
 Lemma concP {L1 L2 : dlang char} {w : word char} :
   reflect (exists w1 w2, w = w1 ++ w2 /\ w1 \in L1 /\ w2 \in L2) (w \in conc L1 L2).
-Proof. apply: (iffP existsP) => [[n] /andP [H1 H2] | [w1] [w2] [e [H1 H2]]].
+Proof using. apply: (iffP existsP) => [[n] /andP [H1 H2] | [w1] [w2] [e [H1 H2]]].
   - exists (take n w). exists (drop n w). by rewrite cat_take_drop -topredE.
   - have lt_w1: size w1 < (size w).+1 by rewrite e size_cat ltnS leq_addr.
     exists (Ordinal lt_w1); subst.
@@ -116,18 +116,18 @@ Proof. apply: (iffP existsP) => [[n] /andP [H1 H2] | [w1] [w2] [e [H1 H2]]].
 Qed.
 
 Lemma conc_cat w1 w2 L1 L2 : w1 \in L1 -> w2 \in L2 -> w1 ++ w2 \in conc L1 L2.
-Proof. move => H1 H2. apply/concP. exists w1. by exists w2. Qed.
+Proof using. move => H1 H2. apply/concP. exists w1. by exists w2. Qed.
 
 Lemma conc_eq (l1: dlang char) l2 l3 l4:
   l1 =i l2 -> l3 =i l4 -> conc l1 l3 =i conc l2 l4.
-Proof.
+Proof using.
   move => H1 H2 w. apply: eq_existsb => n. 
   by rewrite (_ : l1 =1 l2) // (_ : l3 =1 l4).
 Qed.
 
 Lemma starP : forall {L v},
   reflect (exists2 vv, all [predD L & eps] vv & v = flatten vv) (v \in star L).
-Proof.
+Proof using.
 move=> L v;
   elim: {v}_.+1 {-2}v (ltnSn (size v)) => // n IHn [|x v] /= le_v_n.
   by left; exists [::].
@@ -141,20 +141,20 @@ by rewrite -ltnS (leq_trans _ le_v_n) // size_cat !ltnS leq_addl.
 Qed.
 
 Lemma star_cat w1 w2 L : w1 \in L -> w2 \in (star L) -> w1 ++ w2 \in star L.
-Proof.
+Proof using.
   case: w1 => [|a w1] // H1 /starP [vv Ha Hf]. apply/starP.
   by exists ((a::w1) :: vv); rewrite ?Hf //= H1.
 Qed.
 
 Lemma starI (L : dlang char)  vv :
   (forall v, v \in vv -> v \in L) -> flatten vv \in star L.
-Proof.
+Proof using.
   elim: vv => /= [//| v vv IHvv /all1s [H1 H2]].
   exact: star_cat _ (IHvv _).
 Qed.
 
 Lemma star_eq (l1 : dlang char) l2: l1 =i l2 -> star l1 =i star l2.
-Proof.
+Proof using.
   move => H1 w. apply/starP/starP; move => [] vv H3 H4; exists vv => //;
   erewrite eq_all; try eexact H3; move => x /=; by rewrite ?H1 // -?H1.
 Qed.

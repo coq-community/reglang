@@ -91,11 +91,11 @@ Section Language.
 
   Lemma I_of_vev_max k (a:char) w: 
     k \in I_of (vec_of w) (enum_rank a) -> k < size w.
-  Proof. by rewrite /vec_of /I_of mem_filter mem_iota add0n size_map => /andP[_]. Qed.
+  Proof using. by rewrite /vec_of /I_of mem_filter mem_iota add0n size_map => /andP[_]. Qed.
     
   Lemma I_of_vecP k a w: k < size w -> 
     (k \in I_of (vec_of w) (enum_rank a) = (nth a w k == a)).
-  Proof.
+  Proof using.
     move => H. rewrite /vec_of /I_of mem_filter mem_iota add0n size_map /=. 
     rewrite (nth_map a) // H andbT. 
     rewrite (nth_map (enum_rank a)) ?size_tuple ?ltn_ord //.
@@ -107,10 +107,10 @@ Section Language.
   Definition mso_lang s := fun w => vec_lang s (vec_of w).
 
   Lemma vec_of_hom : homomorphism vec_of.
-  Proof. exact: map_cat. Qed.
+  Proof using. exact: map_cat. Qed.
 
   Lemma mso_preim s : mso_lang s =p preimage vec_of (@vec_lang #|char| s).
-  Proof. done. Qed.
+  Proof using. done. Qed.
   
 End Language.
 
@@ -764,7 +764,7 @@ Section NFAtoMSO.
 
   Lemma sat_max (w : word T)  m : 
     cons [:: m] (I_of (vec_of w)) |= max <-> m = size w.
-  Proof.
+  Proof using.
     split.
     - move/sat_all1 => B.
       apply/eqP. rewrite eqn_leq [_ <= m]leqNgt [m <= _]leqNgt.
@@ -800,7 +800,7 @@ Section NFAtoMSO.
   Lemma sat_part X I k : 
     I X =i [:: k] -> 
     I |= part X <-> forall n, n <= k -> exists! q:A, n \in I (rank q).
-  Proof.
+  Proof using.
     move => H0. split.
     - move => H1 m Hm. move/sat_all1 : H1 => /(_ m) /sat_imp. case/(_ _)/Wrap. 
       + rewrite sat_leq ; first apply Hm; done.
@@ -833,7 +833,7 @@ Section NFAtoMSO.
                                        k \in I (rank a) /\ 
                                        k \in tnth Ns (rank p) /\ 
                                        k.+1 \in tnth Ns (rank q)).
-  Proof.
+  Proof using.
     split.
     - move => H k lt_m. move/sat_all1/(_ k.+1) : H. move/sat_all1/(_ k).
       rewrite 2!sat_imp. case/(_ _ _)/Wrap.
@@ -863,7 +863,7 @@ Section NFAtoMSO.
   
   Lemma sat_init (Ns : n.-tuple (seq nat)) I : 
     cat Ns I |= init <-> exists2 q, q \in nfa_s A & 0 \in tnth Ns (rank q).
-  Proof.
+  Proof using.
     split.
     - move/sat_all1/(_ 0)/sat_imp. case/(_ _)/Wrap; first exact/sat_zero.
       case/sat_orE => s. rewrite mem_enum /= => B /sub1P C. exists s => //.
@@ -879,7 +879,7 @@ Section NFAtoMSO.
   Lemma sat_accept (Ns : n.-tuple (seq nat)) m I : 
     cat Ns (cons [:: m] I) |= accept n <-> 
     exists2 q, q \in nfa_fin A & m \in tnth Ns (rank q).
-  Proof.
+  Proof using.
     split.
     - case/sat_orE => q. 
       rewrite mem_enum /= cat_size ?cat_prefix // -tnth_nth.
@@ -896,7 +896,7 @@ Section NFAtoMSO.
 
 
   Theorem form_ofP w : reflect (@mso_lang T form_of w) (w \in nfa_lang A).
-  Proof.
+  Proof using.
     apply: (iffP nfaP).
     - move =>[s] [r] [r1 r2].
       rewrite /mso_lang /vec_lang sat_ex1. exists (size w). 
