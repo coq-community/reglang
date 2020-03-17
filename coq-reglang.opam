@@ -16,9 +16,9 @@ automata (deterministic, nondeterministic, one-way, two-way),
 regular expressions, and the logic WS1S. It also contains various
 decidability results and closure properties of regular languages."""
 
-build: [make "-j%{jobs}%"]
-install: [make "install"]
+build: ["dune" "build" "-p" name "-j" jobs]
 depends: [
+  "dune" {>= "2.4"}
   "coq" {(>= "8.10" & < "8.12~") | (= "dev")}
   "coq-mathcomp-ssreflect" {(>= "1.9" & < "1.11~") | (= "dev")}
 ]
