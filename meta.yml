@@ -58,10 +58,10 @@ tested_coq_opam_versions:
 dependencies:
 - opam:
     name: coq-mathcomp-ssreflect
-    version: '{(>= "1.9" & < "1.11~") | (= "dev")}'
+    version: '{(>= "1.11" & < "1.12~") | (= "dev")}'
   nix: ssreflect
   description: |-
-    [MathComp](https://math-comp.github.io) 1.9.0 or later (`ssreflect` suffices)
+    [MathComp](https://math-comp.github.io) 1.11.0 or later (`ssreflect` suffices)
 
 namespace: RegLang
 

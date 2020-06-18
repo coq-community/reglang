@@ -20,7 +20,7 @@
 [zulip-link]: https://coq.zulipchat.com/#narrow/stream/237663-coq-community-devs.20.26.20users
 
 [coqdoc-shield]: https://img.shields.io/badge/docs-coqdoc-blue.svg
-[coqdoc-link]: https://coq-community.github.io/reglang/docs/latest/coqdoc/toc.html
+[coqdoc-link]: https://coq-community.org/reglang
 
 [doi-shield]: https://zenodo.org/badge/DOI/10.1007/s10817-018-9460-x.svg
 [doi-link]: https://doi.org/10.1007/s10817-018-9460-x
@@ -43,7 +43,7 @@ decidability results and closure properties of regular languages.
 - License: [CeCILL-B](LICENSE)
 - Compatible Coq versions: 8.11 (use releases for other Coq versions)
 - Additional dependencies:
-  - [MathComp](https://math-comp.github.io) 1.9.0 or later (`ssreflect` suffices)
+  - [MathComp](https://math-comp.github.io) 1.11.0 or later (`ssreflect` suffices)
 - Coq namespace: `RegLang`
 - Related publication(s):
   - [Regular Language Representations in the Constructive Type Theory of Coq](https://hal.archives-ouvertes.fr/hal-01832031/document) doi:[10.1007/s10817-018-9460-x](https://doi.org/10.1007/s10817-018-9460-x)
@@ -63,7 +63,7 @@ To instead build and install manually, do:
 ``` shell
 git clone https://github.com/coq-community/reglang.git
 cd reglang
-make   # or make -j <number-of-cores-on-your-machine>
+make   # or make -j <number-of-cores-on-your-machine> 
 make install
 ```
 

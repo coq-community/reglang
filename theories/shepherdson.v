@@ -154,7 +154,7 @@ Section NFA2toAFA.
       pose f (c : nfa2_config M x) : nfa2_config M (x ++ z) := (c.1, inord c.2).
       rewrite -[(p,inord i)]/(f (p,i)) -[(q,inord j)]/(f (q,j)).
       apply: connect_transfer => //.
-      - move => {p q i j} [p i] [q j] /= [->] /inord_inj. 
+      - move => {p q i j} [p i] [q j] /= [->] /inord_inj.
         by case/(_ _)/Wrap => [|->//]; rewrite size_cat; lia.
       - move => [? ?] [? ?]. rewrite /f /=. exact: srelL.  
       - move => {p q i j} [p i] [q j] step. exists (q,inord j). 
@@ -178,13 +178,6 @@ Section NFA2toAFA.
     (** Dually, steps on the right of [x++z] do not depend on [x], if they do not
     cross the boundary between [x] and [z]. *)
 
-    Lemma bla (k: nat_eqType) x1 x2 :
-      k < (size x2).+2 ->
-      size x1 + k < (size x1 + size x2).+2.
-    Proof.
-      lia.
-    Qed.
-
     Lemma readR (q:M) k : k != 0 -> k < (size z).+2 ->
        read q (inord k : pos z) = read q (inord (size x + k) : pos (x++z)).
     Proof.
@@ -196,7 +189,7 @@ Section NFA2toAFA.
         have X: (Ordinal Hi').+1 = (inord (size x + k) : pos (x ++ z)). 
           rewrite /= -addnS Hi !inordK // size_cat.
           by move: (size x) (size z) k Hk {Hk0 Hi} => k m n; lia.
-        by rewrite (ord2PC X) -(tnthR (i := i)). 
+        by rewrite (ord2PC X) -(tnthR (i := i)).
     Qed.
 
     Lemma srelR (m k k' : nat) p p' : k != 0 -> k < (size z).+2 -> k' < (size z).+2 ->
@@ -205,12 +198,10 @@ Section NFA2toAFA.
     Proof.
       move => Hk0 Hk Hk'. rewrite /srel /= !inordK ?addSnnS ?eqn_add2l //; last first.
         by rewrite size_cat; move: (size x) (size z) Hk => n n0; lia.
-      case: (_ != _); rewrite ?andbT ?andbF // /step -?readR //. 
-      rewrite !inordK ?size_cat; first by rewrite -!addnS !eqn_add2l.
-      - by lia.
-      - by lia.
-      - by move: (size x) (size z) Hk => n n0; lia.
-      - by move: (size x) (size z) Hk' => n n0; lia.
+      case: (_ != _); rewrite ?andbT ?andbF // /step -?readR //.
+      rewrite !inordK ?size_cat //; first by rewrite -!addnS !eqn_add2l.
+        by move: (size x) (size z) Hk => n n0; lia.
+      by move: (size x) (size z) Hk' => n n0; lia.
     Qed.
 
     Lemma srelRE m k p c : k < (size z).+2 -> k != 0 -> 
@@ -243,14 +234,14 @@ Section NFA2toAFA.
     case: (boolP (i == 0)) => Hi0.
     - rewrite (eqP Hi0) !addn0 => p1 p2.
       case: (srel_mid_path (k := (size x).+1) _ p1 p2); try solve [rewrite inordI; lia].
-      apply/andP; split; rewrite !inordK ?size_cat; try by move: (size x); lia.
+        by apply/andP; split; rewrite !inordK ?size_cat; move: (size x); lia.
       move => p' [cl] [cr] [Ecs Lcl Pcl].
       apply/(@srel_mid (size y).+1) ; try solve [rewrite !inordK ?size_cat; move: (size y); lia|rewrite -addn1; lia].
       + exists p'. apply/Tab2P. rewrite -Tab_eq. apply/Tab2P. by apply/connectP; exists cl.
       + subst cs. rewrite -[_.+1 as X in inord X]addn1. 
         apply: (IH cr) => {IH} //.
         * destruct cl as [|c cs]; simpl in *. case: Lcl => _. 
-          -- move/(f_equal (@nat_of_ord _)); rewrite ?inordK ?size_cat; intros; lia.
+          -- by move/(f_equal (@nat_of_ord _)); rewrite ?inordK ?size_cat; intros; lia.
           -- by rewrite[size (cs ++ cr)]size_cat -addnS leq_addl.
         * rewrite cat_path -Lcl addn1 in p1 *. by case/andP : p1.
         * by rewrite p2 last_cat -Lcl addn1.
@@ -282,11 +273,9 @@ Section NFA2toAFA.
     case/(@srel_mid (size x).+1); try by rewrite /ord1 /= size_cat; lia.
     move => q /Tab1P q1 q2.
     apply/(@srel_mid (size y).+1); try by rewrite /ord1 /= size_cat; lia.
-    exists q. apply/Tab1P; first by rewrite -E.
-    move: q2 => {q1}.
-    rewrite {2}size_cat addn0 inord_max => Hc.
-    rewrite {2}size_cat addn0 inord_max.
-    by move: Hc; apply: (runR_eq (i := 1) (j := 1) (k := 1)); rewrite ?size_cat => //=; lia.
+    exists q; first by apply/Tab1P; rewrite -E.
+    move: q2 => {q1}. rewrite !inord_max.
+    by apply: (runR_eq (i := 1) (j := 1) (k := 1)); rewrite ?addn1 ?cats0 //=.
   Qed.
 
   Lemma Tab_rc : right_congruent Tab.
