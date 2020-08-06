@@ -1,3 +1,3 @@
-(lang dune 2.4)
-(using coq 0.1)
-(name coq-reglang)
+(lang dune 2.5)
+(using coq 0.2)
+(name reglang)
