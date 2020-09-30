@@ -3,6 +3,8 @@
 Require Import mathcomp.ssreflect.ssreflect.
 From mathcomp Require Import all_ssreflect.
 
+Set Default Proof Using "Type".
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -212,7 +214,8 @@ Section Functional.
   Hypothesis f_inv: forall x z, e' (f x) z -> exists y, z = f y. 
 
   Lemma connect_transfer x y : connect e x y = connect e' (f x) (f y).
-  Proof. apply/idP/idP.
+  Proof using f_eq f_inj f_inv.
+    apply/idP/idP.
     - case/connectP => s.
       elim: s x => //= [x _ -> |z s IH x]; first exact: connect0.
       case/andP => xz pth Hy. rewrite f_eq in xz.
@@ -221,7 +224,7 @@ Section Functional.
       elim: s x => //= [x _ /f_inj -> |z s IH x]; first exact: connect0.
       case/andP => xz pth Hy. case: (f_inv xz) => z' ?; subst. 
       rewrite -f_eq in xz. apply: connect_trans (connect1 xz) _. exact: IH.
-  Qed.  
+  Qed.
 End Functional.
 
 Lemma functional_sub (T : finType) (e1 e2 : rel T) : 
@@ -257,7 +260,3 @@ Proof. by rewrite (eqP (xchooseP (Sf x))). Qed.
 
 Lemma dec_eq (P : Prop) (decP : decidable P) : decP <-> P.
 Proof. by case: decP. Qed.
-
-
-
-

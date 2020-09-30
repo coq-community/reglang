@@ -3,6 +3,8 @@
 From mathcomp Require Import all_ssreflect.
 From RegLang Require Import misc languages.
 
+Set Default Proof Using "Type".
+
 Set Implicit Arguments.
 Unset Printing Implicit Defensive.
 Unset Strict Implicit.
@@ -157,21 +159,21 @@ Section CutOff.
   Hypothesis RC_f : forall x y a, f x = f y -> f (x++[::a]) = f (y++[::a]).
 
   Lemma RC_seq x y z : f x = f y -> f (x++z) = f (y++z).
-  Proof.
+  Proof using RC_f.
     elim: z x y => [|a z IHz] x y; first by rewrite !cats0.
     rewrite -(cat1s a) (catA x [::a]) (catA y [::a]). move/(RC_f a). exact: IHz.
   Qed.
 
   Lemma RC_rep x (i j : 'I_(size x)) :
     i < j -> f (take i x) = f (take j x) -> f (take i x ++ drop j x) = f x.
-  Proof. move => Hij Hfij. rewrite -{5}(cat_take_drop j x). exact: RC_seq. Qed.
+  Proof using RC_f. move => Hij Hfij. rewrite -{5}(cat_take_drop j x). exact: RC_seq. Qed.
 
 
   Definition exseqb (p : pred rT) :=
     [exists n : 'I_#|rT|.+1, exists x : n.-tuple aT, p (f x)].
 
   Lemma exseqP (p : pred rT) : reflect (exists x, p (f x)) (exseqb p).
-  Proof.
+  Proof using RC_f.
     apply: (iffP idP); last case.
     - case/existsP => n. case/existsP => x Hx. by exists x.
     - apply: (size_induction (measure := size)) => x IHx px.
@@ -187,10 +189,10 @@ Section CutOff.
   Qed.
     
   Lemma exseq_dec (p : pred rT) : decidable (exists x, p (f x)).
-  Proof. apply: decP. exact: exseqP. Qed.
+  Proof using RC_f. apply: decP. exact: exseqP. Qed.
 
   Lemma allseq_dec (p : pred rT) : decidable (forall x, p (f x)).
-  Proof.
+  Proof using RC_f.
     case: (exseq_dec (predC p)) => H;[right|left].
     - move => A. case: H => [x /= Hx]. by rewrite A in Hx.
     - move => x. apply/negPn/negP => C. apply: H. by exists x.
@@ -279,7 +281,7 @@ Section Preimage.
      dfa_trans x a := delta x (h [:: a]) |}.
 
   Lemma dfa_preimP A : dfa_lang (dfa_preim A) =i preim h (dfa_lang A).
-  Proof. 
+  Proof using h_hom.
     move => w. rewrite !inE /dfa_accept /dfa_preim /=. 
     elim: w (dfa_s A) => [|a w IHw] x /= ; first by rewrite h0.
     by rewrite -[a :: w]cat1s h_hom !delta_cat -IHw.
@@ -316,7 +318,7 @@ Section RightQuotient.
        dfa_fin := [set q | dec_L2 q] |}.
 
   Lemma dfa_quotP x : reflect (quotR x) (x \in dfa_lang dfa_quot).
-  Proof.
+  Proof using acc_L1.
     apply: (iffP idP).
     - rewrite inE /dfa_accept inE. case/dec_eq => y inL2.
       rewrite -delta_cat => H. exists y => //. by rewrite -acc_L1.
@@ -363,7 +365,7 @@ Section LeftQuotient.
   Proof. rewrite inE /delta_s. elim: x (dfa_s A)=> //= a x IH q. by rewrite accE IH. Qed.
 
   Lemma regular_quotL_aux : regular quotL.
-  Proof.
+  Proof using acc_L2 dec_L1.
     pose S := [seq q | q <- enum A & dec_L1 q].
     pose L (q:A) := mem (dfa_lang (A_start q)).
     pose R x := exists2 a, a \in S & L a x.
@@ -444,19 +446,19 @@ Section NonRegular.
   Qed.
 
   Lemma countL n1 n2 : count (pred1 a) (nseq n1 a ++ nseq n2 b) = n1.
-  Proof. by rewrite count_cat !count_nseq (negbTE Hab) eqxx //= mul1n mul0n addn0. Qed.
+  Proof using Hab. by rewrite count_cat !count_nseq (negbTE Hab) eqxx //= mul1n mul0n addn0. Qed.
 
   Lemma countR n1 n2 : count (pred1 b) (nseq n1 a ++ nseq n2 b) = n2.
-  Proof. by rewrite count_cat !count_nseq eq_sym (negbTE Hab) eqxx //= mul1n mul0n. Qed.
+  Proof using Hab. by rewrite count_cat !count_nseq eq_sym (negbTE Hab) eqxx //= mul1n mul0n. Qed.
 
   Lemma Lab_eq n1 n2 : Lab (nseq n1 a ++ nseq n2 b) -> n1 = n2.
-  Proof.
+  Proof using Hab.
     move => [n H].
     by rewrite -[n1](countL _ n2) -{2}[n2](countR n1 n2) H countL countR.
   Qed.
 
   Lemma Lab_not_regular : ~ inhabited (regular Lab).
-  Proof.
+  Proof using Hab.
     pose f n := nseq n a.
     apply: (@residualP f) => n1 n2. move/(_ (nseq n2 b)) => H.
     apply: Lab_eq. apply/H. by exists n2.

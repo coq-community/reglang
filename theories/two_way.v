@@ -3,6 +3,8 @@
 From mathcomp Require Import all_ssreflect.
 From RegLang Require Import misc languages dfa regexp myhill_nerode.
 
+Set Default Proof Using "Type".
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -192,7 +194,6 @@ Section DFAtoDFA2.
   Lemma nfa2_of_aux2 (q f:A) (i : pos w) : i != ord0 ->
     f \in nfa2_f nfa2_of_dfa -> connect (step nfa2_of_dfa w) (q,i) (f,ord_max) -> 
     ((drop i.-1 w) \in dfa_accept q).
-  Proof.
   Proof.
     move => H fin_f. case/connectP => p. elim: p i H q => //= [|[q' j] p IHp i Hi q].
     - move => i Hi q _ [<- <-]. rewrite drop_size -topredE /= accept_nil. by rewrite inE in fin_f.

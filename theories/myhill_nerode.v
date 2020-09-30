@@ -3,6 +3,8 @@
 From mathcomp Require Import all_ssreflect.
 From RegLang Require Import misc languages dfa minimization regexp.
 
+Set Default Proof Using "Type".
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -182,7 +184,7 @@ Section mDFAtoMG.
   Variable MA : minimal A.
 
   Lemma minimal_nerode : nerode (dfa_lang A) (delta_s A).
-  Proof.
+  Proof using MA.
     move => u v. apply: iff_trans (iff_sym (minimal_collapsed MA _ _)) _.
     by split => H w; move: (H w); rewrite -!delta_cat !delta_lang.
   Qed.

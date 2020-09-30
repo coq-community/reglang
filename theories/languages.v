@@ -3,6 +3,8 @@
 From mathcomp Require Import all_ssreflect.
 From RegLang Require Import misc.
 
+Set Default Proof Using "Type".
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -41,16 +43,16 @@ Section HomDef.
   Hypothesis h_hom : homomorphism.
 
   Lemma h0 : h [::] = [::].
-  Proof.
+  Proof using h_hom.
     apply: size0nil. apply/eqP.
     by rewrite -(eqn_add2r (size (h [::]))) -size_cat -h_hom /=.
   Qed.
 
   Lemma h_seq w : h w = flatten [seq h [:: a] | a <- w].
-  Proof. elim: w => [|a w IHw] /= ; by rewrite ?h0 // -cat1s h_hom IHw. Qed.
+  Proof using h_hom. elim: w => [|a w IHw] /= ; by rewrite ?h0 // -cat1s h_hom IHw. Qed.
 
   Lemma h_flatten vv : h (flatten vv) = flatten (map h vv).
-  Proof.
+  Proof using h_hom.
     elim: vv => //= [|v vv IHvv]; first exact: h0.
     by rewrite h_hom IHvv.
   Qed.

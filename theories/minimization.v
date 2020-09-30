@@ -4,6 +4,8 @@ From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq choice.
 From mathcomp Require Import fintype path fingraph finfun finset generic_quotient.
 From RegLang Require Import misc languages dfa.
 
+Set Default Proof Using "Type".
+
 Set Implicit Arguments.
 Unset Printing Implicit Defensive.
 Unset Strict Implicit.
@@ -43,19 +45,19 @@ Section Isomopism.
   Definition iso_inv := delta_s A \o cr B_conn.
 
   Lemma delta_iso w x : delta (iso x) w \in dfa_fin B = (delta x w \in dfa_fin A).
-  Proof. by rewrite -{2}[x](crK (Sf := A_conn)) -!delta_cat !delta_lang L_AB. Qed.
+  Proof using L_AB. by rewrite -{2}[x](crK (Sf := A_conn)) -!delta_cat !delta_lang L_AB. Qed.
 
   Lemma delta_iso_inv w x : delta (iso_inv x) w \in dfa_fin A = (delta x w \in dfa_fin B).
-  Proof. by rewrite -{2}[x](crK (Sf := B_conn)) -!delta_cat !delta_lang L_AB. Qed.
+  Proof using L_AB. by rewrite -{2}[x](crK (Sf := B_conn)) -!delta_cat !delta_lang L_AB. Qed.
 
   Lemma can_iso : cancel iso_inv iso.
-  Proof. move => x. apply/B_coll => w. by rewrite delta_iso delta_iso_inv. Qed.
+  Proof using B_coll L_AB. move => x. apply/B_coll => w. by rewrite delta_iso delta_iso_inv. Qed.
 
   Lemma can_iso_inv : cancel iso iso_inv.
-  Proof. move => x. apply/A_coll => w. by rewrite delta_iso_inv delta_iso. Qed.
+  Proof using A_coll L_AB. move => x. apply/A_coll => w. by rewrite delta_iso_inv delta_iso. Qed.
 
   Lemma coll_iso : dfa_iso A B.
-  Proof.
+  Proof using A_coll B_coll A_conn B_conn L_AB.
     exists iso. split.
     - exact: Bijective can_iso_inv can_iso.
     - move => x a. apply/B_coll => w. rewrite -[_ (iso x) a]/(delta (iso x) [::a]).
