@@ -36,26 +36,7 @@ Section Basics.
 End Basics. 
 
 Section HomDef.
-  Variables (char char' : finType).
-  Variable (h : seq char -> seq char').
-
-  Definition homomorphism := forall w1 w2, h (w1 ++ w2) = h w1 ++ h w2.
-  Hypothesis h_hom : homomorphism.
-
-  Lemma h0 : h [::] = [::].
-  Proof using h_hom.
-    apply: size0nil. apply/eqP.
-    by rewrite -(eqn_add2r (size (h [::]))) -size_cat -h_hom /=.
-  Qed.
-
-  Lemma h_seq w : h w = flatten [seq h [:: a] | a <- w].
-  Proof using h_hom. elim: w => [|a w IHw] /= ; by rewrite ?h0 // -cat1s h_hom IHw. Qed.
-
-  Lemma h_flatten vv : h (flatten vv) = flatten (map h vv).
-  Proof using h_hom.
-    elim: vv => //= [|v vv IHvv]; first exact: h0.
-    by rewrite h_hom IHvv.
-  Qed.
+  Variables (char char' : finType) (h : seq char -> seq char').
 
   Definition image (L : word char -> Prop) v := exists w, L w /\ h w = v.
 
@@ -65,6 +46,24 @@ Section HomDef.
 
   Definition preimage (L : word char' -> Prop) v :=  L (h v).
 
+  Definition homomorphism := forall w1 w2, h (w1 ++ w2) = h w1 ++ h w2.
+  Hypothesis h_hom : homomorphism.
+  Local Set Default Proof Using "h_hom".  
+
+  Lemma h0 : h [::] = [::].
+  Proof.
+    apply: size0nil. apply/eqP.
+    by rewrite -(eqn_add2r (size (h [::]))) -size_cat -h_hom /=.
+  Qed.
+
+  Lemma h_seq w : h w = flatten [seq h [:: a] | a <- w].
+  Proof. elim: w => [|a w IHw] /= ; by rewrite ?h0 // -cat1s h_hom IHw. Qed.
+
+  Lemma h_flatten vv : h (flatten vv) = flatten (map h vv).
+  Proof.
+    elim: vv => //= [|v vv IHvv]; first exact: h0.
+    by rewrite h_hom IHvv.
+  Qed.
 
 End HomDef.
 

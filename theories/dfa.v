@@ -157,23 +157,24 @@ Qed.
 Section CutOff.
   Variables (aT rT : finType) (f : seq aT -> rT).
   Hypothesis RC_f : forall x y a, f x = f y -> f (x++[::a]) = f (y++[::a]).
+  Local Set Default Proof Using "RC_f".
 
   Lemma RC_seq x y z : f x = f y -> f (x++z) = f (y++z).
-  Proof using RC_f.
+  Proof.
     elim: z x y => [|a z IHz] x y; first by rewrite !cats0.
     rewrite -(cat1s a) (catA x [::a]) (catA y [::a]). move/(RC_f a). exact: IHz.
   Qed.
 
   Lemma RC_rep x (i j : 'I_(size x)) :
     i < j -> f (take i x) = f (take j x) -> f (take i x ++ drop j x) = f x.
-  Proof using RC_f. move => Hij Hfij. rewrite -{5}(cat_take_drop j x). exact: RC_seq. Qed.
+  Proof. move => Hij Hfij. rewrite -{5}(cat_take_drop j x). exact: RC_seq. Qed.
 
 
   Definition exseqb (p : pred rT) :=
     [exists n : 'I_#|rT|.+1, exists x : n.-tuple aT, p (f x)].
 
   Lemma exseqP (p : pred rT) : reflect (exists x, p (f x)) (exseqb p).
-  Proof using RC_f.
+  Proof.
     apply: (iffP idP); last case.
     - case/existsP => n. case/existsP => x Hx. by exists x.
     - apply: (size_induction (measure := size)) => x IHx px.
@@ -189,10 +190,10 @@ Section CutOff.
   Qed.
     
   Lemma exseq_dec (p : pred rT) : decidable (exists x, p (f x)).
-  Proof using RC_f. apply: decP. exact: exseqP. Qed.
+  Proof. apply: decP. exact: exseqP. Qed.
 
   Lemma allseq_dec (p : pred rT) : decidable (forall x, p (f x)).
-  Proof using RC_f.
+  Proof.
     case: (exseq_dec (predC p)) => H;[right|left].
     - move => A. case: H => [x /= Hx]. by rewrite A in Hx.
     - move => x. apply/negPn/negP => C. apply: H. by exists x.
@@ -435,30 +436,26 @@ Section NonRegular.
   Qed.
 
   Hypothesis (a b : char) (Hab : a != b).
+  Local Set Default Proof Using "Hab".
 
   Definition Lab w := exists n, w = nseq n a ++ nseq n b.
 
-  Lemma count_nseq (T : eqType) (c d : T) n :
-    count (pred1 c) (nseq n d) = (c == d) * n.
-  Proof.
-    elim: n => [|n] /=; first by rewrite muln0.
-    rewrite [d == c]eq_sym. by case e: (c == d) => /= ->.
+  Lemma countL n1 n2 : count (pred1 a) (nseq n1 a ++ nseq n2 b) = n1.
+  Proof. 
+    by rewrite count_cat !count_nseq /= eqxx eq_sym (negbTE Hab) mul1n mul0n addn0. 
   Qed.
 
-  Lemma countL n1 n2 : count (pred1 a) (nseq n1 a ++ nseq n2 b) = n1.
-  Proof using Hab. by rewrite count_cat !count_nseq (negbTE Hab) eqxx //= mul1n mul0n addn0. Qed.
-
   Lemma countR n1 n2 : count (pred1 b) (nseq n1 a ++ nseq n2 b) = n2.
-  Proof using Hab. by rewrite count_cat !count_nseq eq_sym (negbTE Hab) eqxx //= mul1n mul0n. Qed.
+  Proof. by rewrite count_cat !count_nseq /= (negbTE Hab) eqxx //= mul1n mul0n. Qed.
 
   Lemma Lab_eq n1 n2 : Lab (nseq n1 a ++ nseq n2 b) -> n1 = n2.
-  Proof using Hab.
+  Proof.
     move => [n H].
     by rewrite -[n1](countL _ n2) -{2}[n2](countR n1 n2) H countL countR.
   Qed.
 
   Lemma Lab_not_regular : ~ inhabited (regular Lab).
-  Proof using Hab.
+  Proof.
     pose f n := nseq n a.
     apply: (@residualP f) => n1 n2. move/(_ (nseq n2 b)) => H.
     apply: Lab_eq. apply/H. by exists n2.
