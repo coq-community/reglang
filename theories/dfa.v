@@ -3,6 +3,8 @@
 From mathcomp Require Import all_ssreflect.
 From RegLang Require Import misc languages.
 
+Set Default Proof Using "Type".
+
 Set Implicit Arguments.
 Unset Printing Implicit Defensive.
 Unset Strict Implicit.
@@ -155,6 +157,7 @@ Qed.
 Section CutOff.
   Variables (aT rT : finType) (f : seq aT -> rT).
   Hypothesis RC_f : forall x y a, f x = f y -> f (x++[::a]) = f (y++[::a]).
+  Local Set Default Proof Using "RC_f".
 
   Lemma RC_seq x y z : f x = f y -> f (x++z) = f (y++z).
   Proof.
@@ -279,7 +282,7 @@ Section Preimage.
      dfa_trans x a := delta x (h [:: a]) |}.
 
   Lemma dfa_preimP A : dfa_lang (dfa_preim A) =i preim h (dfa_lang A).
-  Proof. 
+  Proof using h_hom.
     move => w. rewrite !inE /dfa_accept /dfa_preim /=. 
     elim: w (dfa_s A) => [|a w IHw] x /= ; first by rewrite h0.
     by rewrite -[a :: w]cat1s h_hom !delta_cat -IHw.
@@ -316,7 +319,7 @@ Section RightQuotient.
        dfa_fin := [set q | dec_L2 q] |}.
 
   Lemma dfa_quotP x : reflect (quotR x) (x \in dfa_lang dfa_quot).
-  Proof.
+  Proof using acc_L1.
     apply: (iffP idP).
     - rewrite inE /dfa_accept inE. case/dec_eq => y inL2.
       rewrite -delta_cat => H. exists y => //. by rewrite -acc_L1.
@@ -363,7 +366,7 @@ Section LeftQuotient.
   Proof. rewrite inE /delta_s. elim: x (dfa_s A)=> //= a x IH q. by rewrite accE IH. Qed.
 
   Lemma regular_quotL_aux : regular quotL.
-  Proof.
+  Proof using acc_L2 dec_L1.
     pose S := [seq q | q <- enum A & dec_L1 q].
     pose L (q:A) := mem (dfa_lang (A_start q)).
     pose R x := exists2 a, a \in S & L a x.
@@ -433,21 +436,17 @@ Section NonRegular.
   Qed.
 
   Hypothesis (a b : char) (Hab : a != b).
+  Local Set Default Proof Using "Hab".
 
   Definition Lab w := exists n, w = nseq n a ++ nseq n b.
 
-  Lemma count_nseq (T : eqType) (c d : T) n :
-    count (pred1 c) (nseq n d) = (c == d) * n.
-  Proof.
-    elim: n => [|n] /=; first by rewrite muln0.
-    rewrite [d == c]eq_sym. by case e: (c == d) => /= ->.
+  Lemma countL n1 n2 : count (pred1 a) (nseq n1 a ++ nseq n2 b) = n1.
+  Proof. 
+    by rewrite count_cat !count_nseq /= eqxx eq_sym (negbTE Hab) mul1n mul0n addn0. 
   Qed.
 
-  Lemma countL n1 n2 : count (pred1 a) (nseq n1 a ++ nseq n2 b) = n1.
-  Proof. by rewrite count_cat !count_nseq (negbTE Hab) eqxx //= mul1n mul0n addn0. Qed.
-
   Lemma countR n1 n2 : count (pred1 b) (nseq n1 a ++ nseq n2 b) = n2.
-  Proof. by rewrite count_cat !count_nseq eq_sym (negbTE Hab) eqxx //= mul1n mul0n. Qed.
+  Proof. by rewrite count_cat !count_nseq /= (negbTE Hab) eqxx //= mul1n mul0n. Qed.
 
   Lemma Lab_eq n1 n2 : Lab (nseq n1 a ++ nseq n2 b) -> n1 = n2.
   Proof.

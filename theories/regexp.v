@@ -3,6 +3,8 @@
 From mathcomp Require Import all_ssreflect.
 From RegLang Require Import setoid_leq misc languages dfa nfa.
 
+Set Default Proof Using "Type".
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -408,7 +410,7 @@ Section Image.
     end.
 
   Lemma re_imageP e v : reflect (image h (re_lang e) v) (v \in re_image e).
-  Proof.
+  Proof using h_hom.
     elim: e v => [||a|e IHe|e1 IHe1 e2 IHe2|e1 IHe1 e2 IHe2] v /=.
     - rewrite inE; constructor. move => [u]. by case.
     - rewrite inE; apply: (iffP eqP) => [-> |[w] [] /eqP -> <-]; last exact: h0.

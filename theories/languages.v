@@ -3,6 +3,8 @@
 From mathcomp Require Import all_ssreflect.
 From RegLang Require Import misc.
 
+Set Default Proof Using "Type".
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -34,11 +36,19 @@ Section Basics.
 End Basics. 
 
 Section HomDef.
-  Variables (char char' : finType).
-  Variable (h : seq char -> seq char').
+  Variables (char char' : finType) (h : seq char -> seq char').
+
+  Definition image (L : word char -> Prop) v := exists w, L w /\ h w = v.
+
+  Lemma image_ext L1 L2  w :
+    (forall v, L1 v <-> L2 v) -> (image L1 w <-> image L2 w).
+  Proof. by move => H; split; move => [v] [] /H; exists v. Qed.
+
+  Definition preimage (L : word char' -> Prop) v :=  L (h v).
 
   Definition homomorphism := forall w1 w2, h (w1 ++ w2) = h w1 ++ h w2.
   Hypothesis h_hom : homomorphism.
+  Local Set Default Proof Using "h_hom".  
 
   Lemma h0 : h [::] = [::].
   Proof.
@@ -54,15 +64,6 @@ Section HomDef.
     elim: vv => //= [|v vv IHvv]; first exact: h0.
     by rewrite h_hom IHvv.
   Qed.
-
-  Definition image (L : word char -> Prop) v := exists w, L w /\ h w = v.
-
-  Lemma image_ext L1 L2  w :
-    (forall v, L1 v <-> L2 v) -> (image L1 w <-> image L2 w).
-  Proof. by move => H; split; move => [v] [] /H; exists v. Qed.
-
-  Definition preimage (L : word char' -> Prop) v :=  L (h v).
-
 
 End HomDef.
 

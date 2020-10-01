@@ -4,6 +4,8 @@ From Coq Require Import Omega.
 From mathcomp Require Import all_ssreflect.
 From RegLang Require Import misc setoid_leq languages dfa myhill_nerode two_way.
 
+Set Default Proof Using "Type".
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -12,7 +14,7 @@ Unset Printing Implicit Defensive.
 
 (** Preliminaries *)
 
-Lemma contraN (b : bool) (P : Prop) : b -> ~~ b -> P. by case b. Qed. 
+Lemma contraN (b : bool) (P : Prop) : b -> ~~ b -> P. Proof. by case b. Qed.
 
 Lemma inord_inj n m : n <= m -> injective (@inord m \o @nat_of_ord n.+1).
 Proof.

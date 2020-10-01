@@ -3,6 +3,8 @@
 From mathcomp Require Import all_ssreflect.
 From RegLang Require Import misc languages nfa two_way.
 
+Set Default Proof Using "Type".
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
