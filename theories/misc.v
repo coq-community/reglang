@@ -28,7 +28,7 @@ Lemma eqb_iff (b1 b2 : bool) : (b1 <-> b2) <-> (b1 = b2).
 Proof. split => [[A B]|->//]. exact/idP/idP. Qed.
 
 (* equivalence of type inhabitation *)
-CoInductive iffT T1 T2 := IffT of (T1 -> T2) & (T2 -> T1).
+Variant iffT T1 T2 := IffT of (T1 -> T2) & (T2 -> T1).
 Notation "T1 <-T-> T2" := (iffT T1 T2) (at level 30).
 
 Definition iffT_LR T1 T2 : iffT T1 T2 -> T1 -> T2. by case. Qed.
