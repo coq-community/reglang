@@ -34,16 +34,17 @@ The current stable release of Regular Language Representations in Coq can be [do
 
 The coqdoc presentations of releases can be browsed online:
 
+- [v1.1.1](docs/v1.1.1/coqdoc/toc.html)
 - [v1.1](docs/v1.1/coqdoc/toc.html)
 
-Other related publications, if any, are listed below.
+See also related publications:
 
 - [Regular Language Representations in the Constructive Type Theory of Coq](https://hal.archives-ouvertes.fr/hal-01832031/document) doi:[10.1007/s10817-018-9460-x](https://doi.org/10.1007/s10817-018-9460-x)
 
 ## Help and contact
 
 - Report issues on [GitHub](https://github.com/coq-community/reglang/issues)
-- Chat with us on [Gitter](https://gitter.im/coq-community/Lobby)
+- Chat with us on [Zulip](https://coq.zulipchat.com/#narrow/stream/237663-coq-community-devs.20.26.20users)
 - Discuss with us on Coq's [Discourse](https://coq.discourse.group) forum
 
 ## Authors and contributors
