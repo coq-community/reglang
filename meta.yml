@@ -3,7 +3,7 @@ fullname: Regular Language Representations in Coq
 shortname: reglang
 organization: coq-community
 community: true
-travis: true
+action: true
 coqdoc: true
 doi: 10.1007/s10817-018-9460-x
 
@@ -40,6 +40,8 @@ maintainers:
 opam-file-maintainer: palmskog@gmail.com
 
 opam-file-version: dev
+
+dune: true
 
 license:
   fullname: CeCILL-B
