@@ -139,7 +139,12 @@ Proof.
 Qed.
 
 Lemma cardT_eq (T : finType) (p : pred T) : #|{: { x | p x}}| = #|T| -> p =1 predT.
-Proof. move/(inj_card_bij val_inj) => [g g1 g2 x]. rewrite -(g2 x). exact: valP. Qed.
+Proof.
+  (* backwards compatible fix for mathcomp PR #626 - mathcomp-1.12.0 *)
+  move=> eq_pT; have [|g g1 g2 x] := @inj_card_bij [finType of (sig p)] T _ val_inj.
+    by rewrite eq_pT.
+  rewrite -(g2 x); exact: valP.
+Qed.
 
 (** Finite Ordinals *)
 
@@ -244,8 +249,8 @@ Qed.
 Lemma surj_card_bij (T T' : finType) (f : T -> T') :
   surjective f -> #|T| = #|T'| -> bijective f.
 Proof.
-  move => S E. apply: inj_card_bij (E). apply/injectiveP. change (uniq (codom f)).
-  apply/card_uniqP. rewrite size_map -cardT E. exact: surjectiveE.
+  move => S E. apply: inj_card_bij; last by rewrite E. 
+  apply/injectiveP; apply/card_uniqP. rewrite size_map -cardT E. exact: surjectiveE.
 Qed.
 
 (* We define a general inverse of surjective functions from choiceType -> eqType.
@@ -255,8 +260,6 @@ Definition cr {X : choiceType} {Y : eqType} {f : X -> Y} (Sf : surjective f) y :
 
 Lemma crK {X : choiceType} {Y : eqType} {f : X->Y} {Sf : surjective f} x: f (cr Sf x) = x.
 Proof. by rewrite (eqP (xchooseP (Sf x))). Qed.
-
-
 
 Lemma dec_eq (P : Prop) (decP : decidable P) : decP <-> P.
 Proof. by case: decP. Qed.

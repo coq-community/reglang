@@ -1,14 +1,14 @@
 # Regular Language Representations in Coq
 
-[![Travis][travis-shield]][travis-link]
+[![CI][action-shield]][action-link]
 [![Contributing][contributing-shield]][contributing-link]
 [![Code of Conduct][conduct-shield]][conduct-link]
 [![Zulip][zulip-shield]][zulip-link]
 [![coqdoc][coqdoc-shield]][coqdoc-link]
 [![DOI][doi-shield]][doi-link]
 
-[travis-shield]: https://travis-ci.com/coq-community/reglang.svg?branch=master
-[travis-link]: https://travis-ci.com/coq-community/reglang/builds
+[action-shield]: https://github.com/coq-community/reglang/workflows/CI/badge.svg?branch=master
+[action-link]: https://github.com/coq-community/reglang/actions?query=workflow%3ACI
 
 [contributing-shield]: https://img.shields.io/badge/contributions-welcome-%23f7931e.svg
 [contributing-link]: https://github.com/coq-community/manifesto/blob/master/CONTRIBUTING.md
@@ -44,6 +44,7 @@ decidability results and closure properties of regular languages.
 - Compatible Coq versions: 8.10 or later (use releases for other Coq versions)
 - Additional dependencies:
   - [MathComp](https://math-comp.github.io) 1.9.0 or later (`ssreflect` suffices)
+  - [Dune](https://dune.build) 2.5 or later
 - Coq namespace: `RegLang`
 - Related publication(s):
   - [Regular Language Representations in the Constructive Type Theory of Coq](https://hal.archives-ouvertes.fr/hal-01832031/document) doi:[10.1007/s10817-018-9460-x](https://doi.org/10.1007/s10817-018-9460-x)
@@ -63,8 +64,8 @@ To instead build and install manually, do:
 ``` shell
 git clone https://github.com/coq-community/reglang.git
 cd reglang
-make   # or make -j <number-of-cores-on-your-machine>
-make install
+dune build
+dune install
 ```
 
 
