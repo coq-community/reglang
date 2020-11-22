@@ -1,14 +1,14 @@
 # Regular Language Representations in Coq
 
-[![Travis][travis-shield]][travis-link]
+[![CI][action-shield]][action-link]
 [![Contributing][contributing-shield]][contributing-link]
 [![Code of Conduct][conduct-shield]][conduct-link]
 [![Zulip][zulip-shield]][zulip-link]
 [![coqdoc][coqdoc-shield]][coqdoc-link]
 [![DOI][doi-shield]][doi-link]
 
-[travis-shield]: https://travis-ci.com/coq-community/reglang.svg?branch=master
-[travis-link]: https://travis-ci.com/coq-community/reglang/builds
+[action-shield]: https://github.com/coq-community/reglang/workflows/CI/badge.svg?branch=master
+[action-link]: https://github.com/coq-community/reglang/actions?query=workflow%3ACI
 
 [contributing-shield]: https://img.shields.io/badge/contributions-welcome-%23f7931e.svg
 [contributing-link]: https://github.com/coq-community/manifesto/blob/master/CONTRIBUTING.md
@@ -63,7 +63,7 @@ To instead build and install manually, do:
 ``` shell
 git clone https://github.com/coq-community/reglang.git
 cd reglang
-make   # or make -j <number-of-cores-on-your-machine>
+make   # or make -j <number-of-cores-on-your-machine> 
 make install
 ```
 
