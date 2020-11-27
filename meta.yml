@@ -5,6 +5,7 @@ organization: coq-community
 community: true
 action: true
 coqdoc: true
+dune: false
 doi: 10.1007/s10817-018-9460-x
 
 synopsis: >-
@@ -41,8 +42,6 @@ opam-file-maintainer: palmskog@gmail.com
 
 opam-file-version: dev
 
-dune: true
-
 license:
   fullname: CeCILL-B
   identifier: CECILL-B
@@ -54,7 +53,7 @@ supported_coq_versions:
 dependencies:
 - opam:
     name: coq-mathcomp-ssreflect
-    version: '{(>= "1.9" & < "1.12~") | (= "dev")}'
+    version: '{(>= "1.9" & < "1.13~") | (= "dev")}'
   nix: ssreflect
   description: |-
     [MathComp](https://math-comp.github.io) 1.9.0 or later (`ssreflect` suffices)
@@ -65,6 +64,8 @@ tested_coq_nix_versions:
 tested_coq_opam_versions:
 - version: 'coq-dev'
   repo: 'mathcomp/mathcomp-dev'
+- version: '1.12.0-coq-8.12'
+  repo: 'mathcomp/mathcomp'
 - version: '1.11.0-coq-8.12'
   repo: 'mathcomp/mathcomp'
 - version: '1.10.0-coq-8.11'
