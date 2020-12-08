@@ -74,7 +74,7 @@ elim: ss => //= s ss IHss.
 by rewrite rev_cons flatten_rcons -IHss rev_cat.
 Qed.
 
-Hint Resolve mem_head : core.
+Global Hint Resolve mem_head : core.
 
 Lemma all1s {T : eqType} {a : T} {s} {P : T -> Prop} :
   (forall b, b \in a :: s -> P b) <-> P a /\ (forall b, b \in s -> P b).
@@ -159,7 +159,7 @@ Definition ord1 {n} := (@Ordinal (n.+2) 1 (erefl _)).
 Lemma inord1 n : ord1 = inord 1 :> 'I_n.+2. 
 Proof. apply: ord_inj => /=. by rewrite inordK. Qed.
 
-Hint Resolve ltn_ord : core.
+Global Hint Resolve ltn_ord : core.
 
 (** Finite Sets - finset.v *)
 
