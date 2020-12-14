@@ -240,7 +240,8 @@ Qed.
 Lemma enfa_concIr (p : A2) x : nfa_accept p x -> @enfa_accept enfa_conc (inr p) x.
 Proof.
   elim: x p => [p Hp|a x IH p /= /exists_inP [q q1 q2]].
-  - by constructor; rewrite mem_imset.
+  - (* compat: <mathcomp-1.12 *)
+    constructor; solve [exact: imset_f|exact:mem_imset]. 
   - apply: (@EnfaSome enfa_conc _ _ (inr q)) => //. exact: IH.
 Qed.
 
@@ -255,7 +256,8 @@ Qed.
 Lemma enfa_concP x : reflect (enfa_lang enfa_conc x) (conc (nfa_lang A1) (nfa_lang A2) x).
 Proof.
   apply: (iffP (@concP _ _ _ _)) => [[x1] [x2] [X1 [X2 X3]] |].
-  - case/exists_inP : X2 => s ? ?. exists (inl s); first by rewrite /enfa_conc /= mem_imset.
+  - (* compat: <mathcomp-1.12 *)
+    case/exists_inP : X2 => s ? ?. exists (inl s); first solve [exact: imset_f|exact:mem_imset].
     subst. exact: enfa_concIl.
   - move => [[s /imsetP [? ? [?]] /enfa_concE [x1] [x2] [? ? ?] |s]]; last by case/imsetP.
     exists x1; exists x2. repeat (split => //). apply/exists_inP. by exists s;subst.
