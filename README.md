@@ -1,14 +1,18 @@
+<!---
+This file was generated from `meta.yml`, please do not edit manually.
+Follow the instructions on https://github.com/coq-community/templates to regenerate.
+--->
 # Regular Language Representations in Coq
 
-[![CI][action-shield]][action-link]
+[![Docker CI][docker-action-shield]][docker-action-link]
 [![Contributing][contributing-shield]][contributing-link]
 [![Code of Conduct][conduct-shield]][conduct-link]
 [![Zulip][zulip-shield]][zulip-link]
 [![coqdoc][coqdoc-shield]][coqdoc-link]
 [![DOI][doi-shield]][doi-link]
 
-[action-shield]: https://github.com/coq-community/reglang/workflows/CI/badge.svg?branch=master
-[action-link]: https://github.com/coq-community/reglang/actions?query=workflow%3ACI
+[docker-action-shield]: https://github.com/coq-community/reglang/workflows/Docker%20CI/badge.svg?branch=master
+[docker-action-link]: https://github.com/coq-community/reglang/actions?query=workflow:"Docker%20CI"
 
 [contributing-shield]: https://img.shields.io/badge/contributions-welcome-%23f7931e.svg
 [contributing-link]: https://github.com/coq-community/manifesto/blob/master/CONTRIBUTING.md
@@ -20,7 +24,7 @@
 [zulip-link]: https://coq.zulipchat.com/#narrow/stream/237663-coq-community-devs.20.26.20users
 
 [coqdoc-shield]: https://img.shields.io/badge/docs-coqdoc-blue.svg
-[coqdoc-link]: https://coq-community.org/reglang/docs/latest/coqdoc/toc.html
+[coqdoc-link]: https://coq-community.org/reglang
 
 [doi-shield]: https://zenodo.org/badge/DOI/10.1007/s10817-018-9460-x.svg
 [doi-link]: https://doi.org/10.1007/s10817-018-9460-x

@@ -75,6 +75,8 @@ tested_coq_opam_versions:
 - version: '1.9.0-coq-8.10'
   repo: 'mathcomp/mathcomp'
 
+ci_cron_schedule: '20 4 * * *'
+
 namespace: RegLang
 
 keywords:
