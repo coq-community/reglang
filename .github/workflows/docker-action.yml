@@ -1,6 +1,10 @@
-name: CI
+# This file was generated from `meta.yml`, please do not edit manually.
+# Follow the instructions on https://github.com/coq-community/templates to regenerate.
+name: Docker CI
 
 on:
+  schedule:
+    - cron: '20 4 * * *'
   push:
     branches:
       - master

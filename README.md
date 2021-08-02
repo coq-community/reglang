@@ -76,7 +76,7 @@ make install
 
 To generate HTML documentation, run `make coqdoc` and point your browser at `docs/coqdoc/toc.html`.
 
-See also the pregenerated HTML documentation for the [latest release](https://coq-community.github.io/reglang/docs/latest/coqdoc/toc.html).
+See also the pregenerated HTML documentation for the [latest release](https://coq-community.org/reglang/docs/latest/coqdoc/toc.html).
 
 ## File Contents
 
