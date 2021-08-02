@@ -2,6 +2,7 @@
 -arg -w -arg -notation-overridden
 -arg -w -arg -duplicate-clear
 -arg -w -arg -notation-incompatible-format
+-arg -w -arg -deprecated-instance-without-locality
 theories/misc.v
 theories/setoid_leq.v
 theories/languages.v
