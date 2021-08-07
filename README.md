@@ -5,6 +5,7 @@ Follow the instructions on https://github.com/coq-community/templates to regener
 # Regular Language Representations in Coq
 
 [![Docker CI][docker-action-shield]][docker-action-link]
+[![Nix CI][nix-action-shield]][nix-action-link]
 [![Contributing][contributing-shield]][contributing-link]
 [![Code of Conduct][conduct-shield]][conduct-link]
 [![Zulip][zulip-shield]][zulip-link]
@@ -13,6 +14,9 @@ Follow the instructions on https://github.com/coq-community/templates to regener
 
 [docker-action-shield]: https://github.com/coq-community/reglang/workflows/Docker%20CI/badge.svg?branch=master
 [docker-action-link]: https://github.com/coq-community/reglang/actions?query=workflow:"Docker%20CI"
+
+[nix-action-shield]: https://github.com/coq-community/reglang/workflows/Nix%20CI/badge.svg?branch=master
+[nix-action-link]: https://github.com/coq-community/reglang/actions?query=workflow:"Nix%20CI"
 
 [contributing-shield]: https://img.shields.io/badge/contributions-welcome-%23f7931e.svg
 [contributing-link]: https://github.com/coq-community/manifesto/blob/master/CONTRIBUTING.md
