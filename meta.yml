@@ -4,6 +4,7 @@ shortname: reglang
 organization: coq-community
 community: true
 action: true
+nix: true
 coqdoc: true
 dune: false
 doi: 10.1007/s10817-018-9460-x
@@ -54,12 +55,17 @@ dependencies:
 - opam:
     name: coq-mathcomp-ssreflect
     version: '{(>= "1.9" & < "1.13~") | (= "dev")}'
-  nix: ssreflect
   description: |-
     [MathComp](https://math-comp.github.io) 1.9.0 or later (`ssreflect` suffices)
 
 tested_coq_nix_versions:
-- version_or_url: https://github.com/coq/coq-on-cachix/tarball/master
+- coq_version: 'master'
+  extra_dev_dependencies:
+  - nix_name: mathcomp
+- coq_version: 'v8.14'
+  extra_dev_dependencies:
+  - nix_name: mathcomp
+- coq_version: '8.13'
 
 tested_coq_opam_versions:
 - version: 'coq-dev'
