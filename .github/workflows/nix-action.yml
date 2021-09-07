@@ -3,6 +3,8 @@
 name: Nix CI
 
 on:
+  schedule:
+    - cron: '20 4 * * *'
   push:
     branches:
       - master
@@ -24,15 +26,15 @@ jobs:
     steps:
       - name: Determine which ref to test
         run: |
-          if [ ${{ github.event_name }} = "push" ]; then
-            echo "tested_ref=${{ github.ref }}" >> $GITHUB_ENV
-          else
+          if [[ ${{ github.event_name }} =~ "pull_request" ]]; then
             merge_commit=$(git ls-remote ${{ github.event.repository.html_url }} refs/pull/${{ github.event.number }}/merge | cut -f1)
             if [ -z "$merge_commit" ]; then
               echo "tested_ref=refs/pull/${{ github.event.number }}/head" >> $GITHUB_ENV
             else
               echo "tested_ref=refs/pull/${{ github.event.number }}/merge" >> $GITHUB_ENV
             fi
+          else
+            echo "tested_ref=${{ github.ref }}" >> $GITHUB_ENV
           fi
       - uses: cachix/install-nix-action@v12
         with:
