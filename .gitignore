@@ -14,3 +14,4 @@ Makefile.coq.conf
 .coq-native/
 _build/
 docs/
+.lia.cache
