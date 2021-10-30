@@ -20,35 +20,30 @@ jobs:
       matrix:
         overrides:
           - 'coq = "master"; mathcomp = "master"'
-          - 'coq = "v8.14"; mathcomp = "master"'
+          - 'coq = "8.14"'
           - 'coq = "8.13"'
       fail-fast: false
     steps:
-      - name: Determine which ref to test
+      - name: Determine which commit to test
         run: |
           if [[ ${{ github.event_name }} =~ "pull_request" ]]; then
             merge_commit=$(git ls-remote ${{ github.event.repository.html_url }} refs/pull/${{ github.event.number }}/merge | cut -f1)
             if [ -z "$merge_commit" ]; then
-              echo "tested_ref=refs/pull/${{ github.event.number }}/head" >> $GITHUB_ENV
+              echo "tested_commit=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
             else
-              echo "tested_ref=refs/pull/${{ github.event.number }}/merge" >> $GITHUB_ENV
+              echo "tested_commit=$merge_commit" >> $GITHUB_ENV
             fi
           else
-            echo "tested_ref=${{ github.ref }}" >> $GITHUB_ENV
+            echo "tested_commit=${{ github.sha }}" >> $GITHUB_ENV
           fi
-      - uses: cachix/install-nix-action@v12
+      - uses: cachix/install-nix-action@v14
         with:
           nix_path: nixpkgs=channel:nixpkgs-unstable
-      - uses: cachix/cachix-action@v8
-        with:
-          name: coq
-      - uses: cachix/cachix-action@v8
+      - uses: cachix/cachix-action@v10
         with:
           name: coq-community
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-      - uses: cachix/cachix-action@v8
-        with:
-          name: math-comp
+          extraPullNames: coq, math-comp
       - uses: actions/checkout@v2
         with:
           ref: ${{ env.tested_ref }}
