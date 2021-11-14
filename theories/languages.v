@@ -23,7 +23,7 @@ infinite (but discrete) alphabets *)
 Thierry Coquand, Vincent Siles, A Decision Procedure for Regular
 Expression Equivalence in Type Theory (DOI:
 10.1007/978-3-642-25379-9_11). See also:
-https://github.com/vsiles/regexp-Brzozowski *)
+https://github.com/coq-community/regexp-Brzozowski *)
 
 Section Basics.
   Variables char : eqType.
@@ -78,6 +78,8 @@ Definition void : dlang char := pred0.
 
 Definition eps : dlang char := pred1 [::].
 
+Definition dot : dlang char := [pred w | size w == 1].
+
 Definition atom x : dlang char := pred1 [:: x].
 
 Definition compl L : dlang char := predC L.
@@ -102,6 +104,12 @@ than or equal" to [v] *)
 
 Definition star L : dlang char :=
   fix star v := if v is x :: v' then conc (residual x L) star v' else true.
+
+Lemma compl_invol L : compl (compl L) =i L.
+Proof. by move => w; rewrite inE /= /compl /= negbK. Qed.
+
+Lemma in_prod L1 L2 v : (v \in prod L1 L2) = (v \in L1) && (v \in L2).
+Proof. by rewrite inE. Qed.
 
 Lemma plusP r s w :
   reflect (w \in r \/ w \in s) (w \in plus r s).
