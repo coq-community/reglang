@@ -209,7 +209,7 @@ Section KleeneAlgorithm.
         case/setU1P => [H|]; last by rewrite take_take.
         move: (min_i _ lt_i_j). by rewrite negb_and J1 H eqxx.
       + apply/LP. rewrite -H1 -{2}[w](cat_take_drop i) delta_cat delta_z. 
-        split => // j J1 J2. rewrite -{1}delta_z -delta_cat -take_addn.
+        split => // j J1 J2. rewrite -{1}delta_z -delta_cat -takeD.
         apply: H2; first by rewrite addn_gt0 J1 orbT.
         by rewrite -[w](cat_take_drop i) size_cat size_take lt_w ltn_add2l.
     - move => H; left. apply/LP. split => // i I1 I2. apply: contraTT (H2 _ I1 I2) => C.

@@ -27,6 +27,9 @@ Proof. firstorder. Qed.
 Lemma eqb_iff (b1 b2 : bool) : (b1 <-> b2) <-> (b1 = b2).
 Proof. split => [[A B]|->//]. exact/idP/idP. Qed.
 
+Lemma dec_eq (P : Prop) (decP : decidable P) : decP <-> P.
+Proof. by case: decP. Qed.
+
 (* equivalence of type inhabitation *)
 Variant iffT T1 T2 := IffT of (T1 -> T2) & (T2 -> T1).
 Notation "T1 <-T-> T2" := (iffT T1 T2) (at level 30).
@@ -48,31 +51,14 @@ Qed.
 
 (** Sequences - seq.v *)
 
-Lemma nth_cons T (x0:T) x (s : seq T) n : nth x0 (x::s) n.+1 = nth x0 s n.
-Proof. done. Qed.
+Arguments nth T x0 !s !n.
 
 Lemma take_take T (s : seq T) n m  : n < m -> take n (take m s) = take n s.
 Proof. elim: m n s => // n IHn [|m] [|a s] //= ?. by rewrite IHn. Qed.
 
-Lemma take_addn (T : Type) (s : seq T) n m : take (n + m) s = take n s ++ take m (drop n s).
-Proof.
-  elim: n m s => [|n IH] [|m] [|a s] //; first by rewrite take0 addn0 cats0.
-  by rewrite drop_cons addSn !take_cons /= IH.
-Qed.
-
 Lemma index_take (T : eqType) (a : T) n (s : seq T) : 
   a \in take n s -> index a (take n s) = index a s.
 Proof. move => H. by rewrite -{2}[s](cat_take_drop n) index_cat H. Qed.
-
-Lemma flatten_rcons T ss (s:seq T) : flatten (rcons ss s) = flatten ss ++ s.
-Proof. by rewrite -cats1 flatten_cat /= cats0. Qed.
-
-Lemma rev_flatten T (ss : seq (seq T)) :
-  rev (flatten ss) = flatten (rev (map rev ss)).
-Proof.
-elim: ss => //= s ss IHss.
-by rewrite rev_cons flatten_rcons -IHss rev_cat.
-Qed.
 
 Global Hint Resolve mem_head : core.
 
@@ -105,7 +91,7 @@ Lemma bigmax_seq_sup (T : eqType) (s:seq T) (P : pred T) F k m :
 Proof. move => A B C. by rewrite (big_rem k) //= B leq_max C. Qed.
 
 Lemma max_mem n0 (s : seq nat) : n0 \in s -> \max_(i <- s) i \in s.
-Proof.
+Proof. 
   case: s => // a s _. rewrite big_cons big_seq.
   elim/big_ind : _ => // [n m|n A].
   - rewrite -{5}[a]maxnn maxnACA => ? ?. rewrite {1}/maxn. by case: ifP.
@@ -261,5 +247,3 @@ Definition cr {X : choiceType} {Y : eqType} {f : X -> Y} (Sf : surjective f) y :
 Lemma crK {X : choiceType} {Y : eqType} {f : X->Y} {Sf : surjective f} x: f (cr Sf x) = x.
 Proof. by rewrite (eqP (xchooseP (Sf x))). Qed.
 
-Lemma dec_eq (P : Prop) (decP : decidable P) : decP <-> P.
-Proof. by case: decP. Qed.

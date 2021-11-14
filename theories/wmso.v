@@ -227,7 +227,7 @@ Lemma nth_glue0 b n (v : seq (vec n)) k :
   nth false (nth [tuple of nseq n.+1 false] (glue b v) k) 0 =
   nth false b k.
 Proof.
-  elim: k v b => [|k IH] [|v vs] [|b bs] //; rewrite [glue _ _]/= ?nth_nil ?nth_cons ?IH //.
+  elim: k v b => [|k IH] [|v vs] [|b bs] //=. 
   case: (ltnP k (size vs)) => A.
   - by rewrite (nth_map [tuple of nseq n false]) //.
   - by rewrite [_ _ _ k]nth_default // size_map.
@@ -245,13 +245,11 @@ Lemma nth_glueS b n (v : seq (vec n)) i k :
   nth false (nth [tuple of nseq n.+1 false] (glue b v) k) i.+1 =
   nth false (nth [tuple of nseq n false] v k) i.
 Proof.
-  elim: k v b => [|k IH] [|v vs] [|b bs]  //.
-  - by rewrite [glue _ _]/= IH !nth_nil nth_nseq if_same.
-  - rewrite [glue _ _]/= !nth_cons.
-    case: (ltnP k (size vs)) => A.
+  elim: k v b => [|k IH] [|v vs] [|b bs] //=.
+  - by rewrite IH !nth_nil nth_nseq if_same.
+  - case: (ltnP k (size vs)) => A.
     + by rewrite (nth_map [tuple of nseq n false]).
     + by rewrite ![_ _ _ k]nth_default ?size_map.
-  - by rewrite [glue _ _]/= !nth_cons.
 Qed.
   
 Lemma I_of_glueS i b n (v : seq (vec n)) k : 
