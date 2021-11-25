@@ -105,6 +105,12 @@ than or equal" to [v] *)
 Definition star L : dlang char :=
   fix star v := if v is x :: v' then conc (residual x L) star v' else true.
 
+Lemma in_dot u : (u \in dot) = (size u == 1).
+Proof. by []. Qed.
+
+Lemma in_compl L v : (v \in compl L) = (v \notin L).
+Proof. by []. Qed.
+
 Lemma compl_invol L : compl (compl L) =i L.
 Proof. by move => w; rewrite inE /= /compl /= negbK. Qed.
 
@@ -114,6 +120,9 @@ Proof. by rewrite inE. Qed.
 Lemma plusP r s w :
   reflect (w \in r \/ w \in s) (w \in plus r s).
 Proof. rewrite !inE. exact: orP. Qed.
+
+Lemma in_residual x L u : (u \in residual x L) = (x :: u \in L).
+Proof. by []. Qed.
 
 Lemma concP {L1 L2 : dlang char} {w : word char} :
   reflect (exists w1 w2, w = w1 ++ w2 /\ w1 \in L1 /\ w2 \in L2) (w \in conc L1 L2).
