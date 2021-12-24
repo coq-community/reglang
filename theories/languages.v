@@ -11,11 +11,11 @@ Unset Printing Implicit Defensive.
 
 (** * Languages in Type Theory 
 
-In this file mainly defines aliases for (decidable) languages. It also
+This file mainly defines aliases for (decidable) languages. It also
 shows that decidable languages are closed under the primitive regular
-operations (e.g. concatenation and interation). This will allow us to
+operations (e.g., concatenation and interation). This will allow us to
 assign decidable languages to regular expressions. We allow for
-infinite (but discrete) alphabets *)
+infinite (but discrete) alphabets. *)
  
 (** The definitions of [conc] and [star] as well as the proofs of
 [starP] and [concP] are taken from from regexp.v in:
@@ -164,17 +164,32 @@ Proof.
   by exists ((a::w1) :: vv); rewrite ?Hf //= H1.
 Qed.
 
-Lemma starI (L : dlang char)  vv :
+Lemma starI (L : dlang char) vv :
   (forall v, v \in vv -> v \in L) -> flatten vv \in star L.
 Proof.
   elim: vv => /= [//| v vv IHvv /all1s [H1 H2]].
   exact: star_cat _ (IHvv _).
 Qed.
 
-Lemma star_eq (l1 : dlang char) l2: l1 =i l2 -> star l1 =i star l2.
+Lemma star_eq (l1 : dlang char) l2 : l1 =i l2 -> star l1 =i star l2.
 Proof.
   move => H1 w. apply/starP/starP; move => [] vv H3 H4; exists vv => //;
   erewrite eq_all; try eexact H3; move => x /=; by rewrite ?H1 // -?H1.
+Qed.
+
+Lemma star_id (l : dlang char) : star (star l) =i star l.
+Proof.
+  move => u. rewrite -!topredE /=. apply/starP/starP => [[vs h1 h2]|].
+    elim: vs u h1 h2 => [|hd tl Ih] u h1 h2; first by exists [::].
+    move: h1 => /= h1. case/andP: h1; case/andP => hhd1 hhd2 htl.
+    case: (Ih (flatten tl)) => //= [xs x1 x2].
+    case/starP: hhd2 => hds j1 j2.
+    exists (hds ++ xs); first by rewrite all_cat; apply/andP.
+    by rewrite h2 j2 /= x2 flatten_cat.
+  move => [hs h1 h2]. exists hs => //. apply/allP => x x1.
+  move/allP: h1 => h1. case/andP: (h1 x x1) => /= h3 h4.
+  rewrite h3 /=. apply/starP. exists [:: x] => /=; first by rewrite h3 h4.
+  by rewrite cats0.
 Qed.
 
 End DecidableLanguages.
