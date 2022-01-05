@@ -57,29 +57,30 @@ Lemma index_take (T : eqType) (a : T) n (s : seq T) :
   a \in take n s -> index a (take n s) = index a s.
 Proof. move => H. by rewrite -{2}[s](cat_take_drop n) index_cat H. Qed.
 
-Global Hint Resolve mem_head : core.
-
-Lemma all1s {T : eqType} {a : T} {s} {P : T -> Prop} :
-  (forall b, b \in a :: s -> P b) <-> P a /\ (forall b, b \in s -> P b).
+(* from mathcomp-1.13 *)
+Lemma forall_cons {T : eqType} {P : T -> Prop} {a s} :
+  {in a::s, forall x, P x} <-> P a /\ {in s, forall x, P x}.
 Proof.
-  split => [A|[A B] b /predU1P [->//|]]; last exact: B.
-  split => [|b B]; apply: A => //. by rewrite !inE B orbT.
+split=> [A|[A B]]; last by move => x /predU1P [-> //|]; apply: B.
+by split=> [|b Hb]; apply: A; rewrite !inE ?eqxx ?Hb ?orbT.
 Qed.
 
-Lemma ex1s {T : eqType} {a : T} {s} {P : T -> Prop} :
-  (exists2 x : T, x \in a :: s & P x) <-> P a \/ (exists2 x : T, x \in s & P x).
+(* from mathcomp-1.13 *)
+Lemma exists_cons {T : eqType} {P : T -> Prop} {a s} :
+  (exists2 x, x \in a::s & P x) <-> P a \/ exists2 x, x \in s & P x.
 Proof.
-  split => [[x] /predU1P [->|]|]; firstorder. exists x => //. by rewrite inE H orbT. 
+split=> [[x /predU1P[->|x_s] Px]|]; [by left| by right; exists x|].
+by move=> [?|[x x_s ?]]; [exists a|exists x]; rewrite ?inE ?eqxx ?x_s ?orbT.
 Qed.
 
 Lemma orS (b1 b2 : bool) : b1 || b2 -> {b1} + {b2}.
 Proof. by case: b1 => /= [_|H]; [left|right]. Qed.
 
-Lemma all1sT {T : eqType} {a : T} {s} {P : T -> Type} :
+Lemma forall_consT {T : eqType} {a : T} {s} {P : T -> Type} :
   (forall b, b \in a :: s -> P b) <-T-> (P a * (forall b, b \in s -> P b)).
 Proof.
   split => [A|[A B] b]. 
-  - split; first by apply: A. move => b in_s. apply A. by rewrite inE in_s orbT.
+  - by split => [|b b_s]; apply: A; rewrite inE ?b_s ?orbT ?eqxx.
   - rewrite inE. case/orS => [/eqP -> //|]. exact: B. 
 Qed.
 
@@ -90,9 +91,9 @@ Proof. move => A B C. by rewrite (big_rem k) //= B leq_max C. Qed.
 Lemma max_mem n0 (s : seq nat) : n0 \in s -> \max_(i <- s) i \in s.
 Proof. 
   case: s => // a s _. rewrite big_cons big_seq.
-  elim/big_ind : _ => // [n m|n A].
+  elim/big_ind : _ => [|n m|n A]; first exact: mem_head.
   - rewrite -{5}[a]maxnn maxnACA => ? ?. rewrite {1}/maxn. by case: ifP.
-  - rewrite /maxn. case: ifP => _ //. by rewrite inE A orbT.
+  - rewrite /maxn. case: ifP; by rewrite ?mem_head // inE A orbT.
 Qed.
 
 (* reasoning about singletons *)
@@ -100,7 +101,9 @@ Lemma seq1P (T : eqType) (x y : T) : reflect (x = y) (x \in [:: y]).
 Proof. rewrite inE. exact: eqP. Qed.
 
 Lemma sub1P (T : eqType) x (p : pred T) : reflect {subset [:: x] <= p} (x \in p).
-Proof. apply: (iffP idP) => [A y|]; by [rewrite inE => /eqP->|apply]. Qed.
+Proof. 
+apply: (iffP idP) => [A y|]; by [rewrite inE => /eqP->|apply; exact: mem_head]. 
+Qed.
 
 (** Finite Types - fintype.v *)
 
@@ -141,8 +144,6 @@ Definition ord1 {n} := (@Ordinal (n.+2) 1 (erefl _)).
 
 Lemma inord1 n : ord1 = inord 1 :> 'I_n.+2. 
 Proof. apply: ord_inj => /=. by rewrite inordK. Qed.
-
-Global Hint Resolve ltn_ord : core.
 
 (** Finite Sets - finset.v *)
 

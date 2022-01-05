@@ -144,10 +144,10 @@ Lemma regular_bigU (T : eqType) (L : T -> lang char) (s : seq T) :
 Proof.
   elim: s => //. 
   - move => _. apply: regular_ext regular0 _. by split => // [[a]]. 
-  - move => a s IH /all1sT [H1 H2]. 
+  - move => a s IH /forall_consT [H1 H2]. 
     pose L' := (fun x => L a x \/ (fun x : word => exists2 a : T, a \in s & L a x) x). 
     apply: (regular_ext (L2 := L')); first by apply: regularU => //; exact: IH. 
-    move => x. rewrite /L'. exact: ex1s. 
+    move => x. rewrite /L'. exact: exists_cons. 
 Qed.
 
 

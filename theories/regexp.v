@@ -89,7 +89,7 @@ Fixpoint re_size (char: eqType) (e : regexp char) :=
 Lemma big_plus_size (T char : eqType) (r : seq T) (F : T -> regexp char) m :
   (forall i, i \in r -> re_size (F i) <= m) -> re_size (\sigma_(i <- r) F i) <= (size r * m.+1).+1.
 Proof.
-  elim: r => [|e r IH /all1s [A B]]; first by rewrite big_nil.
+  elim: r => [|e r IH /forall_cons [A B]]; first by rewrite big_nil.
   rewrite big_cons /= ltnS mulSn addSn -addnS leq_add //. exact: IH.
 Qed.  
 
@@ -423,7 +423,7 @@ Section Image.
           by move => /Hvv /= /andP [_ /IHe].
         subst v. elim: vv Hvv => [|v vv IHvv] Hvv /=; first by exists [::]; rewrite ?h0.
         case: (Hvv v (mem_head _ _)) => w [Hw1 Hw2].
-        case/all1s: Hvv => Hv /IHvv [ww [Hww1 Hww2]].
+        case/forall_cons: Hvv => Hv /IHvv [ww [Hww1 Hww2]].
         exists (w++ww); split; by [exact: star_cat | rewrite h_hom Hw2 Hww2].
       + case => w [] /starP [ww] /allP Hww1 -> <-. rewrite h_flatten //.
         apply: starI => v' /mapP [w' /Hww1 /= /andP [_ Hw' ->]].

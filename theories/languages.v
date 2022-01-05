@@ -158,7 +158,7 @@ Qed.
 Lemma starI (L : dlang char)  vv :
   (forall v, v \in vv -> v \in L) -> flatten vv \in star L.
 Proof.
-  elim: vv => /= [//| v vv IHvv /all1s [H1 H2]].
+  elim: vv => /= [//| v vv IHvv /forall_cons [H1 H2]].
   exact: star_cat _ (IHvv _).
 Qed.
 
