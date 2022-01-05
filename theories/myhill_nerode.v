@@ -162,7 +162,7 @@ Proof.
   move => p q. split => [coll_pq|->//]. 
   rewrite -[p](crK (Sf := (@imfun_of_surj _ M))).
   rewrite -[q](crK (Sf := (@imfun_of_surj _ M))).
-  apply/Sub_eq. apply/nerodeP => w.
+  apply: val_inj. apply/nerodeP => w.
   rewrite -!(@classifier_to_dfa_correct _ M) !inE /dfa_accept !delta_cat.
   rewrite -!/(delta_s _ _) !classifier_to_dfa_delta !crK. exact: coll_pq.
 Qed.

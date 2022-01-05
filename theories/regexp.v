@@ -206,7 +206,7 @@ Section KleeneAlgorithm.
       + apply/LP. split => // j J1 J2.
         have lt_i_j : j < i. apply: leq_trans J2 _. by rewrite size_take lt_w.
         have/(H2 _ J1) : j < size w. exact: ltn_trans lt_w.
-        case/setU1P => [H|]; last by rewrite take_take.
+        case/setU1P => [H|]; last by rewrite take_take 1?ltnW.
         move: (min_i _ lt_i_j). by rewrite negb_and J1 H eqxx.
       + apply/LP. rewrite -H1 -{2}[w](cat_take_drop i) delta_cat delta_z. 
         split => // j J1 J2. rewrite -{1}delta_z -delta_cat -takeD.

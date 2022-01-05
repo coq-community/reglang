@@ -53,9 +53,6 @@ Qed.
 
 Arguments nth T x0 !s !n.
 
-Lemma take_take T (s : seq T) n m  : n < m -> take n (take m s) = take n s.
-Proof. elim: m n s => // n IHn [|m] [|a s] //= ?. by rewrite IHn. Qed.
-
 Lemma index_take (T : eqType) (a : T) n (s : seq T) : 
   a \in take n s -> index a (take n s) = index a s.
 Proof. move => H. by rewrite -{2}[s](cat_take_drop n) index_cat H. Qed.
@@ -154,14 +151,6 @@ Proof. rewrite -!cardsT -powersetT. exact: card_powerset. Qed.
 
 (** Miscellaneous *)
 
-Lemma Sub_eq (T : Type) (P : pred T) (sT : subType P) (x y : T) (Px : P x) (Py : P y) : 
-  (@Sub _ _ sT) x Px = Sub y Py <-> x = y.
-Proof. 
-  split => [|e]. 
-  - by rewrite -{2}[x](SubK sT) -{2}[y](SubK sT) => ->. 
-  - move: Py. rewrite -e => Py. by rewrite (bool_irrelevance Py Px).
-Qed.
-
 Local Open Scope quotient_scope.
 Lemma epiK {T:choiceType} (e : equiv_rel T) x : e (repr (\pi_{eq_quot e} x)) x.
 Proof. by rewrite -eqmodE reprK. Qed.
@@ -246,4 +235,3 @@ Definition cr {X : choiceType} {Y : eqType} {f : X -> Y} (Sf : surjective f) y :
 
 Lemma crK {X : choiceType} {Y : eqType} {f : X->Y} {Sf : surjective f} x: f (cr Sf x) = x.
 Proof. by rewrite (eqP (xchooseP (Sf x))). Qed.
-
