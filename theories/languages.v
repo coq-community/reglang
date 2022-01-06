@@ -48,7 +48,7 @@ Section HomDef.
 
   Definition homomorphism := forall w1 w2, h (w1 ++ w2) = h w1 ++ h w2.
   Hypothesis h_hom : homomorphism.
-  Local Set Default Proof Using "h_hom".  
+  Local Set Default Proof Using "h_hom".
 
   Lemma h0 : h [::] = [::].
   Proof.
@@ -72,7 +72,7 @@ End HomDef.
 Section DecidableLanguages.
 
 Variable char : eqType.
-Implicit Types (x y z : char) (u v w : word char) (L : dlang char).
+Implicit Types (x y z : char) (u v w : word char) (l : dlang char).
 
 Definition void : dlang char := pred0.
 
@@ -82,50 +82,50 @@ Definition dot : dlang char := [pred w | size w == 1].
 
 Definition atom x : dlang char := pred1 [:: x].
 
-Definition compl L : dlang char := predC L.
+Definition compl l : dlang char := predC l.
 
-Definition prod L1 L2 : dlang char := [pred w in L1 | w \in L2].
+Definition prod l1 l2 : dlang char := [pred w in l1 | w \in l2].
 
-Definition plus L1 L2 : dlang char := [pred w | (w \in L1) || (w \in L2)].
+Definition plus l1 l2 : dlang char := [pred w | (w \in l1) || (w \in l2)].
 
-Definition residual x L : dlang char := [pred w | x :: w \in L].
+Definition residual x l : dlang char := [pred w | x :: w \in l].
 
 (** For the concatenation of two decidable languages, we use finite
 types. Note that we need to use [L1] and [L2] applicatively in order
 for the termination check for [star] to succeed. *)
 
-Definition conc (L1 L2: dlang char) : dlang char :=
-  fun v => [exists i : 'I_(size v).+1, L1 (take i v) && L2 (drop i v)].
+Definition conc l1 l2 : dlang char :=
+  fun v => [exists i : 'I_(size v).+1, l1 (take i v) && l2 (drop i v)].
 
 (** The iteration (Kleene star) operator is defined using resisdual
 languages. Termination of star relies in the fact that conc applies
 its second argument only to [drop i v] which is "structurally less
 than or equal" to [v] *)
 
-Definition star L : dlang char :=
-  fix star v := if v is x :: v' then conc (residual x L) star v' else true.
+Definition star l : dlang char :=
+  fix star v := if v is x :: v' then conc (residual x l) star v' else true.
 
 Lemma in_dot u : (u \in dot) = (size u == 1).
 Proof. by []. Qed.
 
-Lemma in_compl L v : (v \in compl L) = (v \notin L).
+Lemma in_compl l v : (v \in compl l) = (v \notin l).
 Proof. by []. Qed.
 
-Lemma compl_invol L : compl (compl L) =i L.
+Lemma compl_invol l : compl (compl l) =i l.
 Proof. by move => w; rewrite inE /= /compl /= negbK. Qed.
 
-Lemma in_prod L1 L2 v : (v \in prod L1 L2) = (v \in L1) && (v \in L2).
+Lemma in_prod l1 l2 v : (v \in prod l1 l2) = (v \in l1) && (v \in l2).
 Proof. by rewrite inE. Qed.
 
 Lemma plusP r s w :
   reflect (w \in r \/ w \in s) (w \in plus r s).
 Proof. rewrite !inE. exact: orP. Qed.
 
-Lemma in_residual x L u : (u \in residual x L) = (x :: u \in L).
+Lemma in_residual x l u : (u \in residual x l) = (x :: u \in l).
 Proof. by []. Qed.
 
-Lemma concP {L1 L2 : dlang char} {w : word char} :
-  reflect (exists w1 w2, w = w1 ++ w2 /\ w1 \in L1 /\ w2 \in L2) (w \in conc L1 L2).
+Lemma concP {l1 l2 w} :
+  reflect (exists w1 w2, w = w1 ++ w2 /\ w1 \in l1 /\ w2 \in l2) (w \in conc l1 l2).
 Proof. apply: (iffP existsP) => [[n] /andP [H1 H2] | [w1] [w2] [e [H1 H2]]].
   - exists (take n w). exists (drop n w). by rewrite cat_take_drop -topredE.
   - have lt_w1: size w1 < (size w).+1 by rewrite e size_cat ltnS leq_addr.
@@ -133,51 +133,51 @@ Proof. apply: (iffP existsP) => [[n] /andP [H1 H2] | [w1] [w2] [e [H1 H2]]].
     rewrite take_size_cat // drop_size_cat //. exact/andP.
 Qed.
 
-Lemma conc_cat w1 w2 L1 L2 : w1 \in L1 -> w2 \in L2 -> w1 ++ w2 \in conc L1 L2.
+Lemma conc_cat w1 w2 l1 l2 : w1 \in l1 -> w2 \in l2 -> w1 ++ w2 \in conc l1 l2.
 Proof. move => H1 H2. apply/concP. exists w1. by exists w2. Qed.
 
-Lemma conc_eq (l1: dlang char) l2 l3 l4:
+Lemma conc_eq l1 l2 l3 l4 :
   l1 =i l2 -> l3 =i l4 -> conc l1 l3 =i conc l2 l4.
 Proof.
   move => H1 H2 w. apply: eq_existsb => n. 
   by rewrite (_ : l1 =1 l2) // (_ : l3 =1 l4).
 Qed.
 
-Lemma starP : forall {L v},
-  reflect (exists2 vv, all [predD L & eps] vv & v = flatten vv) (v \in star L).
+Lemma starP : forall {l v},
+  reflect (exists2 vv, all [predD l & eps] vv & v = flatten vv) (v \in star l).
 Proof.
-move=> L v;
+move=> l v;
   elim: {v}_.+1 {-2}v (ltnSn (size v)) => // n IHn [|x v] /= le_v_n.
   by left; exists [::].
 apply: (iffP concP) => [[u] [v'] [def_v [Lxu starLv']] | [[|[|y u] vv] //=]].
-  case/IHn: starLv' => [|vv Lvv def_v'].
+  case/IHn: starLv' => [|vv lvv def_v'].
     by rewrite -ltnS (leq_trans _ le_v_n) // def_v size_cat !ltnS leq_addl.
   by exists ((x :: u) :: vv); [exact/andP | rewrite def_v def_v'].
-case/andP=> Lyu Lvv [def_x def_v]; exists u. exists (flatten vv).
+case/andP=> lyu lvv [def_x def_v]; exists u. exists (flatten vv).
 subst. split => //; split => //. apply/IHn; last by exists vv.
 by rewrite -ltnS (leq_trans _ le_v_n) // size_cat !ltnS leq_addl.
 Qed.
 
-Lemma star_cat w1 w2 L : w1 \in L -> w2 \in (star L) -> w1 ++ w2 \in star L.
+Lemma star_cat w1 w2 l : w1 \in l -> w2 \in (star l) -> w1 ++ w2 \in star l.
 Proof.
   case: w1 => [|a w1] // H1 /starP [vv Ha Hf]. apply/starP.
   by exists ((a::w1) :: vv); rewrite ?Hf //= H1.
 Qed.
 
-Lemma starI (L : dlang char) vv :
-  (forall v, v \in vv -> v \in L) -> flatten vv \in star L.
+Lemma starI l vv :
+  (forall v, v \in vv -> v \in l) -> flatten vv \in star l.
 Proof.
   elim: vv => /= [//| v vv IHvv /forall_cons [H1 H2]].
   exact: star_cat _ (IHvv _).
 Qed.
 
-Lemma star_eq (l1 : dlang char) l2 : l1 =i l2 -> star l1 =i star l2.
+Lemma star_eq l1 l2 : l1 =i l2 -> star l1 =i star l2.
 Proof.
   move => H1 w. apply/starP/starP; move => [] vv H3 H4; exists vv => //;
   erewrite eq_all; try eexact H3; move => x /=; by rewrite ?H1 // -?H1.
 Qed.
 
-Lemma star_id (l : dlang char) : star (star l) =i star l.
+Lemma star_id l : star (star l) =i star l.
 Proof.
   move => u. rewrite -!topredE /=. apply/starP/starP => [[vs h1 h2]|].
     elim: vs u h1 h2 => [|hd tl Ih] u h1 h2; first by exists [::].
