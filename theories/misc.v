@@ -27,6 +27,9 @@ Proof. firstorder. Qed.
 Lemma eqb_iff (b1 b2 : bool) : (b1 <-> b2) <-> (b1 = b2).
 Proof. split => [[A B]|->//]. exact/idP/idP. Qed.
 
+Lemma dec_eq (P : Prop) (decP : decidable P) : decP <-> P.
+Proof. by case: decP. Qed.
+
 (* equivalence of type inhabitation *)
 Variant iffT T1 T2 := IffT of (T1 -> T2) & (T2 -> T1).
 Notation "T1 <-T-> T2" := (iffT T1 T2) (at level 30).
@@ -48,55 +51,36 @@ Qed.
 
 (** Sequences - seq.v *)
 
-Lemma nth_cons T (x0:T) x (s : seq T) n : nth x0 (x::s) n.+1 = nth x0 s n.
-Proof. done. Qed.
-
-Lemma take_take T (s : seq T) n m  : n < m -> take n (take m s) = take n s.
-Proof. elim: m n s => // n IHn [|m] [|a s] //= ?. by rewrite IHn. Qed.
-
-Lemma take_addn (T : Type) (s : seq T) n m : take (n + m) s = take n s ++ take m (drop n s).
-Proof.
-  elim: n m s => [|n IH] [|m] [|a s] //; first by rewrite take0 addn0 cats0.
-  by rewrite drop_cons addSn !take_cons /= IH.
-Qed.
+Arguments nth T x0 !s !n.
 
 Lemma index_take (T : eqType) (a : T) n (s : seq T) : 
   a \in take n s -> index a (take n s) = index a s.
 Proof. move => H. by rewrite -{2}[s](cat_take_drop n) index_cat H. Qed.
 
-Lemma flatten_rcons T ss (s:seq T) : flatten (rcons ss s) = flatten ss ++ s.
-Proof. by rewrite -cats1 flatten_cat /= cats0. Qed.
-
-Lemma rev_flatten T (ss : seq (seq T)) :
-  rev (flatten ss) = flatten (rev (map rev ss)).
+(* from mathcomp-1.13 *)
+Lemma forall_cons {T : eqType} {P : T -> Prop} {a s} :
+  {in a::s, forall x, P x} <-> P a /\ {in s, forall x, P x}.
 Proof.
-elim: ss => //= s ss IHss.
-by rewrite rev_cons flatten_rcons -IHss rev_cat.
+split=> [A|[A B]]; last by move => x /predU1P [-> //|]; apply: B.
+by split=> [|b Hb]; apply: A; rewrite !inE ?eqxx ?Hb ?orbT.
 Qed.
 
-Global Hint Resolve mem_head : core.
-
-Lemma all1s {T : eqType} {a : T} {s} {P : T -> Prop} :
-  (forall b, b \in a :: s -> P b) <-> P a /\ (forall b, b \in s -> P b).
+(* from mathcomp-1.13 *)
+Lemma exists_cons {T : eqType} {P : T -> Prop} {a s} :
+  (exists2 x, x \in a::s & P x) <-> P a \/ exists2 x, x \in s & P x.
 Proof.
-  split => [A|[A B] b /predU1P [->//|]]; last exact: B.
-  split => [|b B]; apply: A => //. by rewrite !inE B orbT.
-Qed.
-
-Lemma ex1s {T : eqType} {a : T} {s} {P : T -> Prop} :
-  (exists2 x : T, x \in a :: s & P x) <-> P a \/ (exists2 x : T, x \in s & P x).
-Proof.
-  split => [[x] /predU1P [->|]|]; firstorder. exists x => //. by rewrite inE H orbT. 
+split=> [[x /predU1P[->|x_s] Px]|]; [by left| by right; exists x|].
+by move=> [?|[x x_s ?]]; [exists a|exists x]; rewrite ?inE ?eqxx ?x_s ?orbT.
 Qed.
 
 Lemma orS (b1 b2 : bool) : b1 || b2 -> {b1} + {b2}.
 Proof. by case: b1 => /= [_|H]; [left|right]. Qed.
 
-Lemma all1sT {T : eqType} {a : T} {s} {P : T -> Type} :
+Lemma forall_consT {T : eqType} {a : T} {s} {P : T -> Type} :
   (forall b, b \in a :: s -> P b) <-T-> (P a * (forall b, b \in s -> P b)).
 Proof.
   split => [A|[A B] b]. 
-  - split; first by apply: A. move => b in_s. apply A. by rewrite inE in_s orbT.
+  - by split => [|b b_s]; apply: A; rewrite inE ?b_s ?orbT ?eqxx.
   - rewrite inE. case/orS => [/eqP -> //|]. exact: B. 
 Qed.
 
@@ -105,11 +89,11 @@ Lemma bigmax_seq_sup (T : eqType) (s:seq T) (P : pred T) F k m :
 Proof. move => A B C. by rewrite (big_rem k) //= B leq_max C. Qed.
 
 Lemma max_mem n0 (s : seq nat) : n0 \in s -> \max_(i <- s) i \in s.
-Proof.
+Proof. 
   case: s => // a s _. rewrite big_cons big_seq.
-  elim/big_ind : _ => // [n m|n A].
+  elim/big_ind : _ => [|n m|n A]; first exact: mem_head.
   - rewrite -{5}[a]maxnn maxnACA => ? ?. rewrite {1}/maxn. by case: ifP.
-  - rewrite /maxn. case: ifP => _ //. by rewrite inE A orbT.
+  - rewrite /maxn. case: ifP; by rewrite ?mem_head // inE A orbT.
 Qed.
 
 (* reasoning about singletons *)
@@ -117,7 +101,9 @@ Lemma seq1P (T : eqType) (x y : T) : reflect (x = y) (x \in [:: y]).
 Proof. rewrite inE. exact: eqP. Qed.
 
 Lemma sub1P (T : eqType) x (p : pred T) : reflect {subset [:: x] <= p} (x \in p).
-Proof. apply: (iffP idP) => [A y|]; by [rewrite inE => /eqP->|apply]. Qed.
+Proof. 
+apply: (iffP idP) => [A y|]; by [rewrite inE => /eqP->|apply; exact: mem_head]. 
+Qed.
 
 (** Finite Types - fintype.v *)
 
@@ -159,22 +145,12 @@ Definition ord1 {n} := (@Ordinal (n.+2) 1 (erefl _)).
 Lemma inord1 n : ord1 = inord 1 :> 'I_n.+2. 
 Proof. apply: ord_inj => /=. by rewrite inordK. Qed.
 
-Global Hint Resolve ltn_ord : core.
-
 (** Finite Sets - finset.v *)
 
 Lemma card_set (T:finType) : #|{set T}| = 2^#|T|.
 Proof. rewrite -!cardsT -powersetT. exact: card_powerset. Qed.
 
 (** Miscellaneous *)
-
-Lemma Sub_eq (T : Type) (P : pred T) (sT : subType P) (x y : T) (Px : P x) (Py : P y) : 
-  (@Sub _ _ sT) x Px = Sub y Py <-> x = y.
-Proof. 
-  split => [|e]. 
-  - by rewrite -{2}[x](SubK sT) -{2}[y](SubK sT) => ->. 
-  - move: Py. rewrite -e => Py. by rewrite (bool_irrelevance Py Px).
-Qed.
 
 Local Open Scope quotient_scope.
 Lemma epiK {T:choiceType} (e : equiv_rel T) x : e (repr (\pi_{eq_quot e} x)) x.
@@ -260,6 +236,3 @@ Definition cr {X : choiceType} {Y : eqType} {f : X -> Y} (Sf : surjective f) y :
 
 Lemma crK {X : choiceType} {Y : eqType} {f : X->Y} {Sf : surjective f} x: f (cr Sf x) = x.
 Proof. by rewrite (eqP (xchooseP (Sf x))). Qed.
-
-Lemma dec_eq (P : Prop) (decP : decidable P) : decP <-> P.
-Proof. by case: decP. Qed.

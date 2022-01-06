@@ -144,10 +144,10 @@ Lemma regular_bigU (T : eqType) (L : T -> lang char) (s : seq T) :
 Proof.
   elim: s => //. 
   - move => _. apply: regular_ext regular0 _. by split => // [[a]]. 
-  - move => a s IH /all1sT [H1 H2]. 
+  - move => a s IH /forall_consT [H1 H2]. 
     pose L' := (fun x => L a x \/ (fun x : word => exists2 a : T, a \in s & L a x) x). 
     apply: (regular_ext (L2 := L')); first by apply: regularU => //; exact: IH. 
-    move => x. rewrite /L'. exact: ex1s. 
+    move => x. rewrite /L'. exact: exists_cons. 
 Qed.
 
 
@@ -488,10 +488,10 @@ Section Pumping.
     exists (take i y). exists (sub i j y). exists (drop j y). split => [||k].
     - apply: contraL ij. 
       by rewrite /nilp size_take size_drop ltn_sub2r ?ltn_ord // subn_eq0 leqNgt.
-    - by rewrite catA -take_addn subnKC 1?ltnW // cat_take_drop.
+    - by rewrite catA -takeD subnKC 1?ltnW // cat_take_drop.
     - rewrite inE /dfa_accept !delta_cat delta_rep.
       by rewrite fij -!delta_cat !catA -[(x ++ _) ++ _]catA cat_take_drop -!catA.
-      rewrite -delta_cat -take_addn subnKC //. exact: ltnW.
+      rewrite -delta_cat -takeD subnKC //. exact: ltnW.
   Qed.
 
   Lemma pumping (L : word char -> Prop) :

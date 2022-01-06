@@ -227,7 +227,7 @@ Lemma nth_glue0 b n (v : seq (vec n)) k :
   nth false (nth [tuple of nseq n.+1 false] (glue b v) k) 0 =
   nth false b k.
 Proof.
-  elim: k v b => [|k IH] [|v vs] [|b bs] //; rewrite [glue _ _]/= ?nth_nil ?nth_cons ?IH //.
+  elim: k v b => [|k IH] [|v vs] [|b bs] //=. 
   case: (ltnP k (size vs)) => A.
   - by rewrite (nth_map [tuple of nseq n false]) //.
   - by rewrite [_ _ _ k]nth_default // size_map.
@@ -245,13 +245,11 @@ Lemma nth_glueS b n (v : seq (vec n)) i k :
   nth false (nth [tuple of nseq n.+1 false] (glue b v) k) i.+1 =
   nth false (nth [tuple of nseq n false] v k) i.
 Proof.
-  elim: k v b => [|k IH] [|v vs] [|b bs]  //.
-  - by rewrite [glue _ _]/= IH !nth_nil nth_nseq if_same.
-  - rewrite [glue _ _]/= !nth_cons.
-    case: (ltnP k (size vs)) => A.
+  elim: k v b => [|k IH] [|v vs] [|b bs] //=.
+  - by rewrite IH !nth_nil nth_nseq if_same.
+  - case: (ltnP k (size vs)) => A.
     + by rewrite (nth_map [tuple of nseq n false]).
     + by rewrite ![_ _ _ k]nth_default ?size_map.
-  - by rewrite [glue _ _]/= !nth_cons.
 Qed.
   
 Lemma I_of_glueS i b n (v : seq (vec n)) k : 
@@ -364,7 +362,7 @@ Proof.
       * move => A _ B u. case/predU1P => [->|]; by [rewrite (negbTE A)| apply: B].
       * move => A _ [v1] [v2] [C D E]. 
         exists (a :: v1); exists v2; split => //; first by rewrite C.
-        apply/all1s. split => //. by rewrite (negbTE A).
+        apply/forall_cons. split => //. by rewrite (negbTE A).
     + move => [|] [|] // v. by exists nil; exists v.
   - move => [v1] [v2] [->] A B. exists false; first by rewrite inE. 
     elim: v1 A => /= [_|a v1 IH A].
@@ -589,7 +587,7 @@ Proof.
     + rewrite sat_emptyN. exists n. by rewrite inE.
     + move => k /=. by rewrite inE => /eqP->.
     + move/(_ _ H). by rewrite inE => /eqP->.
-  - case => n A. split; first by exists n;rewrite A.
+  - case => n A. split; first by exists n;rewrite A mem_head.
     apply/sat_all => N. rewrite 2!sat_imp sat_emptyN => /= [[k Hk] D] m E. 
     move: (D _ Hk). rewrite A inE => /eqP ?; subst. 
     rewrite A inE in E. by rewrite (eqP E).
@@ -621,7 +619,7 @@ Lemma sat_orE (T:eqType) (s : seq T) F I :
   I |= \or_(i <- s) F i -> exists2 x, x \in s & I |= F x.
 Proof.
   elim: s => // [|a s IH]; first by rewrite big_nil.
-  rewrite big_cons sat_or. case => [A|/IH [x A B]]; first by exists a.
+  rewrite big_cons sat_or. case => [A|/IH [x A B]]; first by exists a => //; exact: mem_head.
   exists x => //. by rewrite inE A orbT.
 Qed.
 
@@ -630,7 +628,7 @@ Lemma sat_bigand (T:eqType) (s : seq T) F I :
 Proof.
   elim: s => [|a s IH]; first by rewrite big_nil; split => // _; apply.
   rewrite big_cons sat_and IH. split => [[A B]x/predU1P[->//|]|A]. exact: B.
-  split => [|x B]; apply: A => //. by rewrite inE B orbT.
+  split => [|x B]; apply: A; by rewrite ?mem_head // inE B orbT.
 Qed.
 
 (** First-oder Quantification *)
@@ -680,12 +678,12 @@ Lemma sat_succ I X x Y y : I X =i [:: x] -> I Y =i [:: y] ->
 Proof.
   move => A B. rewrite sat_and sat_not sat_ex1 nat_succ. 
   split => [[C D]|[C D]]. 
-  - split; first apply C; rewrite ?A ?B //.
+  - split; first apply C; rewrite ?A ?B ?mem_head //.
     apply: impliesPn D; constructor => [[k [k1 k2]]]. exists k.
     rewrite sat_and /=; split => ? ?; by rewrite ?A ?B => /seq1P-> /seq1P->.
   - split. move => ? ? ; by rewrite ?A ?B => /seq1P-> /seq1P->.
     apply: impliesPn D; constructor => [[k] /sat_and [k1 k2]]. exists k.
-    split; [apply k1|apply k2]; by rewrite /= ?A ?B. 
+    split; [apply k1|apply k2]; by rewrite /= ?A ?B ?mem_head. 
 Qed.
 
 Definition zero X := single X :/\: Not (Ex1 (succ 0 X.+1)).
@@ -785,7 +783,7 @@ Section NFAtoMSO.
       rewrite sat_all1 => k.
       rewrite sat_and; split.
       + rewrite /= => H. 
-        move: H => /(_ k (size w)). case/(_ _ _)/Wrap => // H.
+        move: H => /(_ k (size w) (mem_head _ _) (mem_head _ _)) => H.
         pose a0 := tnth (in_tuple w) (Ordinal H).
         apply (sat_orI (x := nth a0 w k)); first by rewrite mem_enum.
         rewrite /= => ? /seq1P->. by rewrite I_of_vecP ?(set_nth_default a0).
@@ -850,12 +848,12 @@ Section NFAtoMSO.
         * by rewrite cat_prefix // -tnth_nth in E.
     - move => H. apply/sat_all1 => k'. apply/sat_all1 => k. rewrite !sat_imp => B C.
       move/sat_succ : B => /(_ k' k). case/(_ _ _)/Wrap => // ?;subst.
-      case: (H _ (C k m _ _)) => //=; first by rewrite cat_size //=.
+      case: (H _ (C k m _ _)); rewrite /= ?cat_size /= ?mem_head //.
       move => p [a] [q] [paq [D [E F]]]. 
       apply: (sat_orI (x := (p,a,q))); first by rewrite mem_enum. 
       rewrite !sat_and; repeat split. 
       + apply/sub1P. rewrite /= cat_beyond ?leq_addl //.
-        rewrite -addnBA // subnn addn0. done.
+        by rewrite -addnBA // subnn addn0.
       + apply/sub1P. by rewrite /= cat_prefix // -tnth_nth.
       + apply/sub1P. by rewrite /= cat_prefix // -tnth_nth.
   Qed.
