@@ -91,7 +91,7 @@ Definition plus l1 l2 : dlang char := [pred w | (w \in l1) || (w \in l2)].
 Definition residual x l : dlang char := [pred w | x :: w \in l].
 
 (** For the concatenation of two decidable languages, we use finite
-types. Note that we need to use [L1] and [L2] applicatively in order
+types. Note that we need to use [l1] and [l2] applicatively in order
 for the termination check for [star] to succeed. *)
 
 Definition conc l1 l2 : dlang char :=
