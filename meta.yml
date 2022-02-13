@@ -59,9 +59,6 @@ dependencies:
     [MathComp](https://math-comp.github.io) 1.11.0 or later (`ssreflect` suffices)
 
 tested_coq_nix_versions:
-- coq_version: 'master'
-  extra_dev_dependencies:
-  - nix_name: mathcomp
 - coq_version: '8.15'
 - coq_version: '8.14'
 - coq_version: '8.13'
