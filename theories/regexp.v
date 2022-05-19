@@ -1,5 +1,6 @@
 (* Authors: Christian Doczkal and Jan-Oliver Kaiser *)
 (* Distributed under the terms of CeCILL-B. *)
+From HB Require Import structures.
 From mathcomp Require Import all_ssreflect.
 From RegLang Require Import setoid_leq misc languages dfa nfa.
 
@@ -29,8 +30,7 @@ Inductive regexp :=
 Lemma eq_regexp_dec (e1 e2 : regexp) : {e1 = e2} + {e1 <> e2}.
 Proof. decide equality; apply: eq_comparable. Qed.
 
-Definition regexp_eqMixin := EqMixin (compareP eq_regexp_dec).
-Canonical Structure form_eqType := EqType _ regexp_eqMixin.
+HB.instance Definition _ := hasDecEq.Build regexp (compareP eq_regexp_dec).
 End RegExp.
 
 Arguments void : clear implicits.
@@ -206,7 +206,7 @@ Section KleeneAlgorithm.
       + apply/LP. split => // j J1 J2.
         have lt_i_j : j < i. apply: leq_trans J2 _. by rewrite size_take lt_w.
         have/(H2 _ J1) : j < size w. exact: ltn_trans lt_w.
-        case/setU1P => [H|]; last by rewrite take_take 1?ltnW.
+        case/setU1P => [H|]; last by rewrite take_takel 1?ltnW.
         move: (min_i _ lt_i_j). by rewrite negb_and J1 H eqxx.
       + apply/LP. rewrite -H1 -{2}[w](cat_take_drop i) delta_cat delta_z.
         split => // j J1 J2. rewrite -{1}delta_z -delta_cat -takeD.

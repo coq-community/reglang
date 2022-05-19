@@ -1,5 +1,6 @@
 (* Authors: Christian Doczkal and Jan-Oliver Kaiser *)
 (* Distributed under the terms of CeCILL-B. *)
+From HB Require Import structures.
 From mathcomp Require Import all_ssreflect.
 From RegLang Require Import misc.
 
@@ -31,7 +32,7 @@ Section Basics.
   Definition lang := word -> Prop.
   Definition dlang := pred word.
 
-  Canonical Structure word_eqType := [eqType of word].
+  HB.instance Definition _ := Equality.on word.
   Identity Coercion pred_of_dlang : dlang >-> pred.
 End Basics.
 

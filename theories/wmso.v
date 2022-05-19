@@ -116,7 +116,7 @@ Section Language.
 
 End Language.
 
-Notation vec n := [finType of n.-tuple bool].
+Notation vec n := (n.-tuple bool : finType).
 
 (** ** Translation from MSO Formulas to NFAs *)
 
@@ -130,7 +130,7 @@ Definition nfa_for_imp n (A B : nfa (vec n)) :=
 (** MSO Primitives *)
 
 Definition nfa_for_incl n X Y :=
-  {| nfa_state := [finType of unit];
+  {| nfa_state := unit;
      nfa_s := setT;
      nfa_fin := setT;
      nfa_trans := fun p (v : vec n) q => nth false v X ==> nth false v Y |}.
