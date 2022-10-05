@@ -6,7 +6,7 @@ community: true
 action: true
 nix: true
 coqdoc: true
-dune: false
+dune: true
 doi: 10.1007/s10817-018-9460-x
 
 synopsis: >-
@@ -49,7 +49,7 @@ license:
 
 supported_coq_versions:
   text: 8.10 or later (use releases for other Coq versions)
-  opam: '{(>= "8.10" & < "8.16~") | (= "dev")}'
+  opam: '{(>= "8.10" & < "8.17~") | (= "dev")}'
 
 dependencies:
 - opam:
@@ -59,13 +59,15 @@ dependencies:
     [MathComp](https://math-comp.github.io) 1.11.0 or later (`ssreflect` suffices)
 
 tested_coq_nix_versions:
+- coq_version: '8.16'
 - coq_version: '8.15'
 - coq_version: '8.14'
 - coq_version: '8.13'
 
 tested_coq_opam_versions:
-- version: 'coq-dev'
-  repo: 'mathcomp/mathcomp-dev'
+- version: 'dev'
+- version: '1.15.0-coq-8.16'
+  repo: 'mathcomp/mathcomp'
 - version: '1.15.0-coq-8.15'
   repo: 'mathcomp/mathcomp'
 - version: '1.14.0-coq-8.15'
@@ -87,7 +89,7 @@ tested_coq_opam_versions:
 - version: '1.11.0-coq-8.12'
   repo: 'mathcomp/mathcomp'
 
-ci_cron_schedule: '20 4 * * *'
+ci_cron_schedule: '10 1 * * 0'
 
 namespace: RegLang
 

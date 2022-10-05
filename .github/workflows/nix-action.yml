@@ -4,7 +4,7 @@ name: Nix CI
 
 on:
   schedule:
-    - cron: '20 4 * * *'
+    - cron: '10 1 * * 0'
   push:
     branches:
       - master
@@ -19,6 +19,7 @@ jobs:
     strategy:
       matrix:
         overrides:
+          - 'coq = "8.16"'
           - 'coq = "8.15"'
           - 'coq = "8.14"'
           - 'coq = "8.13"'
