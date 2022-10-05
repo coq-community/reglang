@@ -4,7 +4,7 @@ name: Docker CI
 
 on:
   schedule:
-    - cron: '20 4 * * *'
+    - cron: '10 1 * * 0'
   push:
     branches:
       - master
@@ -19,7 +19,8 @@ jobs:
     strategy:
       matrix:
         image:
-          - 'mathcomp/mathcomp-dev:coq-dev'
+          - 'coqorg/coq:dev'
+          - 'mathcomp/mathcomp:1.15.0-coq-8.16'
           - 'mathcomp/mathcomp:1.15.0-coq-8.15'
           - 'mathcomp/mathcomp:1.14.0-coq-8.15'
           - 'mathcomp/mathcomp:1.14.0-coq-8.14'
