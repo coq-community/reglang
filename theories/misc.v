@@ -57,6 +57,14 @@ Lemma index_take (T : eqType) (a : T) n (s : seq T) :
   a \in take n s -> index a (take n s) = index a s.
 Proof. move => H. by rewrite -{2}[s](cat_take_drop n) index_cat H. Qed.
 
+(* from mathcomp-1.15 *)
+Lemma take_take (T: eqType) i j :
+  i <= j -> forall (s : seq T), take i (take j s) = take i s.
+Proof.
+move=> ij s; elim: s i j ij => [// | a s IHs] [|i] [|j] //=.
+by rewrite ltnS => /IHs ->.
+Qed.
+
 (* from mathcomp-1.13 *)
 Lemma forall_cons {T : eqType} {P : T -> Prop} {a s} :
   {in a::s, forall x, P x} <-> P a /\ {in s, forall x, P x}.
