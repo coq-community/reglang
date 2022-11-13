@@ -65,7 +65,8 @@ tested_coq_nix_versions:
 - coq_version: '8.13'
 
 tested_coq_opam_versions:
-- version: 'dev'
+- version: 'coq-dev'
+  repo: 'mathcomp/mathcomp-dev'
 - version: '1.15.0-coq-8.16'
   repo: 'mathcomp/mathcomp'
 - version: '1.15.0-coq-8.15'
