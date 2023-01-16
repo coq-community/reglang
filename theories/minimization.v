@@ -83,27 +83,27 @@ Qed.
 Section Prune.
   Variable A : dfa.
 
-  Definition reachable  (q:A) := exseq_dec (@delta_rc _ A) (pred1 q).
+  Definition reachable (q:A) := exseq_dec (@delta_rc _ A) (pred1 q).
   Definition connectedb := [forall x: A, reachable x].
 
   Lemma connectedP : reflect (connected A) (connectedb).
-  Proof. 
-    apply: (iffP forallP) => H y; first by move/dec_eq: (H y). 
+  Proof.
+    apply: (iffP forallP) => H y; first by move/dec_eq: (H y).
     apply/dec_eq. case (H y) => x Hx. by exists x.
   Qed.
 
   Definition reachable_type := { x:A | reachable x }.
 
   Lemma reachable_trans_proof (x : reachable_type) a : reachable (dfa_trans (val x) a).
-  Proof. 
-    apply/dec_eq. case/dec_eq : (svalP x) =>  /= y /eqP <-. 
+  Proof.
+    apply/dec_eq. case/dec_eq : (svalP x) =>  /= y /eqP <-.
     exists (y++[::a]). by rewrite delta_cat.
   Qed.
-    
+
   Definition reachable_trans (x : reachable_type) a : reachable_type :=
     Sub (dfa_trans (val x) a) (reachable_trans_proof x a).
 
-  Lemma reachabe_s_proof : reachable (dfa_s A). 
+  Lemma reachabe_s_proof : reachable (dfa_s A).
   Proof. apply/dec_eq. exists nil. exact: eqxx. Qed.
 
   Definition reachable_s : reachable_type := Sub (dfa_s A) reachabe_s_proof.
@@ -122,7 +122,7 @@ Section Prune.
   Qed.
 
   Lemma dfa_prune_connected : connected dfa_prune.
-  Proof. 
+  Proof.
     move => q. case/dec_eq: (svalP q) => /= x Hx. exists x.
     elim/last_ind : x q Hx => //= x a IHx q.
     rewrite -!cats1 /delta_s !delta_cat -!/(delta_s _ x) => H.
@@ -145,7 +145,7 @@ Section Prune.
 
 End Prune.
 
-(** ** Quoitient modulo collapsing relation
+(** ** Quotient modulo collapsing relation
 
 For the minimization of connected automata we construct the quotient of the
 input automaton with respect to the collapsing relation. To form the quotient
@@ -213,7 +213,7 @@ Section Collapse.
   Lemma collapse_fin (x : A) :
     (\pi x \in dfa_fin collapse) = (x \in dfa_fin A).
   Proof.
-    rewrite /collapse /= inE. 
+    rewrite /collapse /= inE.
     by move/collP: (epiK collb_equiv x) => /(_ [::]).
   Qed.
 
@@ -221,7 +221,7 @@ End Collapse.
 
 (** ** Correctness of Minimization *)
 
-(** Minimization yields a fully collapsed DFA accpeting the same language *)
+(** Minimization yields a fully collapsed DFA accepting the same language *)
 
 Lemma collapse_collapsed (A  : dfa) : collapsed (collapse A).
 Proof.
@@ -245,11 +245,11 @@ Proof.
   by rewrite /delta_s collapse_delta -/(delta_s A w) Hw reprK.
 Qed.
 
-(** Combine prunine and collapsing into minimization function *)
+(** Combine pruning and collapsing into minimization function *)
 
 Definition minimize := collapse \o dfa_prune.
 
-Lemma minimize_size (A : dfa) : #|minimize A| <= #|A|. 
+Lemma minimize_size (A : dfa) : #|minimize A| <= #|A|.
 Proof. exact: leq_trans (collapse_size _) (dfa_prune_size _). Qed.
 
 Lemma minimize_collapsed (A : dfa) : collapsed (minimize A).
@@ -269,7 +269,7 @@ Proof. apply: abstract_minimization => B. auto using minimize_correct. (* and hi
 (** ** Uniqueness of minimal automaton *)
 
 Lemma minimal_connected A : minimal A -> connected A.
-Proof. 
+Proof.
   move => MA. apply: prune_eq_connected.
   apply/eqP. rewrite eqn_leq dfa_prune_size andbT.
   apply: MA => x. by rewrite dfa_prune_correct.

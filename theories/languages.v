@@ -9,16 +9,16 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-(** * Languages in Type Theory 
+(** * Languages in Type Theory
 
 This file mainly defines aliases for (decidable) languages. It also
 shows that decidable languages are closed under the primitive regular
-operations (e.g., concatenation and interation). This will allow us to
+operations (e.g., concatenation and iteration). This will allow us to
 assign decidable languages to regular expressions. We allow for
 infinite (but discrete) alphabets. *)
- 
+
 (** The definitions of [conc] and [star] as well as the proofs of
-[starP] and [concP] are taken from from regexp.v in:
+[starP] and [concP] are taken from regexp.v in:
 
 Thierry Coquand, Vincent Siles, A Decision Procedure for Regular
 Expression Equivalence in Type Theory (DOI:
@@ -33,7 +33,7 @@ Section Basics.
 
   Canonical Structure word_eqType := [eqType of word].
   Identity Coercion pred_of_dlang : dlang >-> pred.
-End Basics. 
+End Basics.
 
 Section HomDef.
   Variables (char char' : finType) (h : seq char -> seq char').
@@ -97,8 +97,8 @@ for the termination check for [star] to succeed. *)
 Definition conc l1 l2 : dlang char :=
   fun v => [exists i : 'I_(size v).+1, l1 (take i v) && l2 (drop i v)].
 
-(** The iteration (Kleene star) operator is defined using resisdual
-languages. Termination of star relies in the fact that conc applies
+(** The iteration (Kleene star) operator is defined using residual
+languages. Termination of star relies on the fact that conc applies
 its second argument only to [drop i v] which is "structurally less
 than or equal" to [v] *)
 
@@ -127,7 +127,7 @@ Proof. by []. Qed.
 Lemma concP {l1 l2 w} :
   reflect (exists w1 w2, w = w1 ++ w2 /\ w1 \in l1 /\ w2 \in l2) (w \in conc l1 l2).
 Proof. apply: (iffP existsP) => [[n] /andP [H1 H2] | [w1] [w2] [e [H1 H2]]].
-  - exists (take n w). exists (drop n w). by rewrite cat_take_drop -topredE.
+  - exists (take n w), (drop n w). by rewrite cat_take_drop.
   - have lt_w1: size w1 < (size w).+1 by rewrite e size_cat ltnS leq_addr.
     exists (Ordinal lt_w1); subst.
     rewrite take_size_cat // drop_size_cat //. exact/andP.
@@ -139,7 +139,7 @@ Proof. move => H1 H2. apply/concP. exists w1. by exists w2. Qed.
 Lemma conc_eq l1 l2 l3 l4 :
   l1 =i l2 -> l3 =i l4 -> conc l1 l3 =i conc l2 l4.
 Proof.
-  move => H1 H2 w. apply: eq_existsb => n. 
+  move => H1 H2 w. apply: eq_existsb => n.
   by rewrite (_ : l1 =1 l2) // (_ : l3 =1 l4).
 Qed.
 
@@ -153,8 +153,8 @@ apply: (iffP concP) => [[u] [v'] [def_v [Lxu starLv']] | [[|[|y u] vv] //=]].
   case/IHn: starLv' => [|vv lvv def_v'].
     by rewrite -ltnS (leq_trans _ le_v_n) // def_v size_cat !ltnS leq_addl.
   by exists ((x :: u) :: vv); [exact/andP | rewrite def_v def_v'].
-case/andP=> lyu lvv [def_x def_v]; exists u. exists (flatten vv).
-subst. split => //; split => //. apply/IHn; last by exists vv.
+case/andP=> lyu lvv [def_x def_v]; exists u, (flatten vv).
+subst; do 2![split=>//]. apply/IHn; last by exists vv.
 by rewrite -ltnS (leq_trans _ le_v_n) // size_cat !ltnS leq_addl.
 Qed.
 
@@ -179,7 +179,7 @@ Qed.
 
 Lemma star_id l : star (star l) =i star l.
 Proof.
-  move => u. rewrite -!topredE /=. apply/starP/starP => [[vs h1 h2]|].
+  move => u. apply/starP/starP => [[vs h1 h2]|].
     elim: vs u h1 h2 => [|hd tl Ih] u h1 h2; first by exists [::].
     move: h1 => /= h1. case/andP: h1; case/andP => hhd1 hhd2 htl.
     case: (Ih (flatten tl)) => //= [xs x1 x2].

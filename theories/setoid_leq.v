@@ -8,14 +8,14 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-(** ** Setoid Rewriting with Ssreflec's boolean inequalities.                      *)
+(** ** Setoid Rewriting with Ssreflect's boolean inequalities.                      *)
 (** Solution suggested by Georges Gonthier (ssreflect mailinglist @ 18.12.2016) *)
 
 (** Preorder and Instances for bool *)
 
 Inductive leb a b := Leb of (a ==> b).
 
-Lemma leb_eq a b : leb a b <-> (a -> b). 
+Lemma leb_eq a b : leb a b <-> (a -> b).
 Proof. move: a b => [|] [|]; firstorder. Qed.
 
 Instance: PreOrder leb.
@@ -32,13 +32,13 @@ Proof. move => a b []. exact: implyP. Qed.
 
 (** Instances for le  *)
 
-Instance: Proper (le --> le ++> leb) leq. 
+Instance: Proper (le --> le ++> leb) leq.
 Proof. move => n m /leP ? n' m' /leP ?. apply/leb_eq => ?. eauto using leq_trans. Qed.
 
-Instance: Proper (le ==> le ==> le) addn. 
+Instance: Proper (le ==> le ==> le) addn.
 Proof. move => n m /leP ? n' m' /leP ?. apply/leP. exact: leq_add. Qed.
 
-Instance: Proper (le ==> le ==> le) muln. 
+Instance: Proper (le ==> le ==> le) muln.
 Proof. move => n m /leP ? n' m' /leP ?. apply/leP. exact: leq_mul. Qed.
 
 Instance: Proper (le ++> le --> le) subn.

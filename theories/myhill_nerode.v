@@ -14,7 +14,7 @@ Unset Printing Implicit Defensive.
 (** For us, classifiers (right-congruent functions from words into
 some finite type) serve as a constructive approximation of
 Myhill-Nerode partition. We show that classifiers for given language
-can be turned into DFAs and vice versa. Moroever, we show that there
+can be turned into DFAs and vice versa. Moreover, we show that there
 exist most general classifiers corresponding to minimal automata. *)
 
 Section Clasifiers.
@@ -87,9 +87,9 @@ Section ClassifierToDFA.
     move => x y a [] /cf_congruent.
     move/(_ a) => /eqP H. exact/eqP.
   Qed.
-  
+
   Definition classifier_to_dfa :=
-    {| dfa_s := imfun_of [::]; 
+    {| dfa_s := imfun_of [::];
        dfa_fin := [set x | cr (imfun_of_surj) x \in L];
        dfa_trans x a := imfun_of (cr (imfun_of_surj) x ++ [::a]) |}.
 
@@ -109,7 +109,7 @@ End ClassifierToDFA.
 
 Lemma classifier_to_dfa_connected L (M : classifier_for L) :
   connected (classifier_to_dfa M).
-Proof. 
+Proof.
   move => q. exists (cr (@imfun_of_surj _ M) q).
   rewrite -{2}[q](crK (Sf:=(@imfun_of_surj _ M))).
   by rewrite -/(delta_s _ _) classifier_to_dfa_delta.
@@ -119,7 +119,7 @@ Qed.
 
 Just like there exists a coarsest Myhill-Nerode relation, there also
 exist most general classifiers. For these classifiers, the classes
-correspond exactly to thos of the coarsest Myhill-Nerode relation. *)
+correspond exactly to those of the coarsest Myhill-Nerode relation. *)
 
 Definition nerode (X : eqType) (L : dlang char) (E : word -> X) :=
   forall u v, E u = E v <->  forall w, (u++w \in L) = (v++w \in L).
@@ -159,7 +159,7 @@ Proof. exact: classifier_to_dfa_connected. Qed.
 Lemma mg_minimal (L : dlang char) (M : mgClassifier L) : minimal (mg_to_dfa M).
 Proof.
   apply/minimalP. split; first exact: mg_to_connected.
-  move => p q. split => [coll_pq|->//]. 
+  move => p q. split => [coll_pq|->//].
   rewrite -[p](crK (Sf := (@imfun_of_surj _ M))).
   rewrite -[q](crK (Sf := (@imfun_of_surj _ M))).
   apply: val_inj. apply/nerodeP => w.
@@ -192,7 +192,7 @@ Section mDFAtoMG.
   Definition minimal_classifier := {| classifier_fun := delta_s A |}.
 
   Definition dfa_to_mg := {|
-    mg_classifier := minimal_classifier; 
+    mg_classifier := minimal_classifier;
     nerodeP := minimal_nerode |}.
 End mDFAtoMG.
 

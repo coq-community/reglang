@@ -38,7 +38,7 @@ Implicit Types (s t : form) (X Y : nat) (I : valuation) (N : seq nat).
 Definition cons N I : valuation := fun k => if k is k'.+1 then I k' else N.
 
 Fixpoint satisfies (I : valuation) (s : form) :=
-  match s with 
+  match s with
   | Incl X Y => {subset I X <= I Y}
   | Less X Y => forall x y, x \in I X -> y \in I Y -> x < y
   | FF => False
@@ -47,7 +47,7 @@ Fixpoint satisfies (I : valuation) (s : form) :=
   end.
 
 Fixpoint bound (s : form) : nat :=
-  match s with 
+  match s with
   | Incl X Y => maxn X.+1 Y.+1
   | Less X Y => maxn X.+1 Y.+1
   | FF => 0
@@ -73,15 +73,15 @@ Proof.
   - have bound_s N : agree (bound s) (cons N I) (cons N I').
     { move => X. case: X C => //= Y A B. apply: A. rewrite -ltnS. by case: (bound s) B. }
     split.
-    + move => [N] sat_s. exists N. rewrite -IHs. eassumption. exact: bound_s.
-    + move => [N] sat_s. exists N. rewrite IHs. eassumption. exact: bound_s.
+    + move => [N] sat_s. exists N. rewrite -IHs; [exact: sat_s | exact: bound_s].
+    + move => [N] sat_s. exists N. rewrite IHs; [exact: sat_s | exact: bound_s].
 Qed.
 
 Lemma weak_coincidence I I' s : (forall X, I X =i I' X) -> satisfies I s -> satisfies I' s.
 Proof. move => H. by rewrite (@coincidence I I' s). Qed.
 
 (** ** Language-Theoretic Interpretation *)
-  
+
 Section Language.
   Variables (char : finType).
 
@@ -91,15 +91,15 @@ Section Language.
   Definition vec_of (w : word char) : seq (#|char|.-tuple bool) :=
     map (fun a => [tuple X == enum_rank a | X < #|char|]) w.
 
-  Lemma I_of_vev_max k (a:char) w: 
+  Lemma I_of_vev_max k (a:char) w:
     k \in I_of (vec_of w) (enum_rank a) -> k < size w.
   Proof. by rewrite /vec_of /I_of mem_filter mem_iota add0n size_map => /andP[_]. Qed.
-    
-  Lemma I_of_vecP k a w: k < size w -> 
+
+  Lemma I_of_vecP k a w: k < size w ->
     (k \in I_of (vec_of w) (enum_rank a) = (nth a w k == a)).
   Proof.
-    move => H. rewrite /vec_of /I_of mem_filter mem_iota add0n size_map /=. 
-    rewrite (nth_map a) // H andbT. 
+    move => H. rewrite /vec_of /I_of mem_filter mem_iota add0n size_map /=.
+    rewrite (nth_map a) // H andbT.
     rewrite (nth_map (enum_rank a)) ?size_tuple ?ltn_ord //.
     by rewrite nth_ord_enum (inj_eq enum_rank_inj) eq_sym.
   Qed.
@@ -113,7 +113,7 @@ Section Language.
 
   Lemma mso_preim s : mso_lang s =p preimage vec_of (@vec_lang #|char| s).
   Proof. done. Qed.
-  
+
 End Language.
 
 Notation vec n := [finType of n.-tuple bool].
@@ -122,23 +122,23 @@ Notation vec n := [finType of n.-tuple bool].
 
 (** propositional connectives *)
 
-Definition nfa_for_bot n := dfa_to_nfa (dfa_void (vec n)). 
+Definition nfa_for_bot n := dfa_to_nfa (dfa_void (vec n)).
 
-Definition nfa_for_imp n (A B : nfa (vec n)) := 
+Definition nfa_for_imp n (A B : nfa (vec n)) :=
   dfa_to_nfa (dfa_op implb (nfa_to_dfa A) (nfa_to_dfa B)).
 
 (** MSO Primitives *)
 
 Definition nfa_for_incl n X Y :=
-  {| nfa_state := [finType of unit]; 
+  {| nfa_state := [finType of unit];
      nfa_s := setT;
      nfa_fin := setT;
      nfa_trans := fun p (v : vec n) q => nth false v X ==> nth false v Y |}.
 
-Definition enfa_for_ltn n X Y : enfa (vec n) := 
+Definition enfa_for_ltn n X Y : enfa (vec n) :=
   {| enfa_s := [set false];
      enfa_f := setT;
-     enfa_trans := fun (c : option (vec n)) p q => 
+     enfa_trans := fun (c : option (vec n)) p q =>
                      match p,c,q with
                      | false, Some a, false => ~~ nth false a Y
                      | true, Some a, true => ~~ nth false a X
@@ -158,15 +158,15 @@ Definition trans_b0 n (A : nfa (vec n.+1)) (p q : A) :=
   [exists b, nfa_trans p [tuple of b :: nseq n false] q].
 Arguments trans_b0 [n] A p q.
 
-Definition nfa_for_ex n (A : nfa (vec n.+1)) : nfa (vec n) := 
-  {| nfa_s := nfa_s A; 
+Definition nfa_for_ex n (A : nfa (vec n.+1)) : nfa (vec n) :=
+  {| nfa_s := nfa_s A;
      nfa_fin := [set p | [exists (q | q \in nfa_fin A), connect (trans_b0 A) p q]];
      nfa_trans := fun p (v : vec n) q => [exists b, nfa_trans p [tuple of b::v] q] |}.
 
 (** Translation to NFAs *)
 
 Fixpoint nfa_of_form  n s {struct s} : nfa (vec n) :=
-  match s with 
+  match s with
   | Incl X Y => nfa_for_incl n X Y
   | Less X Y => nfa_for_ltn n X Y
   | FF => nfa_for_bot n
@@ -211,10 +211,10 @@ Proof.
   elim: w q {H} => [|v vs IH] q /=.
   - rewrite inE => /exists_inP [f f1 /connectP[p]].
     elim: p q => [x _ |p ps IHp q /= /andP [pth1 pth2]] /= E; first by exists nil; subst.
-    case: (IHp _ pth2 E) => bs Hbs. case/existsP : pth1 => b pth1. exists (b::bs). 
+    case: (IHp _ pth2 E) => bs Hbs. case/existsP : pth1 => b pth1. exists (b::bs).
     by apply/exists_inP; exists p.
-  - case/exists_inP => p /= /existsP [b p1] p2. case: (IH _ p2) => bs Hbs. exists (b::bs). 
-    by apply/exists_inP; exists p. 
+  - case/exists_inP => p /= /existsP [b p1] p2. case: (IH _ p2) => bs Hbs. exists (b::bs).
+    by apply/exists_inP; exists p.
 Qed.
 
 Lemma size_glue b n (v : seq (vec n)) : size (glue b v) = maxn (size b) (size v).
@@ -227,17 +227,17 @@ Lemma nth_glue0 b n (v : seq (vec n)) k :
   nth false (nth [tuple of nseq n.+1 false] (glue b v) k) 0 =
   nth false b k.
 Proof.
-  elim: k v b => [|k IH] [|v vs] [|b bs] //=. 
+  elim: k v b => [|k IH] [|v vs] [|b bs] //=.
   case: (ltnP k (size vs)) => A.
   - by rewrite (nth_map [tuple of nseq n false]) //.
   - by rewrite [_ _ _ k]nth_default // size_map.
 Qed.
 
-Lemma I_of_glue0 i b n (v : seq (vec n)) : 
+Lemma I_of_glue0 i b n (v : seq (vec n)) :
   i \in I_of (glue b v) 0 = nth false b i.
 Proof.
   rewrite mem_filter mem_iota add0n leq0n andTb.
-  rewrite nth_glue0 size_glue leq_max andbC. 
+  rewrite nth_glue0 size_glue leq_max andbC.
   case: (ltnP i (size b)) => //= A. by rewrite nth_default ?andbF.
 Qed.
 
@@ -251,26 +251,26 @@ Proof.
     + by rewrite (nth_map [tuple of nseq n false]).
     + by rewrite ![_ _ _ k]nth_default ?size_map.
 Qed.
-  
-Lemma I_of_glueS i b n (v : seq (vec n)) k : 
+
+Lemma I_of_glueS i b n (v : seq (vec n)) k :
   i \in I_of (glue b v) k.+1 = nth false (nth [tuple of nseq n false] v i) k.
 Proof.
   rewrite mem_filter mem_iota add0n leq0n andTb.
   rewrite nth_glueS size_glue leq_max andbC orbC.
-  case: (ltnP i (size v)) => //= A. 
+  case: (ltnP i (size v)) => //= A.
   by rewrite [_ _ v i]nth_default // nth_nseq if_same andbF.
 Qed.
 
 Lemma vec_ex_glue s n (vs : seq (vec n)) :
   vec_lang (Ex s) vs -> exists bs, vec_lang s (glue bs vs).
 Proof.
-  rewrite /vec_lang /= => [[N sat_s]]. 
+  rewrite /vec_lang /= => [[N sat_s]].
   exists [seq i \in N | i <- iota 0 (\max_(k <- N) k).+1].
-  apply: weak_coincidence sat_s => X i. 
+  apply: weak_coincidence sat_s => X i.
   case: X => [|X].
   - rewrite I_of_glue0. case: (boolP (i < (\max_(k <- N) k).+1)) => ltn_max.
     + by rewrite (nth_map 0) ?size_iota // nth_iota.
-    + rewrite nth_default ?size_map ?size_iota 1?leqNgt //. 
+    + rewrite nth_default ?size_map ?size_iota 1?leqNgt //.
       apply: contraNF ltn_max => H. rewrite ltnS. exact: bigmax_seq_sup H _ _.
   - rewrite I_of_glueS /= /I_of mem_filter mem_iota /= add0n.
     case: (ltnP i (size vs)) => H; first by rewrite andbT.
@@ -283,7 +283,7 @@ Lemma vec_lang0 s n (v : seq (vec n)) k :
 Proof.
   apply coincidence => X ? i. rewrite !mem_filter !mem_iota /= !add0n size_cat nth_cat.
   case: (boolP (i < size v)) => Hi; first by rewrite ltn_addr.
-  by rewrite andbF !(nth_nseq,if_same). 
+  by rewrite andbF !(nth_nseq,if_same).
 Qed.
 
 Lemma prj_glue bs n (v : seq (vec n)) :
@@ -318,7 +318,7 @@ Qed.
 
 (** Correctness of the NFAs for the primitive operations *)
 
-Lemma nfa_for_incl_correct X Y n (v : seq (vec n)): 
+Lemma nfa_for_incl_correct X Y n (v : seq (vec n)):
   reflect (vec_lang (Incl X Y) v) (v \in nfa_lang (nfa_for_incl n X Y)).
 Proof.
   rewrite /nfa_lang inE. apply: (equivP existsP).
@@ -330,9 +330,9 @@ Proof.
         exact: B.
       * move => A. apply/exists_inP; exists tt;[apply/implyP|].
         -- apply: A; exact: mem_head.
-        -- apply/IH => u Hu. apply: A. by rewrite inE Hu orbT.        
+        -- apply/IH => u Hu. apply: A. by rewrite inE Hu orbT.
     + rewrite /vec_lang /=. split.
-      * move => A u in_v u_X. 
+      * move => A u in_v u_X.
         set i := index u v.
         move: (A i). rewrite /I_of !mem_filter !mem_iota !add0n /=.
         rewrite index_mem in_v !andbT. rewrite nth_index //. by apply.
@@ -344,30 +344,30 @@ Qed.
 
 Definition zero_at n X := forall (v : vec n), nth false v X = false.
 
-Lemma nfa_for_ltnP {X Y n} {v : seq (vec n)} : 
-  reflect (exists v1 v2, [/\ v = v1 ++ v2, {in v1,zero_at n Y} & {in v2,zero_at n X}]) 
+Lemma nfa_for_ltnP {X Y n} {v : seq (vec n)} :
+  reflect (exists v1 v2, [/\ v = v1 ++ v2, {in v1,zero_at n Y} & {in v2,zero_at n X}])
           (v \in nfa_lang (nfa_for_ltn n X Y)).
 Proof.
   move: v => v0. apply: (iffP (nfa_ofP _ _)).
   - rewrite /enfa_lang => [[[|_]]]; first by rewrite inE.
-    suff S q v: 
-      enfa_accept (N := enfa_for_ltn n X Y) q v -> 
-      if q 
-      then {in v, zero_at n X} 
+    suff S q v:
+      enfa_accept (N := enfa_for_ltn n X Y) q v ->
+      if q
+      then {in v, zero_at n X}
       else (exists v1 v2, [/\ v = v1 ++ v2, {in v1,zero_at n Y} & {in v2,zero_at n X}]).
     { by move/S. }
     elim => // {v0 v} [||].
-    + case => // _. by do 2 exists nil. 
+    + case => // _. by do 2 exists nil.
     + move => [|] a [|] //= v.
       * move => A _ B u. case/predU1P => [->|]; by [rewrite (negbTE A)| apply: B].
-      * move => A _ [v1] [v2] [C D E]. 
+      * move => A _ [v1] [v2] [C D E].
         exists (a :: v1); exists v2; split => //; first by rewrite C.
         apply/forall_cons. split => //. by rewrite (negbTE A).
     + move => [|] [|] // v. by exists nil; exists v.
-  - move => [v1] [v2] [->] A B. exists false; first by rewrite inE. 
+  - move => [v1] [v2] [->] A B. exists false; first by rewrite inE.
     elim: v1 A => /= [_|a v1 IH A].
     + (apply: EnfaNone; first instantiate (1 := true)) => //.
-      elim: v2 B {v0} => [_|a s IH B]. 
+      elim: v2 B {v0} => [_|a s IH B].
       * constructor. by rewrite inE.
       * (apply: EnfaSome; first instantiate (1 := true)) => //=.
         -- by rewrite B ?inE ?eqxx.
@@ -377,32 +377,32 @@ Proof.
       * apply IH => u C. apply A. by rewrite inE C orbT.
 Qed.
 
-Lemma mem_I_of n (v : seq (vec n)) X k : 
+Lemma mem_I_of n (v : seq (vec n)) X k :
   (k \in I_of v X) = (k < size v) && nth false (nth [tuple of nseq n false] v k) X.
 Proof. by rewrite mem_filter mem_iota add0n /= andbC. Qed.
 
-Lemma nfa_for_ltn_correct X Y n (v : seq (vec n)): 
+Lemma nfa_for_ltn_correct X Y n (v : seq (vec n)):
   reflect (vec_lang (Less X Y) v) (v \in nfa_lang (nfa_for_ltn n X Y)).
 Proof.
   apply: (iffP nfa_for_ltnP).
-  - move => [v1] [v2] [A B C] i j. 
+  - move => [v1] [v2] [A B C] i j.
     rewrite /I_of !mem_filter !mem_iota !add0n /= ![_ && (_ < _)]andbC.
     case: (boolP (_ < _)) => //= D. case: (boolP (_ < _)) => //= E F G.
-    have Hi : i < size v1.  
-    { move: F. rewrite A nth_cat. case: (ifP _) => // /negbT H. 
-      rewrite C ?mem_nth //. rewrite -leqNgt in H. 
+    have Hi : i < size v1.
+    { move: F. rewrite A nth_cat. case: (ifP _) => // /negbT H.
+      rewrite C ?mem_nth //. rewrite -leqNgt in H.
       by rewrite -subSn // leq_subLR -size_cat -A. }
-    have : size v1 <= j. 
+    have : size v1 <= j.
     { move: G. rewrite A nth_cat. case: (ltnP j (size v1)) => // H.
       by rewrite B ? mem_nth. }
     exact: leq_trans.
   - rewrite /vec_lang /= => A.
     case: (boolP (has predT (I_of v X))).
     + case/hasP => x0 /max_mem k_in_X _.
-      set k := (\max_(i <- I_of v X) i) in k_in_X. 
+      set k := (\max_(i <- I_of v X) i) in k_in_X.
       have size_k: k < size v by move: k_in_X; rewrite mem_I_of => /andP[].
-      have size_tk: size (take k.+1 v) = k.+1. 
-      { rewrite size_take. 
+      have size_tk: size (take k.+1 v) = k.+1.
+      { rewrite size_take.
         case: (ltnP k.+1 (size v)) size_k => // H1 H2.
         apply/eqP. by rewrite eqn_leq H1 H2. }
       exists (take k.+1 v); exists (drop k.+1 v); split; first by rewrite cat_take_drop.
@@ -415,17 +415,17 @@ Proof.
       * move => u B. apply/negbTE/negP => D.
         pose i := k.+1 + index u (drop k.+1 v).
         have i_in_X : i \in I_of v X.
-        { rewrite mem_I_of. 
-          rewrite -[v](cat_take_drop k.+1) size_cat size_tk. 
+        { rewrite mem_I_of.
+          rewrite -[v](cat_take_drop k.+1) size_cat size_tk.
           rewrite -addnS leq_add2l index_mem B andTb.
           rewrite nth_cat size_tk leqNgt leq_addr /= /i.
           by rewrite addnC -addnBA // subnn addn0 nth_index. }
         have: i <= k by apply: bigmax_seq_sup i_in_X _ _.
-        by rewrite /i addSn -ltn_subRL subnn. 
-    + move/hasPn => /= B. exists nil; exists v; split => // u in_v.
-      apply/negbTE/negP => D. 
+        by rewrite /i addSn -ltn_subRL subnn.
+    + move/hasPn => /= B. exists [::], v; split => // u in_v.
+      apply/negbTE/negP => D.
       pose i := index u v. move: (B i). case/(_ _)/Wrap => //.
-      by rewrite mem_I_of index_mem in_v nth_index. 
+      by rewrite mem_I_of index_mem in_v nth_index.
 Qed.
 
 Theorem nfa_of_form_correct n (v : seq (n.-tuple bool)) s :
@@ -453,11 +453,11 @@ Proof.
   rewrite mem_filter mem_iota /= add0n size_map size_iota.
   case: (boolP (i < _)); rewrite ?(andbT,andbF) => A.
   + rewrite /vec_of_val.
-    rewrite (nth_map 0) ?size_iota // nth_iota // add0n. 
+    rewrite (nth_map 0) ?size_iota // nth_iota // add0n.
     by rewrite (nth_map (Ordinal lt_n)) ?size_enum_ord ?nth_enum_ord.
   + apply: contraNF A => A. rewrite ltnS. rewrite /lim.
     apply: bigmax_sup => //. instantiate (1 := Ordinal lt_n) => /=.
-    exact: bigmax_seq_sup A _ _ . 
+    exact: bigmax_seq_sup A _ _ .
 Qed.
 
 Lemma vec_of_valP I s : satisfies I s <-> satisfies (I_of (vec_of_val I (bound s))) s.
@@ -471,22 +471,22 @@ Proof.
   pose n := bound s.
   case: (nfa_inhabP (nfa_of_form n s)) => A;[left|right].
   - case: A => w /(@nfa_of_form_correct n) Hw. by exists (I_of w).
-  - move => [I sat_I_s]. apply A. 
-    exists (vec_of_val I n). apply/nfa_of_form_correct. 
+  - move => [I sat_I_s]. apply A.
+    exists (vec_of_val I n). apply/nfa_of_form_correct.
     by rewrite /vec_lang -vec_of_valP.
 Qed.
 
 Corollary vec_lang_regular n s : regular (@vec_lang n s).
 Proof.
-  apply/nfa_regular. exists (nfa_of_form n s) => x. 
-  apply: rwP. exact: nfa_of_form_correct. 
+  apply/nfa_regular. exists (nfa_of_form n s) => x.
+  apply: rwP. exact: nfa_of_form_correct.
 Qed.
 
 (** ** Regularity of the Language of an MSO formula *)
 
 Corollary mso_regular (char: finType) s : regular (@mso_lang char s).
 Proof.
-  apply: regular_ext (mso_preim s). 
+  apply: regular_ext (mso_preim s).
   exact: preim_regular (@vec_of_hom _) (vec_lang_regular _ _).
 Qed.
 
@@ -525,7 +525,7 @@ Definition And s t := Not (Imp s (Not t)).
 Notation "s :/\: t" := (And s t) (at level 45).
 
 Lemma sat_and I s t : I |= And s t <-> (I |= s /\ I |= t).
-Proof. 
+Proof.
   rewrite /And /Not /=. split => [A|]; last tauto.
   split; apply: satNNPP; tauto.
 Qed.
@@ -549,7 +549,7 @@ Proof.
   split => [A N|A].
   - apply: satNNPP => B. apply: A. by exists N.
   - case: (satisfies_dec I (Ex (Not s))) => //= [[N B]].
-    exfalso. exact: B. 
+    exfalso. exact: B.
 Qed.
 
 Opaque All.
@@ -558,18 +558,18 @@ Opaque All.
 
 Definition empty X := All (Incl (X.+1) 0).
 
-Lemma sat_empty I X : 
+Lemma sat_empty I X :
   I |= empty X <-> I X =i pred0.
 Proof.
   rewrite sat_all; split => [/= /(_ [::]) A k|A N k]; last by rewrite A.
-  rewrite inE. apply: negbTE. apply/negP. by move/A. 
+  rewrite inE. apply: negbTE. apply/negP. by move/A.
 Qed.
 
-Lemma sat_emptyN I X : 
+Lemma sat_emptyN I X :
   I |= Not (empty X) <-> (exists n, n \in I X).
-Proof. 
+Proof.
   rewrite satDN; split => [[N]|] /=.
-  - case: (I X) => [|x IX _]. 
+  - case: (I X) => [|x IX _].
     + by case/(_ _)/Wrap.
     + by exists x; rewrite mem_head.
   - case => n A. exists [:: n.+1]. move/(_ _ A). by rewrite inE ltn_eqF.
@@ -580,7 +580,7 @@ Definition single X := Not(empty X) :/\: All (Not(empty 0) --> Incl 0 X.+1 --> I
 Lemma sat_singles I X :
   I |= single X <-> exists n, I X =i [:: n].
 Proof.
-  rewrite sat_and sat_emptyN. split. 
+  rewrite sat_and sat_emptyN. split.
   - move => [[n A] B].
     exists n. move => m. rewrite inE. apply/idP/eqP => [H|-> //].
     move/sat_all/(_ [:: n]): B. rewrite 2!sat_imp. case/(_ _ _)/Wrap.
@@ -588,12 +588,12 @@ Proof.
     + move => k /=. by rewrite inE => /eqP->.
     + move/(_ _ H). by rewrite inE => /eqP->.
   - case => n A. split; first by exists n;rewrite A mem_head.
-    apply/sat_all => N. rewrite 2!sat_imp sat_emptyN => /= [[k Hk] D] m E. 
-    move: (D _ Hk). rewrite A inE => /eqP ?; subst. 
+    apply/sat_all => N. rewrite 2!sat_imp sat_emptyN => /= [[k Hk] D] m E.
+    move: (D _ Hk). rewrite A inE => /eqP ?; subst.
     rewrite A inE in E. by rewrite (eqP E).
 Qed.
 
-(** Big Operatiors *)
+(** Big Operators *)
 
 Notation "\or_ ( i <- r ) F" := (\big [Or/FF]_(i <- r)  F)
   (at level 42, F at level 42, i at level 0,
@@ -623,7 +623,7 @@ Proof.
   exists x => //. by rewrite inE A orbT.
 Qed.
 
-Lemma sat_bigand (T:eqType) (s : seq T) F I : 
+Lemma sat_bigand (T:eqType) (s : seq T) F I :
   I |= \and_(i <- s) F i <-> forall x, x \in s -> I |= F x.
 Proof.
   elim: s => [|a s IH]; first by rewrite big_nil; split => // _; apply.
@@ -631,13 +631,13 @@ Proof.
   split => [|x B]; apply: A; by rewrite ?mem_head // inE B orbT.
 Qed.
 
-(** First-oder Quantification *)
+(** First-order Quantification *)
 (** Note that "first-order" variables are interpreted as one-element lists
 rather than directly as numbers. Hence we need the lemmas [seq1P] and [sub1P] *)
 
 Definition All1 s := All (single 0 --> s).
 
-Lemma sat_all1 I s : 
+Lemma sat_all1 I s :
   I |= All1 s <-> (forall n, cons [:: n] I |= s).
 Proof.
   rewrite sat_all; split.
@@ -648,54 +648,54 @@ Qed.
 
 Definition Ex1 s := Ex (single 0 :/\: s).
 
-Lemma sat_ex1 I s : 
+Lemma sat_ex1 I s :
   I |= Ex1 s <-> (exists n, cons [:: n] I |= s).
 Proof.
-  rewrite /Ex1; split. 
-  - case => N. rewrite -/satisfies => /sat_and [/sat_singles [n] /= B C]. exists n. 
-    apply: weak_coincidence C. by case. 
-  - case => n A. exists [:: n]. apply/sat_and;split => //. 
-    apply/sat_singles. by exists n. 
+  rewrite /Ex1; split.
+  - case => N. rewrite -/satisfies => /sat_and [/sat_singles [n] /= B C]. exists n.
+    apply: weak_coincidence C. by case.
+  - case => n A. exists [:: n]. apply/sat_and;split => //.
+    apply/sat_singles. by exists n.
 Qed.
 
 (* Successor relation and Zero Predicate *)
 
 Lemma nat_succ x y : y = x.+1 <-> x < y /\ ~ exists k, x < k /\ k < y.
 Proof.
-  split. 
+  split.
   - move => ->. rewrite leqnn. split=>//.
     move => [k] [A B]. move:(leq_trans A B). by rewrite ltnn.
-  - move => [A B]. apply/eqP. rewrite eqn_leq leqNgt A andbT. 
-    apply/negP. apply: impliesPn B. constructor. 
-    exists x.+1. by rewrite leqnn H. 
+  - move => [A B]. apply/eqP. rewrite eqn_leq leqNgt A andbT.
+    apply/negP. apply: impliesPn B. constructor.
+    exists x.+1. by rewrite leqnn H.
 Qed.
 
-Definition succ X Y := 
+Definition succ X Y :=
   Less X Y :/\: Not (Ex1 (Less X.+1 0 :/\: Less 0 Y.+1)).
 
 Lemma sat_succ I X x Y y : I X =i [:: x] -> I Y =i [:: y] ->
   I |= succ X Y <-> y = x.+1.
 Proof.
-  move => A B. rewrite sat_and sat_not sat_ex1 nat_succ. 
-  split => [[C D]|[C D]]. 
+  move => A B. rewrite sat_and sat_not sat_ex1 nat_succ.
+  split => [[C D]|[C D]].
   - split; first apply C; rewrite ?A ?B ?mem_head //.
     apply: impliesPn D; constructor => [[k [k1 k2]]]. exists k.
     rewrite sat_and /=; split => ? ?; by rewrite ?A ?B => /seq1P-> /seq1P->.
   - split. move => ? ? ; by rewrite ?A ?B => /seq1P-> /seq1P->.
     apply: impliesPn D; constructor => [[k] /sat_and [k1 k2]]. exists k.
-    split; [apply k1|apply k2]; by rewrite /= ?A ?B ?mem_head. 
+    split; [apply k1|apply k2]; by rewrite /= ?A ?B ?mem_head.
 Qed.
 
 Definition zero X := single X :/\: Not (Ex1 (succ 0 X.+1)).
 
 Lemma sat_zero I X : I X =i [:: 0] <-> I |= zero X.
-Proof. 
+Proof.
   rewrite sat_and sat_singles sat_not sat_ex1.
-  split. 
-  - move => A. split; first by exists 0. 
+  split.
+  - move => A. split; first by exists 0.
     move => [n]. move/sat_succ. move/(_ 0 n) => /=. by case/(_ _ _)/Wrap.
-  - move => [[n A] B] k. rewrite A !inE. 
-    suff S : n == 0. apply/idP/idP => /eqP->; by rewrite // eq_sym. 
+  - move => [[n A] B] k. rewrite A !inE.
+    suff S : n == 0. apply/idP/idP => /eqP->; by rewrite // eq_sym.
     destruct n as [|n] => //. exfalso. apply B.
     exists n. by rewrite (sat_succ (x := n) (y := n.+1)).
 Qed.
@@ -706,16 +706,16 @@ Lemma sat_leq I X x Y y : I X =i [:: x] -> I Y =i [:: y] ->
   I |= Leq X Y <-> x <= y.
 Proof.
   move => A B. rewrite sat_all1. split.
-  - move/(_ y.+1). rewrite sat_imp. case/(_ _)/Wrap. 
+  - move/(_ y.+1). rewrite sat_imp. case/(_ _)/Wrap.
     + by rewrite (sat_succ (x := y) (y := y.+1)).
     + move/(_ x y.+1). rewrite /= A !inE ltnS. by apply.
   - move => C n. rewrite sat_imp. rewrite (sat_succ (x := y) (y := n)) // => ->.
     move => ? ? /=. rewrite A !inE => /eqP-> /eqP->. by rewrite ltnS.
 Qed.
 
-(** Interated existential quantification *)
+(** Iterated existential quantification *)
 
-Definition cat (Ns: seq (seq nat)) I := 
+Definition cat (Ns: seq (seq nat)) I :=
   fun x => if x < size Ns then nth [::] Ns x else I (x - size Ns).
 
 Lemma cat_prefix I n (Ns : n.-tuple (seq nat)) X : X < n -> cat Ns I X = nth [::] Ns X.
@@ -729,40 +729,40 @@ Proof. by rewrite cat_beyond ?subnn. Qed.
 
 Definition exn n s := iter n Ex s.
 
-Lemma sat_exn n s I : 
+Lemma sat_exn n s I :
   (I |= exn n s) <-> (exists Ns : n.-tuple (seq nat), cat Ns I |= s).
 Proof.
   elim: n I => [|n IH] I.
-  - split. 
+  - split.
     + exists [tuple]. rewrite /cat /=. apply: weak_coincidence H => X. by rewrite subn0.
-    + case => Ns. rewrite tuple0 /cat /=. 
+    + case => Ns. rewrite tuple0 /cat /=.
       apply: weak_coincidence => X. by rewrite subn0.
   - have agr Ns N X : cat (rcons Ns N) I X =i cat Ns (cons N I) X.
-      { rewrite /cat /= !size_rcons ltnS. 
+      { rewrite /cat /= !size_rcons ltnS.
         case: (ltngtP X (size Ns)) => B.
         (* use ? and try to preserve compatibility with mathcomp-1.6.x *)
         * by rewrite ?(ltnW B) nth_rcons B.
-        * try rewrite leqNgt B /=. 
+        * try rewrite leqNgt B /=.
           by rewrite -[X - size Ns]prednK ?subn_gt0 //= subnS.
         * by rewrite ?B ?leqnn ?subnn nth_rcons ltnn eqxx. }
     rewrite /=. split => [[N] /IH [Ns A]|].
     + exists [tuple of rcons Ns N]. apply: weak_coincidence A => X k. by rewrite agr.
-    + case. case => Ns /=. elim/last_ind : Ns => // Ns N _. 
+    + case. case => Ns /=. elim/last_ind : Ns => // Ns N _.
       rewrite size_rcons eqSS =>  A B.
-      exists N. apply/IH. exists (Tuple A) => /=. 
-      exact: weak_coincidence _ B. 
+      exists N. apply/IH. exists (Tuple A) => /=.
+      exact: weak_coincidence _ B.
 Qed.
 
 Section NFAtoMSO.
   Variables (T : finType) (A : nfa T).
-  Let n := #|A|. 
+  Let n := #|A|.
   Notation rank := enum_rank.
   Notation val := enum_val.
 
   Definition max :=
     All1 (Less 0 1 <--> \or_(a \in T) Incl 0 (rank a).+2).
 
-  Lemma sat_max (w : word T)  m : 
+  Lemma sat_max (w : word T)  m :
     cons [:: m] (I_of (vec_of w)) |= max <-> m = size w.
   Proof.
     split.
@@ -779,10 +779,10 @@ Section NFAtoMSO.
           apply: (sat_orI (x := a)); first by rewrite mem_enum.
           apply/sub1P => /=. by rewrite I_of_vecP // {2}/a (tnth_nth a).
         * move/(_ m m) => /=. rewrite !mem_head ltnn. by case/(_ _ _)/Wrap.
-    - move->. 
+    - move->.
       rewrite sat_all1 => k.
       rewrite sat_and; split.
-      + rewrite /= => H. 
+      + rewrite /= => H.
         move: H => /(_ k (size w) (mem_head _ _) (mem_head _ _)) => H.
         pose a0 := tnth (in_tuple w) (Ordinal H).
         apply (sat_orI (x := nth a0 w k)); first by rewrite mem_enum.
@@ -792,46 +792,46 @@ Section NFAtoMSO.
         by rewrite mem_iota add0n size_map /= => H ? ? /seq1P-> /seq1P->.
   Qed.
 
-  Definition part X := 
-    All1 (Leq 0 X.+1 --> 
+  Definition part X :=
+    All1 (Leq 0 X.+1 -->
           (\or_(q \in A) (Incl 0 (rank q).+1 :/\:
                         \and_(q' \in [pred x | q != x]) Not (Incl 0 (rank q').+1)))).
 
-  Lemma sat_part X I k : 
-    I X =i [:: k] -> 
+  Lemma sat_part X I k :
+    I X =i [:: k] ->
     I |= part X <-> forall n, n <= k -> exists! q:A, n \in I (rank q).
   Proof.
     move => H0. split.
-    - move => H1 m Hm. move/sat_all1 : H1 => /(_ m) /sat_imp. case/(_ _)/Wrap. 
+    - move => H1 m Hm. move/sat_all1 : H1 => /(_ m) /sat_imp. case/(_ _)/Wrap.
       + rewrite sat_leq ; first apply Hm; done.
-      + case/sat_orE => q _ /sat_and [/= /sub1P q1 /sat_bigand q2]. 
+      + case/sat_orE => q _ /sat_and [/= /sub1P q1 /sat_bigand q2].
         exists q; split => // q' B. apply/eqP. apply/negPn/negP => C.
-        apply: (q2 q'); by [rewrite mem_enum inE|apply/sub1P]. 
-    - move => H1. 
-      apply/sat_all1 => m. rewrite sat_imp => /sat_leq H2. 
+        apply: (q2 q'); by [rewrite mem_enum inE|apply/sub1P].
+    - move => H1.
+      apply/sat_all1 => m. rewrite sat_imp => /sat_leq H2.
       have/H1 {H2} : m <= k by apply: H2.
       case => q [q1 q2]. apply: (sat_orI (x := q)); first by rewrite mem_enum.
-      rewrite sat_and; split; first by move => ? /seq1P ->. 
-      apply/sat_bigand => q'. rewrite mem_enum inE => qq' /sub1P /q2 ?. 
+      rewrite sat_and; split; first by move => ? /seq1P ->.
+      apply/sat_bigand => q'. rewrite mem_enum inE => qq' /sub1P /q2 ?.
       subst. by rewrite eqxx in qq'.
   Qed.
-  
+
   (* forall y x -> succ(x,y) -> x < max -> \or_( ... ) ... *)
   (*        1 0                                            *)
   Definition run X : form :=
-    All1 (All1(succ 0 1 --> Less 0 X.+2 --> 
+    All1 (All1(succ 0 1 --> Less 0 X.+2 -->
                \or_(paq \in [pred x : A * T * A | nfa_trans x.1.1 x.1.2 x.2])
-               let: (p,a,q) := paq in 
+               let: (p,a,q) := paq in
                     Incl 0 ((rank a).+1 + X).+2 (* a at pos x *)
                :/\: Incl 0 (rank p).+2     (* state p active at time x *)
                :/\: Incl 1 (rank q).+2     (* state q is next state of run *)
          )).
 
   Lemma sat_run (Ns : n.-tuple (seq nat)) m I :
-    cat Ns (cons [:: m] I) |= run n <-> 
+    cat Ns (cons [:: m] I) |= run n <->
     (forall k, k < m -> exists (p:A) (a:T) (q:A), nfa_trans p a q /\
-                                       k \in I (rank a) /\ 
-                                       k \in tnth Ns (rank p) /\ 
+                                       k \in I (rank a) /\
+                                       k \in tnth Ns (rank p) /\
                                        k.+1 \in tnth Ns (rank q)).
   Proof.
     split.
@@ -841,17 +841,17 @@ Section NFAtoMSO.
       + move => /= ? y /seq1P ->. rewrite cat_beyond // subnn /=.
         by move/seq1P->.
       + case/sat_orE => [[[p a] q]]. rewrite mem_enum inE /= => B.
-        rewrite !sat_and. (do 2 case) => /= /sub1P C /sub1P D /sub1P E. 
-        exists p. exists a. exists q. repeat split => //. 
+        rewrite !sat_and. (do 2 case) => /= /sub1P C /sub1P D /sub1P E.
+        exists p, a, q. repeat split => //.
         * by rewrite cat_beyond ?leq_addl -?addnBA // subnn addn0 in C.
         * by rewrite cat_prefix // -tnth_nth in D.
         * by rewrite cat_prefix // -tnth_nth in E.
     - move => H. apply/sat_all1 => k'. apply/sat_all1 => k. rewrite !sat_imp => B C.
       move/sat_succ : B => /(_ k' k). case/(_ _ _)/Wrap => // ?;subst.
       case: (H _ (C k m _ _)); rewrite /= ?cat_size /= ?mem_head //.
-      move => p [a] [q] [paq [D [E F]]]. 
-      apply: (sat_orI (x := (p,a,q))); first by rewrite mem_enum. 
-      rewrite !sat_and; repeat split. 
+      move => p [a] [q] [paq [D [E F]]].
+      apply: (sat_orI (x := (p,a,q))); first by rewrite mem_enum.
+      rewrite !sat_and; repeat split.
       + apply/sub1P. rewrite /= cat_beyond ?leq_addl //.
         by rewrite -addnBA // subnn addn0.
       + apply/sub1P. by rewrite /= cat_prefix // -tnth_nth.
@@ -860,8 +860,8 @@ Section NFAtoMSO.
 
   Definition init : form :=
     All1 (zero 0 --> \or_(q \in nfa_s A) Incl 0 (rank q).+1).
-  
-  Lemma sat_init (Ns : n.-tuple (seq nat)) I : 
+
+  Lemma sat_init (Ns : n.-tuple (seq nat)) I :
     cat Ns I |= init <-> exists2 q, q \in nfa_s A & 0 \in tnth Ns (rank q).
   Proof.
     split.
@@ -876,22 +876,22 @@ Section NFAtoMSO.
 
   Definition accept X := \or_(q \in nfa_fin A) Incl X (rank q).
 
-  Lemma sat_accept (Ns : n.-tuple (seq nat)) m I : 
-    cat Ns (cons [:: m] I) |= accept n <-> 
+  Lemma sat_accept (Ns : n.-tuple (seq nat)) m I :
+    cat Ns (cons [:: m] I) |= accept n <->
     exists2 q, q \in nfa_fin A & m \in tnth Ns (rank q).
   Proof.
     split.
-    - case/sat_orE => q. 
+    - case/sat_orE => q.
       rewrite mem_enum /= cat_size ?cat_prefix // -tnth_nth.
       move => B /sub1P C. by exists q.
     - case => q q1 q2. apply: (sat_orI (x := q)); first by rewrite mem_enum.
       rewrite /= cat_size ?cat_prefix // -tnth_nth. exact/sub1P.
   Qed.
-    
+
 
   (** underneath of [exn], [#|A|] refers to the length of the word (i.e. "max") *)
-  Definition form_of := 
-    Ex1 (max :/\: exn #|A| ( 
+  Definition form_of :=
+    Ex1 (max :/\: exn #|A| (
       part #|A| :/\: init :/\: run #|A| :/\: accept #|A|)).
 
 
@@ -899,15 +899,15 @@ Section NFAtoMSO.
   Proof.
     apply: (iffP nfaP).
     - move =>[s] [r] [r1 r2].
-      rewrite /mso_lang /vec_lang sat_ex1. exists (size w). 
-      set I' := cons _ _. 
-      have Hmax : I' |= max by apply/sat_max. 
-      rewrite sat_and sat_exn. split => //. 
+      rewrite /mso_lang /vec_lang sat_ex1. exists (size w).
+      set I' := cons _ _.
+      have Hmax : I' |= max by apply/sat_max.
+      rewrite sat_and sat_exn. split => //.
       pose pos (i : 'I_#|A|) := [seq n <- iota 0 (size r).+1 | nth s (s::r) n == enum_val i].
       pose t := [tuple pos i | i < #|A|].
       exists t.
-      have tP k N (i : 'I_#|A|) : 
-        k \in nth N t i = (k <= size r) && (nth s (s::r) k == val i). 
+      have tP k N (i : 'I_#|A|) :
+        k \in nth N t i = (k <= size r) && (nth s (s::r) k == val i).
       { by rewrite -tnth_nth tnth_mktuple mem_filter mem_iota /= add0n ltnS andbC. }
       rewrite !sat_and; repeat split.
       + apply/(sat_part (k := (size w))). by rewrite cat_size.
@@ -917,37 +917,37 @@ Section NFAtoMSO.
           rewrite tP -(run_size r2) Hk enum_rankK. by move/eqP.
       + apply/sat_init. exists s => //. by rewrite tP /= enum_rankK.
       + apply/sat_run => k Hk. have Hk': k < size r by rewrite -(run_size r2).
-        exists (nth s (s::r) k). 
-        exists (tnth (in_tuple w) (Ordinal Hk)). 
-        exists (nth s (s :: r) k.+1). repeat split.
-        * exact: run_trans. 
-        * rewrite I_of_vecP //. set X := tnth _ _. by rewrite {2}/X (tnth_nth X). 
-        * by rewrite tP ltnW // enum_rankK eqxx. 
+        exists (nth s (s::r) k),
+               (tnth (in_tuple w) (Ordinal Hk)),
+               (nth s (s :: r) k.+1). repeat split.
+        * exact: run_trans.
+        * rewrite I_of_vecP //. set X := tnth _ _. by rewrite {2}/X (tnth_nth X).
+        * by rewrite tP ltnW // enum_rankK eqxx.
         * by rewrite tP enum_rankK Hk' eqxx.
-      + apply/sat_accept. exists (last s r); first exact: run_last r2. 
+      + apply/sat_accept. exists (last s r); first exact: run_last r2.
         rewrite tP. by rewrite (run_size r2) leqnn enum_rankK nth_last /=.
-    - rewrite /mso_lang /vec_lang sat_ex1 => [[m] /sat_and [/sat_max B /sat_exn [Ns]]]. 
-      repeat case/sat_and. subst. set I' := cat _ _. 
+    - rewrite /mso_lang /vec_lang sat_ex1 => [[m] /sat_and [/sat_max B /sat_exn [Ns]]].
+      repeat case/sat_and. subst. set I' := cat _ _.
       move => /sat_part B /sat_init [s s1 s2] /sat_run D /sat_accept E.
-      move: {B} (B (size w)). 
+      move: {B} (B (size w)).
       case/(_ _)/Wrap => [k|B]; first by rewrite /I' cat_size.
-      have exP (i : 'I_(size w)) : exists q : A, i.+1 \in I' (rank q). 
+      have exP (i : 'I_(size w)) : exists q : A, i.+1 \in I' (rank q).
       { case: (B i.+1)=> // q [q1 q2]. by exists q. }
       exists s. pose r := [tuple xchoose (exP i) | i < size w]. exists r. split => //.
       have tP k p : k <= size w -> k \in tnth Ns (rank p) -> nth s (s::r) k = p.
-      { case: k => [_|k lt_w] H /=. 
-        - case: (B 0 _) => // q' [q1 q2]. 
+      { case: k => [_|k lt_w] H /=.
+        - case: (B 0 _) => // q' [q1 q2].
           by rewrite -[p]q2 -1?[s]q2 // /I' cat_prefix // -tnth_nth.
-        - rewrite (nth_map (Ordinal lt_w)) ?size_enum_ord //. 
+        - rewrite (nth_map (Ordinal lt_w)) ?size_enum_ord //.
           set m := nth _ _ _. move: (exP _) => F. move: (xchooseP F) => G.
-          case: (B m.+1 _) => // q' [q1 q2]. 
-          rewrite -[xchoose F]q2 -1?[p]q2 //. 
+          case: (B m.+1 _) => // q' [q1 q2].
+          rewrite -[xchoose F]q2 -1?[p]q2 //.
           rewrite /I' cat_prefix // -tnth_nth.
           by rewrite /m nth_enum_ord.
       }
       apply: runI.
       + by rewrite size_tuple.
-      + case: E => f f1 f2. rewrite (_ : last s r = f) //. 
+      + case: E => f f1 f2. rewrite (_ : last s r = f) //.
         by rewrite (last_nth s) size_tuple (tP _ _ _ f2).
       + move => i. move: (D _ (ltn_ord i)) => [p] [a] [q] [pq [Ha [Hp Hq]]].
         rewrite I_of_vecP // in Ha. rewrite (tnth_nth a) (eqP Ha) //.
