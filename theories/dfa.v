@@ -196,7 +196,7 @@ Section CutOff.
   Proof.
     case: (exseq_dec (predC p)) => H;[right|left].
     - move => A. case: H => [x /= Hx]. by rewrite A in Hx.
-    - move => x. apply: contra_notT H => C. by exists x.
+    - move => x. apply/negPn/negP => C. apply: H. by exists x.
   Qed.
 
   (** Construction of Image *)
