@@ -54,7 +54,7 @@ Section EpsilonNFA.
   Definition enfa_lang x := exists2 s, s \in enfa_s N & enfa_accept s x.
 
   (** We convert eNFAs to NFAs by extending the set of starting states and all
-  transitions by epsipon-reachable states - also known as epsilon closure *)
+  transitions by epsilon-reachable states - also known as epsilon closure *)
 
   Definition eps_reach (p : N) := [set q | connect (enfa_trans None) p q].
 
@@ -101,19 +101,19 @@ Variable A : nfa.
 Definition nfa_to_dfa := {|
   dfa_s := nfa_s A;
   dfa_fin := [set X | X :&: nfa_fin A != set0];
-  dfa_trans X a := [set q | [exists (p | p \in X), nfa_trans p a q]] 
+  dfa_trans X a := [set q | [exists (p | p \in X), nfa_trans p a q]]
 |}.
 
 Lemma nfa_to_dfa_correct : nfa_lang A =i dfa_lang nfa_to_dfa.
 Proof.
-  move => w. rewrite !inE {2}/nfa_to_dfa /=. 
+  move => w. rewrite !inE {2}/nfa_to_dfa /=.
   elim: w (nfa_s _) => [|a x IH] X; rewrite /= accE ?inE.
   - apply/existsP/set0Pn => [] [p] H; exists p; by rewrite inE in H *.
   - rewrite -IH /dfa_trans /=. apply/exists_inP/exists_inP.
-    + case => p inX /exists_inP [q ? ?]. exists q => //. rewrite inE. 
+    + case => p inX /exists_inP [q ? ?]. exists q => //. rewrite inE.
       apply/exists_inP. by exists p.
     + case => p. rewrite inE => /exists_inP [q] ? ? ?.
-      exists q => //. apply/exists_inP. by exists p. 
+      exists q => //. apply/exists_inP. by exists p.
 Qed.
 
 End PowersetConstruction.
@@ -131,51 +131,51 @@ Definition dfa_to_nfa : nfa := {|
 
 Lemma dfa_to_nfa_correct : dfa_lang A =i nfa_lang dfa_to_nfa.
 Proof.
-  move => w. rewrite !inE /nfa_s /=. 
+  move => w. rewrite !inE /nfa_s /=.
   elim: w (dfa_s A) => [|b w IHw] x; rewrite accE /=.
-  - apply/idP/existsP => [Fx|[y /andP [/set1P ->]]//]. 
+  - apply/idP/existsP => [Fx|[y /andP [/set1P ->]]//].
     exists x. by rewrite !inE eqxx.
   - rewrite IHw. apply/exists_inP/exists_inP.
     + case => y /set1P -> H. exists x; first exact: set11.
       apply/existsP. exists (dfa_trans x b). by rewrite H eqxx.
     + case => y /set1P -> {y} /existsP [z] /andP [] /eqP-> H.
-      exists z; by rewrite ?set11. 
+      exists z; by rewrite ?set11.
 Qed.
 
 End Embed.
 
-(** ** Operations on NFAs 
+(** ** Operations on NFAs
 
 To prepare the translation from regular expresstions to DFAs, we show
 that finite automata are closed under all regular operations. We build
 the primitive automata, complement and boolean combinations using
 DFAs. *)
 
-Definition nfa_char (a:char) := 
-  {| nfa_s := [set false]; 
-     nfa_fin := [set true]; 
+Definition nfa_char (a:char) :=
+  {| nfa_s := [set false];
+     nfa_fin := [set true];
      nfa_trans p b q := if (p,q) is (false,true) then (b == a) else false |}.
 
 Lemma nfa_char_correct (a : char) : nfa_lang (nfa_char a) =1 pred1 [:: a].
-Proof. 
-  move => w /=. apply/exists_inP/eqP => [[p]|]. 
+Proof.
+  move => w /=. apply/exists_inP/eqP => [[p]|].
   - rewrite inE => /eqP->. case: w => [|b [|c w]] /=; first by rewrite inE.
     + by case/exists_inP => [[/eqP->|//]].
     + case/exists_inP => [[_|//]]. by case/exists_inP.
-  - move->. exists false; first by rewrite inE. apply/exists_inP. 
+  - move->. exists false; first by rewrite inE. apply/exists_inP.
     exists true; by rewrite ?inE //=.
 Qed.
 
-Definition nfa_plus (N M : nfa) := 
+Definition nfa_plus (N M : nfa) :=
   {| nfa_s := [set q | match q with inl q => q \in nfa_s N | inr q => q \in nfa_s M end ];
      nfa_fin := [set q | match q with inl q => q \in nfa_fin N | inr q => q \in nfa_fin M end ];
-     nfa_trans p a q := match p,a,q with  
+     nfa_trans p a q := match p,a,q with
                          | inl p,a,inl q => nfa_trans p a q
                          | inr p,a,inr q => nfa_trans p a q
                          | _,_,_ => false
                          end |}.
 
-Lemma nfa_plus_correct (N M : nfa) : 
+Lemma nfa_plus_correct (N M : nfa) :
   nfa_lang (nfa_plus N M) =i plus (nfa_lang N) (nfa_lang M).
 Proof.
   move => w. apply/idP/idP.
@@ -185,7 +185,7 @@ Proof.
       case/exists_inP => [[|]// p A /IH B]. apply/exists_inP. by exists p.
     + elim: w s {A} B => /= [|a w IH] s; first by rewrite inE.
       case/exists_inP => [[|]// p A /IH B]. apply/exists_inP. by exists p.
-  - rewrite !inE. case/orP => /exists_inP [s A B]; 
+  - rewrite !inE. case/orP => /exists_inP [s A B];
     apply/exists_inP; [exists(inl s)|exists(inr s)]; rewrite ?inE //.
     + elim: w s {A} B => /= [|a w IH] s; first by rewrite inE.
       case/exists_inP => [p A /IH B]. apply/exists_inP. by exists (inl p).
@@ -193,14 +193,14 @@ Proof.
       case/exists_inP => [p A /IH B]. apply/exists_inP. by exists (inr p).
 Qed.
 
-Definition nfa_eps : nfa := 
+Definition nfa_eps : nfa :=
   {| nfa_s := [set tt]; nfa_fin := [set tt]; nfa_trans p a q := false |}.
 
 Lemma nfa_eps_correct: nfa_lang (nfa_eps) =i pred1 [::].
-Proof. 
-  move => w. apply/exists_inP/idP. 
+Proof.
+  move => w. apply/exists_inP/idP.
   + move => [[]]. case: w => [|a w] //= _. by case/exists_inP.
-  + move => /=. rewrite inE=>/eqP->. exists tt; by rewrite /= inE. 
+  + move => /=. rewrite inE=>/eqP->. exists tt; by rewrite /= inE.
 Qed.
 
 (** The automata for concatenation and Kleene star are constructed by
@@ -241,7 +241,7 @@ Lemma enfa_concIr (p : A2) x : nfa_accept p x -> @enfa_accept enfa_conc (inr p) 
 Proof.
   elim: x p => [p Hp|a x IH p /= /exists_inP [q q1 q2]].
   - (* compat: <mathcomp-1.12 *)
-    constructor; solve [exact: imset_f|exact:mem_imset]. 
+    constructor; solve [exact: imset_f|exact:mem_imset].
   - apply: (@EnfaSome enfa_conc _ _ (inr q)) => //. exact: IH.
 Qed.
 
@@ -345,7 +345,7 @@ End eNFAOps.
 Section NFARun.
   Variable (M : nfa).
 
-  Inductive nfa_run : word -> M -> seq M -> Prop := 
+  Inductive nfa_run : word -> M -> seq M -> Prop :=
     | run0 p of p \in nfa_fin M : nfa_run [::] p [::]
     | runS a p q x r & q \in nfa_trans p a : nfa_run x q r -> nfa_run (a::x) p (q::r).
 
@@ -355,15 +355,15 @@ Section NFARun.
     - elim: x p => [|a x IHx] p /=; first by exists [::]; constructor.
       case/exists_inP => q p1 p2. case (IHx q p2) => r ?. by exists (q::r); constructor.
     - elim: x r p => [|a x IHx] r p; first by inversion 1; subst.
-      inversion 1; subst. apply/exists_inP. exists q => //. exact: IHx H4. 
+      inversion 1; subst. apply/exists_inP. exists q => //. exact: IHx H4.
   Qed.
 
   Lemma run_size x r p : nfa_run x p r -> size x = size r.
   Proof. by elim => // {r p x} a p q r x _ _ /= ->. Qed.
 
   Lemma nfaP x : reflect (exists s r, s \in nfa_s M /\ nfa_run x s r) (x \in nfa_lang M).
-  Proof. 
-    apply: (iffP exists_inP). 
+  Proof.
+    apply: (iffP exists_inP).
     - case => s ? /nfa_acceptP [r] ?. by exists s; exists r.
     - case => s [r] [? ?]. exists s => //. apply/nfa_acceptP. by exists r.
   Qed.
@@ -371,12 +371,12 @@ Section NFARun.
   Lemma run_last x p r : nfa_run x p r -> last p r \in nfa_fin M.
   Proof. by elim. Qed.
 
-  Lemma run_trans x p r i (Hi : i < size x) : nfa_run x p r -> 
+  Lemma run_trans x p r i (Hi : i < size x) : nfa_run x p r ->
     nth p (p::r) i.+1 \in nfa_trans (nth p (p::r) i) (tnth (in_tuple x) (Ordinal Hi)).
   Proof.
-    move => H. elim: H i Hi => {x p r} // a p q x r tr run IH /= [|i] Hi //. 
-    rewrite !(set_nth_default q); try by rewrite /= -(run_size run) // ltnW. 
-    rewrite {1}[nth]lock (tnth_nth a) /=. rewrite ltnS in Hi. 
+    move => H. elim: H i Hi => {x p r} // a p q x r tr run IH /= [|i] Hi //.
+    rewrite !(set_nth_default q); try by rewrite /= -(run_size run) // ltnW.
+    rewrite {1}[nth]lock (tnth_nth a) /=. rewrite ltnS in Hi.
     rewrite -{3}[i]/(nat_of_ord (Ordinal Hi)).
     by rewrite -[x]/(tval (in_tuple x)) -tnth_nth -lock IH.
   Qed.
@@ -384,18 +384,18 @@ Section NFARun.
   (** The following lemma uses [in_tuple] and [tnth] in order to avoid
   having to assume the existence of a default symbol *)
 
-  Lemma runI x s r : 
+  Lemma runI x s r :
     size r = size x -> last s r \in nfa_fin M ->
-    (forall i : 'I_(size x), 
+    (forall i : 'I_(size x),
        nth s (s::r) i.+1 \in nfa_trans (nth s (s::r) i) (tnth (in_tuple x) i)) ->
     nfa_run x s r.
-  Proof. 
+  Proof.
     elim: x s r => [|a x IHx ] s r /=.
     - move/eqP => e inF _. rewrite size_eq0 in e. rewrite (eqP e) in inF *. exact: run0.
-    - case: r => // p r /eqP /=. rewrite eqSS => /eqP R1 R2 I. 
-      apply: runS (I ord0) _ => /=. apply: IHx => // i. 
+    - case: r => // p r /eqP /=. rewrite eqSS => /eqP R1 R2 I.
+      apply: runS (I ord0) _ => /=. apply: IHx => // i.
       move: (I (inord i.+1)). rewrite /tnth /= !inordK /= ?ltnS //.
-      rewrite !(set_nth_default p) /= ?R1 // 1?ltnW ?ltnS //. 
+      rewrite !(set_nth_default p) /= ?R1 // 1?ltnW ?ltnS //.
       by rewrite -[x]/(val (in_tuple x)) -!tnth_nth.
   Qed.
 
@@ -415,7 +415,7 @@ Qed.
 Lemma nfa_regular L :
   regular L <-T->  { N : nfa  | forall x, L x <-> x \in nfa_lang N }.
 Proof.
-  split => [[A]|[N]] H. 
+  split => [[A]|[N]] H.
   exists (dfa_to_nfa A) => x. by rewrite -dfa_to_nfa_correct.
   exists (nfa_to_dfa N) => x. by rewrite -nfa_to_dfa_correct.
 Qed.

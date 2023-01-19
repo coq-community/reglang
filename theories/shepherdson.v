@@ -19,22 +19,22 @@ Lemma contraN (b : bool) (P : Prop) : b -> ~~ b -> P. Proof. by case b. Qed.
 Lemma inord_inj n m : n <= m -> injective (@inord m \o @nat_of_ord n.+1).
 Proof.
   move => Hnm k k' /= /(f_equal (@nat_of_ord _)) E. apply/ord_inj.
-  rewrite !inordK // in E; exact: leq_trans (ltn_ord _) _. 
+  rewrite !inordK // in E; exact: leq_trans (ltn_ord _) _.
 Qed.
 
 (** Lemmas for character lookups on composite words *)
 
-Lemma tnthL (T:eqType) (x z : seq T) (i : 'I_(size x)) (j : 'I_(size (x++z))) : 
+Lemma tnthL (T:eqType) (x z : seq T) (i : 'I_(size x)) (j : 'I_(size (x++z))) :
   i = j :> nat -> tnth (in_tuple x) i = tnth (in_tuple (x++z)) j.
-Proof. 
-  move => e. pose a := tnth (in_tuple x) i. 
+Proof.
+  move => e. pose a := tnth (in_tuple x) i.
   by rewrite !(tnth_nth a) /= -e nth_cat ltn_ord.
 Qed.
 
-Lemma tnthR (T:eqType) (x z : seq T) (i : 'I_(size z)) (j : 'I_(size (x++z))) : 
+Lemma tnthR (T:eqType) (x z : seq T) (i : 'I_(size z)) (j : 'I_(size (x++z))) :
   size x + i = j -> tnth (in_tuple z) i = tnth (in_tuple (x++z)) j.
-Proof. 
-  move => e. pose a := tnth (in_tuple z) i. 
+Proof.
+  move => e. pose a := tnth (in_tuple z) i.
   by rewrite !(tnth_nth a) /= -e nth_cat ltnNge leq_addr /= addKn.
 Qed.
 
@@ -71,8 +71,8 @@ Section NFA2toAFA.
   Lemma srel_step_max x : srel (size x).+2 x =2 step M x.
   Proof. move => c d /=. by rewrite /srel neq_ltn ltn_ord orbT andbT. Qed.
 
-  Definition Tab x : table := 
-    ([set q | connect (srel (size x).+1 x) (nfa2_s M, ord1) (q,ord_max)], 
+  Definition Tab x : table :=
+    ([set q | connect (srel (size x).+1 x) (nfa2_s M, ord1) (q,ord_max)],
      [set pq | connect (srel (size x).+1 x) (pq.1,inord (size x)) (pq.2,ord_max)]).
 
   (** To show that [Tab] is right-congruent and refines the language of [M], we
@@ -80,40 +80,40 @@ Section NFA2toAFA.
   time. In particular, this allows us to split runs starting with head position
   [i] and ending at head position [j] at any position [k] in beteen. *)
 
-  Lemma srelLR k x p i q j : srel k x (p,i) (q,j) -> 
+  Lemma srelLR k x p i q j : srel k x (p,i) (q,j) ->
     j.+1 = i :> nat \/ j = i.+1 :> nat.
-  Proof. move/srel_step. case/orP => /andP [_ /eqP ->]; tauto. Qed.
+  Proof. case/srel_step/orP => /andP [_ /eqP ->]; tauto. Qed.
 
   Lemma srel1 k x c d : srel k x c d -> d.2 <= c.2.+1.
   Proof. move: c d => [p i] [q j] /srelLR [<-|->] //=. by ssrlia. Qed.
 
   Lemma srelSr k' k x (c d : nfa2_config M x) : c.2 < k ->
-    srel k x c d = srel (k+k') x c d. 
+    srel k x c d = srel (k+k') x c d.
   Proof. move => lt_k. by rewrite /srel !neq_ltn ltn_addr lt_k ?orbT. Qed.
 
   Lemma srelS k x p q (i j : pos x) m : i <= k ->
      connect (srel k x) (p,i) (q,j) -> connect (srel (k+m) x) (p,i) (q,j).
-  Proof. 
-    move => H /connectP [cs]. 
+  Proof.
+    move => H /connectP [cs].
     elim: cs p i H => [/= p i H _ [-> ->] //|[p' i'] cs IH p i H /= /andP [s pth] l].
     have Hk: i < k. case/andP : s => _ /= s. by rewrite ltn_neqAle H eq_sym s.
     apply: (connect_trans (y := (p',i'))) (connect1 _) _; first by rewrite -srelSr.
     apply: IH => //. move/srel1 : s Hk => /= s. exact: leq_trans.
   Qed.
- 
-  Lemma srel_mid_path (k k' : nat) x (i j : pos x) (p q : M) cs : 
-    i <= k <= j -> path (srel k' x) (p,i) cs -> (q,j) = last (p,i) cs -> 
+
+  Lemma srel_mid_path (k k' : nat) x (i j : pos x) (p q : M) cs :
+    i <= k <= j -> path (srel k' x) (p,i) cs -> (q,j) = last (p,i) cs ->
     exists p' cl cr, [/\ cs = cl ++ cr, (p',inord k) = last (p,i) cl & path (srel k x) (p,i) cl].
-  Proof.  
+  Proof.
     move: cs p i. apply: (size_induction (measure := size)) => cs IH p i /andP [H1 H2].
     case: (boolP (i == k :> nat)) => Ei.
-    - exists p. exists [::]. exists cs. by rewrite -[i]inord_val (eqP Ei).
+    - exists p, [::], cs. by rewrite -[i]inord_val (eqP Ei).
     - destruct cs as [|c cs] => [_ /= [_ E]|/= /andP [s p1] p2]; subst.
       + by rewrite eqn_leq H1 H2 in Ei.
       + have Hi: i < k by rewrite ltn_neqAle Ei H1.
         have mid: c.2 <= k <= j by rewrite (leq_trans (srel1 s)).
         case: (IH cs _ c.1 _ mid) ; rewrite -?surjective_pairing //.
-        move => p' [cl] [cr] [C1 C2 C3]. exists p'. exists (c::cl). exists cr.
+        move => p' [cl] [cr] [C1 C2 C3]. exists p', (c::cl), cr.
         rewrite /= -C1 C3 andbT. split => //. rewrite /srel /= eq_sym Ei andbT.
         exact: srel_step s.
   Qed.
@@ -126,31 +126,31 @@ Section NFA2toAFA.
     - case/connectP => cs c1 c2. case: (srel_mid_path H c1 c2) => [p'] [cl] [cr] [Ecs L C].
       subst cs. rewrite cat_path last_cat -L in c1 c2. case/andP : c1 => ? c1. exists p'.
       + apply/connectP. by exists cl.
-      + apply/connectP. by exists cr. 
+      + apply/connectP. by exists cr.
     - case/andP: H => H1 H2 [p']. move/(srelS (k'-k) H1). rewrite subnKC //. exact: connect_trans.
   Qed.
 
-  Lemma readL x z (p:M) (k : pos x) : k != (size x).+1 :> nat -> 
-    read p (inord k : pos (x++z)) = read p k. 
+  Lemma readL x z (p:M) (k : pos x) : k != (size x).+1 :> nat ->
+    read p (inord k : pos (x++z)) = read p k.
   Proof.
     move => Hk. rewrite /read. case: (ord2P k) => [/eqP->|E|i Hi].
     - by rewrite /= -inord0 ord2P0.
-    - apply: contraN Hk. by rewrite (eqP E). 
+    - apply: contraN Hk. by rewrite (eqP E).
     - have oi : i < size (x++z) by rewrite size_cat ltn_addr.
       have H_eq: (Ordinal oi).+1 = (inord k : pos (x++z)). by rewrite -Hi inordK // ; ssrlia.
       by rewrite (ord2PC H_eq) -(tnthL (i := i)).
   Qed.
- 
+
   Section CompositeWord.
     Variables (x z : word char).
 
     (** We first show that runs on [x] that do not cross the boundary between
     [x] and [z] do not depend on [z]. *)
 
-    Lemma srelL (i j : pos x) p q : 
+    Lemma srelL (i j : pos x) p q :
       srel (size x).+1 x (p,i) (q,j) = srel (size x).+1 (x++z) (p,inord i) (q,inord j).
     Proof.
-      case: (boolP (i == (size x).+1 :> nat)) => Hi. 
+      case: (boolP (i == (size x).+1 :> nat)) => Hi.
       - rewrite /srel (eqP Hi) /= inordK ?eqxx //= ?andbF //; ssrlia.
       - have Hi' : i < (size x).+1. by rewrite ltn_neqAle Hi -ltnS ltn_ord.
         rewrite /srel /step readL // !inordK //; ssrlia.
@@ -164,25 +164,25 @@ Section NFA2toAFA.
       pose f (c : nfa2_config M x) : nfa2_config M (x ++ z) := (c.1, inord c.2).
       rewrite -[(p,inord i)]/(f (p,i)) -[(q,inord j)]/(f (q,j)).
       apply: connect_transfer => //.
-      - move => {p q i j} [p i] [q j] /= [->] /inord_inj. 
+      - move => {p q i j} [p i] [q j] /= [->] /inord_inj.
         case/(_ _)/Wrap => [|->//]. ssrlia.
-      - move => [? ?] [? ?]. rewrite /f /=. exact: srelL.  
-      - move => {p q i j} [p i] [q j] step. exists (q,inord j). 
+      - move => [? ?] [? ?]. rewrite /f /=. exact: srelL.
+      - move => {p q i j} [p i] [q j] step. exists (q,inord j).
         rewrite /f /= inordK ?inord_val //.  move: (srel1 step) => /= Hs.
         case/andP : step => /= _ Hi. rewrite (leqRW Hs) ltn_neqAle eq_sym Hi /=.
         by rewrite inordK ltnS ?leq_ord // (leqRW (leq_ord i)) ltnS size_cat leq_addr.
     Qed.
-    
+
     (** This entails, that the behaviour of [M] starting from the endpoints of
     [x] is also independent of [z]. Note that the direction from right to left
     makes use of lemma [term_uniq] *)
 
-    Lemma Tab1P q : q \in (Tab x).1 
+    Lemma Tab1P q : q \in (Tab x).1
         <-> connect (srel (size x).+1 (x++z)) (nfa2_s M,ord1) (q,inord (size x).+1).
     Proof. by rewrite /Tab inE runL /= -[ord1]inord_val. Qed.
 
     Lemma Tab2P p q : (p,q) \in (Tab x).2
-        <-> connect (srel (size x).+1 (x++z)) (p,inord (size x)) (q,inord (size x).+1). 
+        <-> connect (srel (size x).+1 (x++z)) (p,inord (size x)) (q,inord (size x).+1).
     Proof. by rewrite inE runL /= inordK. Qed.
 
     (** Dually, steps on the right of [x++z] do not depend on [x], if they do not
@@ -192,13 +192,13 @@ Section NFA2toAFA.
        read q (inord k : pos z) = read q (inord (size x + k) : pos (x++z)).
     Proof.
       move => Hk0 Hk. rewrite /read. case: (ord2P _) => [H|H|i Hi].
-      - apply: contraN Hk0. 
+      - apply: contraN Hk0.
         move/eqP/(f_equal (@nat_of_ord _)) : H => /=. by rewrite inordK // => ->.
       - by rewrite -[k](@inordK (size z).+1) ?(eqP H) //= addnS -size_cat -inord_max ord2PM.
       - have Hi' : size x + i < size (x ++ z) by rewrite size_cat ltn_add2l.
-        have X: (Ordinal Hi').+1 = (inord (size x + k) : pos (x ++ z)). 
-          by rewrite /= -addnS Hi !inordK //; ssrlia. 
-        by rewrite (ord2PC X) -(tnthR (i := i)). 
+        have X: (Ordinal Hi').+1 = (inord (size x + k) : pos (x ++ z)).
+          by rewrite /= -addnS Hi !inordK //; ssrlia.
+        by rewrite (ord2PC X) -(tnthR (i := i)).
     Qed.
 
     Lemma srelR (m k k' : nat) p p' : k != 0 -> k < (size z).+2 -> k' < (size z).+2 ->
@@ -206,19 +206,19 @@ Section NFA2toAFA.
       = srel m.+1 z (p,inord k) (p',inord k').
     Proof.
       move => Hk0 Hk Hk'. rewrite /srel /= !inordK ?addSnnS ?eqn_add2l //; ssrlia.
-      case: (_ != _); rewrite ?andbT ?andbF // /step -?readR //. 
+      case: (_ != _); rewrite ?andbT ?andbF // /step -?readR //.
       rewrite !inordK //; ssrlia. by rewrite -!addnS !eqn_add2l.
     Qed.
 
-    Lemma srelRE m k p c : k < (size z).+2 -> k != 0 -> 
-      srel m (x++z) (p,inord (size x + k)) c -> 
+    Lemma srelRE m k p c : k < (size z).+2 -> k != 0 ->
+      srel m (x++z) (p,inord (size x + k)) c ->
       exists q k', k' < (size z).+2 /\ c = (q,inord (size x + k')).
     Proof.
       move: k c => [//|k] [q j] Hk _ /srelLR [/eqP C|/eqP C];
         exists q; rewrite inordK addnS ?eqSS in C; ssrlia.
       - exists k. by rewrite ltnW // -[j]inord_val (eqP C).
       - exists k.+2. rewrite !addnS -[j]inord_val (eqP C). split => //.
-        rewrite eqn_leq in C. case/andP : C => _ C. 
+        rewrite eqn_leq in C. case/andP : C => _ C.
         move: (leq_ltn_trans C (ltn_ord j)).
         by rewrite size_cat -!addnS leq_add2l.
     Qed.
@@ -229,8 +229,8 @@ Section NFA2toAFA.
   refinement states that as long as the black-box results for [x] and [y]
   agreee, runs starting and ending on the right of composite words [x++z] and
   [y++z] behave the same even if they cross the boundaries. *)
-  
-  Lemma runR x y z p q (i j: nat) k : 
+
+  Lemma runR x y z p q (i j: nat) k :
     Tab x = Tab y -> i <= (size z).+1 -> 0 < j <= (size z).+1 ->
     connect (srel ((size x).+1 + k) (x++z)) (p,inord (size x + i)) (q,inord (size x + j)) ->
     connect (srel ((size y).+1 + k) (y++z)) (p,inord (size y + i)) (q,inord (size y + j)).
@@ -243,24 +243,24 @@ Section NFA2toAFA.
       apply/andP; split; rewrite !inordK; ssrlia. move => p' [cl] [cr] [Ecs Lcl Pcl].
       apply/(@srel_mid (size y).+1) ; try solve [rewrite !inordK; ssrlia|rewrite -addn1; ssrlia].
       + exists p'. apply/Tab2P. rewrite -Tab_eq. apply/Tab2P. by apply/connectP; exists cl.
-      + subst cs. rewrite -[_.+1 as X in inord X]addn1. 
+      + subst cs. rewrite -[_.+1 as X in inord X]addn1.
         apply: (IH cr) => {IH} //; ssrlia.
-        * destruct cl as [|c cs]; simpl in *. case: Lcl => _. 
+        * destruct cl as [|c cs]; simpl in *. case: Lcl => _.
           -- move/(f_equal (@nat_of_ord _)); rewrite ?inordK; intros; ssrlia.
           -- by  rewrite[size (cs ++ cr)]size_cat -addnS leq_addl.
         * rewrite cat_path -Lcl addn1 in p1 *. by case/andP : p1.
         * by rewrite p2 last_cat -Lcl addn1.
-    - destruct cs as [|c cs]; simpl in *. 
-      + move => _ [-> /(f_equal (@nat_of_ord _))/eqP]. 
-        rewrite !inordK ?eqn_add2l ?size_cat -?addnS ?leq_add2l // => /eqP ->. 
+    - destruct cs as [|c cs]; simpl in *.
+      + move => _ [-> /(f_equal (@nat_of_ord _))/eqP].
+        rewrite !inordK ?eqn_add2l ?size_cat -?addnS ?leq_add2l // => /eqP ->.
         exact: connect0.
-      + case/andP => P1 P2 L. case/srelRE: (P1) => // p' [ip] [Hip ?]; subst. 
-        rewrite srelR // -(@srelR y z) // in P1. apply: connect_trans (connect1 P1) _. 
+      + case/andP => P1 P2 L. case/srelRE: (P1) => // p' [ip] [Hip ?]; subst.
+        rewrite srelR // -(@srelR y z) // in P1. apply: connect_trans (connect1 P1) _.
         exact: (IH cs).
   Qed.
 
   (** Variant of the lemma above, that generales equality subgoals *)
-  Lemma runR_eq x y z p q (i j: nat) k xk xi xj yk yi yj :  
+  Lemma runR_eq x y z p q (i j: nat) k xk xi xj yk yi yj :
     Tab x = Tab y -> i <= (size z).+1 -> 0 < j <= (size z).+1 ->
     xk = (size x).+1 + k -> xi = size x + i -> xj = size x + j ->
     yk = (size y).+1 + k -> yi = size y + i -> yj = size y + j ->
@@ -284,7 +284,7 @@ Section NFA2toAFA.
 
   Lemma Tab_rc : right_congruent Tab.
   Proof.
-    move => x y a E. 
+    move => x y a E.
     have Tab2 : (Tab (x ++ [:: a])).2 = (Tab (y ++ [:: a])).2.
     { apply/setP => [[p q]]. rewrite /Tab !inE /= !inord_max.
       apply/idP/idP; apply: (runR_eq (i := 1) (j := 2) (k := 1)); by rewrite ?size_cat ?addn1 ?addn2. }
@@ -293,8 +293,8 @@ Section NFA2toAFA.
     pose C x := connect (srel (size (x ++ [:: a])).+1 (x ++ [:: a])) (nfa2_s M, ord1) (q, ord_max).
     wlog suff W: x y E Tab2 / C x -> C y; [by apply/idP/idP; exact: W|].
     case/(@srel_mid (size x).+1); ssrlia => p /Tab1P p1 p2.
-    apply/(@srel_mid (size y).+1); ssrlia. 
-    exists p; first by apply/Tab1P; rewrite -E. move: p2. 
+    apply/(@srel_mid (size y).+1); ssrlia.
+    exists p; first by apply/Tab1P; rewrite -E. move: p2.
     rewrite -![_.+1 as X in inord X]addn1 -[1]/(size [:: a]) -!size_cat.
     rewrite !(@runL _ [::]) !inordK; ssrlia. move/Tab2P => p2. by apply/Tab2P; rewrite -Tab2.
   Qed.
@@ -302,22 +302,22 @@ Section NFA2toAFA.
   Definition nfa2_to_classifier : classifier_for (nfa2_lang M) :=
     {| cf_classifier := Classifier Tab; cf_congruent := Tab_rc; cf_refines := Tab_refines |}.
 
-  Theorem nfa2_to_dfa : 
+  Theorem nfa2_to_dfa :
     { A : dfa char | dfa_lang A =i nfa2_lang M & #|A| <= 2 ^ (#|M| ^ 2 + #|M|) }.
   Proof.
     exists (classifier_to_dfa (nfa2_to_classifier)); first exact: classifier_to_dfa_correct.
     rewrite card_sub (leqRW (max_card _)) [#|_|]/=.
-    by rewrite card_prod expnD mulnC leq_mul //= card_set // card_prod -mulnn. 
+    by rewrite card_prod expnD mulnC leq_mul //= card_set // card_prod -mulnn.
   Qed.
 
 End NFA2toAFA.
 
-(** If M is determinististic, the size bound on the constructed 2DFA improves
+(** If M is deterministic, the size bound on the constructed 2DFA improves
   to [(#|M|.+1)^(#|M|.+1)] *)
 
 Arguments srel [char] M k x c d.
 
-(** ** Imropoved Bound for Translation of 2DFAs to DFAs *)
+(** ** Improved Bound for Translation of 2DFAs to DFAs *)
 
 Section DFA2toAFA.
   Variables (char : finType) (M : dfa2 char).
@@ -349,15 +349,15 @@ Section DFA2toAFA.
   Proof. move => x y /(congr1 val) E. exact: Tab_refines. Qed.
 
   Definition dfa2_to_myhill :=
-    {| cf_classifier := Classifier Tab'; 
-       cf_congruent := image_rc; 
+    {| cf_classifier := Classifier Tab';
+       cf_congruent := image_rc;
        cf_refines := image_refines |}.
 
   Lemma det_range : #|{:image_type (@Tab_rc _ M)}| <= (#|M|.+1)^(#|M|.+1).
   Proof.
     pose table' := (option M * {ffun M -> option M})%type.
     apply: (@leq_trans #|{: table'}|); last by rewrite card_prod card_ffun !card_option expnS.
-    pose f (x : image_type (@Tab_rc _ M)) : table' := 
+    pose f (x : image_type (@Tab_rc _ M)) : table' :=
       let (b,_) := x in ([pick q | q \in b.1],[ffun p => [pick q | (p,q) \in b.2]]).
     suff : injective f by apply: card_leq_inj.
     move => [[a1 a2] Ha] [[b1 b2] Hb] [E1 /ffunP E2]. apply: val_inj => /=.
@@ -376,7 +376,7 @@ Section DFA2toAFA.
       + by rewrite (@Tab2_functional y p q r2).
   Qed.
 
-  Theorem dfa2_to_dfa : 
+  Theorem dfa2_to_dfa :
     { A : dfa char | dfa_lang A =i dfa2_lang M & #|A| <= (#|M|.+1)^(#|M|.+1) }.
   Proof.
     exists (classifier_to_dfa (dfa2_to_myhill)); first exact: classifier_to_dfa_correct.

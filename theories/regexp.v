@@ -73,12 +73,12 @@ Qed.
 Lemma big_plusP (T char: finType) (P:pred T) w (F : T -> regexp char) :
   reflect (exists2 i, P i  & w \in F i) (w \in \sigma_(i | P i) F i).
 Proof.
-  rewrite -big_filter. apply: (iffP (big_plus_seqP _ _ _)) => [[x]|[x] H1 H2]. 
+  rewrite -big_filter. apply: (iffP (big_plus_seqP _ _ _)) => [[x]|[x] H1 H2].
   - rewrite mem_filter => /andP [? ?]; by exists x.
   - by exists x; rewrite // mem_filter H1 mem_index_enum.
 Qed.
 
-Fixpoint re_size (char: eqType) (e : regexp char) := 
+Fixpoint re_size (char: eqType) (e : regexp char) :=
   match e with
   | Star s => (re_size s).+1
   | Plus s t => ((re_size s)+(re_size t)).+1
@@ -91,11 +91,11 @@ Lemma big_plus_size (T char : eqType) (r : seq T) (F : T -> regexp char) m :
 Proof.
   elim: r => [|e r IH /forall_cons [A B]]; first by rewrite big_nil.
   rewrite big_cons /= ltnS mulSn addSn -addnS leq_add //. exact: IH.
-Qed.  
+Qed.
 
 (** ** Regular Expressions to Finite Automata *)
 Section DFAofRE.
-Variable (char : finType).  
+Variable (char : finType).
 
 Fixpoint re_to_nfa (r : regexp char): nfa char :=
   match r with
@@ -106,7 +106,7 @@ Fixpoint re_to_nfa (r : regexp char): nfa char :=
   | Plus s t => nfa_plus (re_to_nfa s) (re_to_nfa t)
   | Conc s t => nfa_conc (re_to_nfa s) (re_to_nfa t)
   end.
-  
+
 Lemma re_to_nfa_correct (r : regexp char) : nfa_lang (re_to_nfa r) =i r.
 Proof.
   elim: r => [||a|s IHs |s IHs t IHt |s IHs t IHt] w //=.
@@ -121,10 +121,10 @@ Qed.
 Lemma re_to_nfa_size e : #|re_to_nfa e| <= 2 * re_size e.
 Proof.
   elim: e; rewrite /= ?card_unit ?card_bool => //.
-  - move => e IH. by rewrite card_option (leqRW IH) mulnS add2n. 
-  - move => e1 IH1 e2 IH2. 
+  - move => e IH. by rewrite card_option (leqRW IH) mulnS add2n.
+  - move => e1 IH1 e2 IH2.
     by rewrite card_sum (leqRW IH1) (leqRW IH2) mulnS mulnDr add2n ltnW.
-  - move => e1 IH1 e2 IH2. 
+  - move => e1 IH1 e2 IH2.
     by rewrite card_sum (leqRW IH1) (leqRW IH2) mulnS mulnDr add2n ltnW.
 Qed.
 
@@ -164,12 +164,12 @@ Section KleeneAlgorithm.
 
   Lemma dfa_L x y w : w \in L^setT x y = (delta x w == y).
   Proof.
-    rewrite unfold_in. case: (_ == _) => //=. 
+    rewrite unfold_in. case: (_ == _) => //=.
     apply/forall_inP => ? ?. by rewrite inE.
   Qed.
 
-  Lemma LP {X : {set A}} {p q : A} {x} : 
-    reflect (delta p x = q /\ forall i, (0 < i) -> (i < size x) -> delta p (take i x) \in X) 
+  Lemma LP {X : {set A}} {p q : A} {x} :
+    reflect (delta p x = q /\ forall i, (0 < i) -> (i < size x) -> delta p (take i x) \in X)
             (x \in L^X p q).
   Proof.
     apply: (iffP andP); case => /eqP ? H; split => //.
@@ -178,7 +178,7 @@ Section KleeneAlgorithm.
   Qed.
 
   Lemma L_monotone (X : {set A}) (x y z : A): {subset L^X x y <= L^(z |: X) x y}.
-  Proof. 
+  Proof.
     move => w. rewrite !unfold_in. case: (_ == _) => //. apply: sub_forall => i /=.
     case: (_ < _) => //= H. by rewrite inE H orbT.
   Qed.
@@ -194,13 +194,13 @@ Section KleeneAlgorithm.
   Qed.
 
   Lemma L_split X p q z w : w \in L (z |: X) p q ->
-    w \in L^X p q \/ 
+    w \in L^X p q \/
     exists w1 w2, [/\ w = w1 ++ w2, size w2 < size w, w1 \in L^X p z & w2 \in L^(z |: X) z q].
   Proof.
     case/LP => H1 H2.
     case: (find_minn_bound (fun i => (0 < i) && (delta p (take i w) == z)) (size w)).
     - case => i [lt_w /andP [i_gt0 /eqP delta_z] min_i]; right.
-      exists (take i w); exists (drop i w). 
+      exists (take i w); exists (drop i w).
       have ? : 0 < size w by exact: ltn_trans lt_w.
       rewrite cat_take_drop size_drop -{2}[size w]subn0 ltn_sub2l //; split => //.
       + apply/LP. split => // j J1 J2.
@@ -208,7 +208,7 @@ Section KleeneAlgorithm.
         have/(H2 _ J1) : j < size w. exact: ltn_trans lt_w.
         case/setU1P => [H|]; last by rewrite take_take 1?ltnW.
         move: (min_i _ lt_i_j). by rewrite negb_and J1 H eqxx.
-      + apply/LP. rewrite -H1 -{2}[w](cat_take_drop i) delta_cat delta_z. 
+      + apply/LP. rewrite -H1 -{2}[w](cat_take_drop i) delta_cat delta_z.
         split => // j J1 J2. rewrite -{1}delta_z -delta_cat -takeD.
         apply: H2; first by rewrite addn_gt0 J1 orbT.
         by rewrite -[w](cat_take_drop i) size_cat size_take lt_w ltn_add2l.
@@ -222,11 +222,11 @@ Section KleeneAlgorithm.
     move => Hz /LP [H11 H12] /LP [H21 H22]. apply/LP.
     split; first by rewrite delta_cat H11 H21.
     move => i i_gt0 H. rewrite take_cat. case: (boolP (i < _)); first exact: H12.
-    rewrite delta_cat H11 -leqNgt => le_w1. 
+    rewrite delta_cat H11 -leqNgt => le_w1.
     case: (posnP (i - size w1)) => [->|Hi]; first by rewrite take0.
     apply: H22 => //. by rewrite -(ltn_add2l (size w1)) subnKC // -size_cat.
   Qed.
- 
+
   Lemma L_catL X x y z w1 w2 :
     w1 \in L^X x z -> w2 \in L^(z |: X) z y -> w1++w2 \in L^(z |: X) x y.
   Proof. move/(L_monotone z). apply: L_cat. exact: setU11. Qed.
@@ -274,7 +274,7 @@ Section KleeneAlgorithm.
   Lemma mem_R0 w x y :
     reflect (w = [::] /\ x=y \/ exists2 a, w = [::a] & dfa_trans x a = y)
             (w \in R0 x y).
-  Proof. 
+  Proof.
     apply: (iffP plusP).
     - case => [| /edgesP]; auto. case e : (x == y) => // /eqP.
       by rewrite (eqP e); auto.
@@ -282,15 +282,15 @@ Section KleeneAlgorithm.
   Qed.
 
   Fixpoint R (X : seq A) (x y : A) :=
-    if X isn't z :: X' then R0 x y else 
+    if X isn't z :: X' then R0 x y else
       Plus (Conc (R X' x z) (Conc (Star (R X' z z)) (R X' z y))) (R X' x y).
 
   Notation "'R^' X" := (R X) (at level 8, format "'R^' X").
 
   Lemma L_R (X : seq A) x y : L^[set z in X] x y =i R^X x y.
   Proof.
-    elim: X x y => [|z X' IH] x y w. 
-    - rewrite (_ : [set z in [::]] = set0) //=. 
+    elim: X x y => [|z X' IH] x y w.
+    - rewrite (_ : [set z in [::]] = set0) //=.
       apply/idP/mem_R0.
       + move/L_set0 => [[-> ->]|[a -> ->]]; by eauto.
       + move => [[-> ->]|[a -> <-]]; apply/LP => /=; split => // [[|i]] //.
@@ -315,22 +315,22 @@ Section KleeneAlgorithm.
   Let c := (2 * #|char|).+3.
 
   Lemma R0_size x y : re_size (R0 x y) <= c.
-  Proof. 
+  Proof.
     rewrite /= [X in X + _](_ : _ = 1); last by case (_ == _).
     rewrite add1n !ltnS. rewrite /edges -big_filter.
     apply: leq_trans (big_plus_size (m := 1) _) _ => [//|].
-    rewrite size_filter ltnS mulnC leq_mul2l /=. 
-    apply: leq_trans (count_size _ _) _. by rewrite /index_enum -enumT cardE. 
+    rewrite size_filter ltnS mulnC leq_mul2l /=.
+    apply: leq_trans (count_size _ _) _. by rewrite /index_enum -enumT cardE.
   Qed.
 
   Fixpoint R_size_rec (n : nat) := if n is n'.+1 then 4 * R_size_rec n' + 4 else c.
 
   Lemma R_size x : re_size (R^(enum A) (dfa_s A) x) <= R_size_rec #|A| .
-  Proof. 
+  Proof.
     rewrite cardE. elim: (enum A) (dfa_s A) x => [|r s IH] p q.
     - exact: R0_size.
-    - rewrite /= 6!(addSn,addnS) addn4 !ltnS !(leqRW (IH _ _)). 
-      by rewrite !mulSn mul0n addn0 !addnA. 
+    - rewrite /= 6!(addSn,addnS) addn4 !ltnS !(leqRW (IH _ _)).
+      by rewrite !mulSn mul0n addn0 !addnA.
   Qed.
 
   Lemma R_size_low (n : nat) : 3 <= R_size_rec n.
@@ -340,13 +340,13 @@ Section KleeneAlgorithm.
   Proof.
     elim: n => //= [|n IH].
     - by rewrite mulnS muln0 addn0.
-    - rewrite [in X in _^X]mulnS expnD mulnA [c * _]mulnC -mulnA. 
+    - rewrite [in X in _^X]mulnS expnD mulnA [c * _]mulnC -mulnA.
       rewrite -(leqRW IH) -[4^2]/((1+3) * 4) -mulnA mulnDl mul1n leq_add //.
       by rewrite -(leqRW (R_size_low _)).
-  Qed. 
+  Qed.
 
   Lemma dfa_to_re_size : re_size dfa_to_re <= (#|A| * (c * 4 ^ (2 * #|A|)).+1).+1.
-  Proof. 
+  Proof.
     rewrite /dfa_to_re -big_filter (leqRW (big_plus_size (m := R_size_rec #|A|)_)).
     - rewrite -(leqRW (R_size_high _)) size_filter (leqRW (count_size _ _)).
       by rewrite ltnS /index_enum -enumT cardE.
@@ -357,8 +357,8 @@ End KleeneAlgorithm.
 
 Lemma regularP (char : finType) (L : lang char) :
   regular L <-T->  { e : regexp char | forall x, L x <-> x \in e}.
-Proof. 
-  split => [[A HA]|[e He]]. 
+Proof.
+  split => [[A HA]|[e He]].
   - exists (dfa_to_re A) => x. by rewrite -dfa_to_re_correct.
   - exists (re_to_dfa e) => x. by rewrite re_to_dfa_correct.
 Qed.
@@ -466,19 +466,19 @@ Lemma Rev_correct (char : finType) (e : regexp char) w :
   w \in Rev e = (rev w \in e).
 Proof.
   elim: e w => [||a|e IH|e1 IH1 e2 IH2|e1 IH1 e2 IH2] w //.
-  - rewrite !inE. apply/eqP/idP; first by move->. 
+  - rewrite !inE. apply/eqP/idP; first by move->.
     elim/last_ind: w => //= s a _. by rewrite rev_rcons.
-  - rewrite !inE. apply/eqP/eqP; first by move->. 
+  - rewrite !inE. apply/eqP/eqP; first by move->.
     do 2 elim/last_ind: w => //= w ? _. by rewrite !rev_rcons.
   - rewrite /=; apply/idP/idP; case/starP => vv /allP /= H.
-    + move->. rewrite rev_flatten. apply: starI => v'. 
+    + move->. rewrite rev_flatten. apply: starI => v'.
       rewrite mem_rev => /mapP [v V1 ->]. rewrite -IH. by case/andP: (H _ V1).
-    + rewrite -{2}[w]revK => ->. rewrite rev_flatten. apply: starI => v'. 
+    + rewrite -{2}[w]revK => ->. rewrite rev_flatten. apply: starI => v'.
       rewrite mem_rev => /mapP [v V1 ->]. rewrite IH revK. by case/andP: (H _ V1).
   - by rewrite /= !inE -!/(re_lang _) IH1 IH2.
   - rewrite /=. apply/concP/concP => [] [w1] [w2]; rewrite -!/(re_lang _).
-    + move => [-> [A B]]. exists (rev w2); exists (rev w1). by rewrite rev_cat -IH1 -IH2.
-    + rewrite -{2}[w]revK. move => [-> [A B]]. exists (rev w2); exists (rev w1). 
+    + move => [-> [A B]]. exists (rev w2), (rev w1). by rewrite rev_cat -IH1 -IH2.
+    + rewrite -{2}[w]revK. move => [-> [A B]]. exists (rev w2), (rev w1).
       by rewrite rev_cat IH1 IH2 !revK.
 Qed.
 

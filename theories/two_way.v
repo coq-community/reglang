@@ -15,14 +15,14 @@ Unset Printing Implicit Defensive.
 
 We want to represent configurations of two-way automata as pairs of states and
 positions on the input word extended with left and right markers. That is
-positions will be of type ['I_n.+2] with [n] beeing the length of the input
-word. We need some facts about finite ordinals of this form. 
+positions will be of type ['I_n.+2] with [n] being the length of the input
+word. We need some facts about finite ordinals of this form.
 
 We define a three-way case analysis on ['I_n.+2]. If [i:'I_n.+2] is
 neither [ord0] nor [ord_max], then we can cast it (with offset 1) to
 ['I_n]. This is used for looking up charaters of an input word *)
 
-Inductive ord2_spec n (m : 'I_n.+2) :=
+Variant ord2_spec n (m : 'I_n.+2) :=
 | Ord20 of m == ord0
 | Ord2M of m == ord_max
 | Ord2C (i : 'I_n) of i.+1 = m.
@@ -50,17 +50,17 @@ Proof.
 Qed.
 
 Lemma ord2PC n {i : 'I_n.+2} {i' : 'I_n} (p : i'.+1 = i) : ord2P i = Ord2C p.
-Proof. 
+Proof.
   case: (ord2P i) => [Hi|Hi|j' p'].
   - exfalso. move/eqP: Hi => Hi. by rewrite Hi in p.
   - exfalso. move:Hi. apply/negP. apply: contra_eqN p => /eqP->.
     rewrite eqn_leq negb_and -[~~ (ord_max <= _)]ltnNge [_.+1 < _](_ : _ = true) ?orbT //.
-    exact: leq_ltn_trans (ltn_ord _) _. 
+    exact: leq_ltn_trans (ltn_ord _) _.
   - have ?: i' = j'. apply: ord_inj. apply/eqP. by rewrite -eqSS p p'. subst.
     by rewrite (eq_irrelevance p p').
 Qed.
 
-(** ** Definition of 2NFAs and their languages. 
+(** ** Definition of 2NFAs and their languages.
 
 We need to call 2NFAs [nfa2] since names may not begin with numbers. *)
 
@@ -70,7 +70,7 @@ Section NFA2.
   Definition dir := bool.
   Definition L := true.
   Definition R := false.
-  
+
   Record nfa2 := Nfa2 {
     nfa2_state :> finType;
     nfa2_s : nfa2_state;
@@ -78,23 +78,23 @@ Section NFA2.
     nfa2_trans : nfa2_state -> char -> {set nfa2_state * dir};
     nfa2_transL : nfa2_state -> {set nfa2_state};
     nfa2_transR : nfa2_state -> {set nfa2_state}}.
-  
+
   Variables (A : nfa2) (x : word char).
 
   Definition tape := in_tuple x.
   Definition pos := ('I_(size x).+2)%type.
   Definition nfa2_config := (A * pos)%type.
 
-  Definition read (q:A) (n : pos) : {set (A * dir)} :=  
+  Definition read (q:A) (n : pos) : {set (A * dir)} :=
     match ord2P n with
       | Ord20 _ => setX (nfa2_transL q) [set R]
       | Ord2M _ => setX (nfa2_transR q) [set L]
       | Ord2C m' _ => nfa2_trans q (tnth tape m')
     end.
 
-  Definition step (c d : nfa2_config) := 
+  Definition step (c d : nfa2_config) :=
     let: ((p,i),(q,j)) := (c,d) in
-        ((q,R) \in read p i) && (j == i.+1 :> nat) 
+        ((q,R) \in read p i) && (j == i.+1 :> nat)
      || ((q,L) \in read p i) && (j.+1 == i :> nat).
 
   Definition nfa2_lang := [exists (q | q \in nfa2_f A), connect step (nfa2_s A,ord1) (q,ord_max)].
@@ -109,7 +109,7 @@ Prenex  Implicits step.
 Section DFA2.
   Variable char : finType.
 
-  Record deterministic (M : nfa2 char) : Prop := 
+  Record deterministic (M : nfa2 char) : Prop :=
   { detC : forall (p:M) a, #|nfa2_trans p a| <= 1;
     detL : forall (p:M), #|nfa2_transL p| <= 1;
     detR : forall (p:M), #|nfa2_transR p| <= 1}.
@@ -129,7 +129,7 @@ Section DFA2.
   Lemma read1 x (p:M) (j:pos x) : read p j = set0 \/ exists s : M * dir, read p j = [set s].
   Proof.
     rewrite /read.
-    case: (ord2P _) => [||i] _;apply cards_lt1; rewrite ?cardsX ?cards1 ?muln1; 
+    case: (ord2P _) => [||i] _;apply cards_lt1; rewrite ?cardsX ?cards1 ?muln1;
       by auto using detL, detC, detR, dfa2_det.
   Qed.
 
@@ -175,7 +175,7 @@ Section DFAtoDFA2.
   Let n := size w.
 
   Lemma nfa2_of_aux (q:A) i : i < (size w).+1 ->
-      ((drop i w) \in dfa_accept q) -> 
+      ((drop i w) \in dfa_accept q) ->
       [exists f in nfa2_f nfa2_of_dfa, connect (step nfa2_of_dfa w) (q,inord i.+1) (f,ord_max)].
   Proof.
     move eq_m : (n - i) => m. elim: m q i eq_m => [|m IHm] q i /eqP H1 H2.
@@ -190,9 +190,9 @@ Section DFAtoDFA2.
       rewrite /step /read (ord2PC (i' := (Ordinal Hi))) ?inordK //= => _.
       by rewrite inE ?eqxx.
   Qed.
-     
+
   Lemma nfa2_of_aux2 (q f:A) (i : pos w) : i != ord0 ->
-    f \in nfa2_f nfa2_of_dfa -> connect (step nfa2_of_dfa w) (q,i) (f,ord_max) -> 
+    f \in nfa2_f nfa2_of_dfa -> connect (step nfa2_of_dfa w) (q,i) (f,ord_max) ->
     ((drop i.-1 w) \in dfa_accept q).
   Proof.
     move => H fin_f. case/connectP => p. elim: p i H q => //= [|[q' j] p IHp i Hi q].
@@ -201,7 +201,7 @@ Section DFAtoDFA2.
       rewrite !inE !xpair_eqE (_ : L == R = false) ?eqxx ?andbT ?andbF ?orbF -?andbA //=.
       case/and3P => /eqP -> /eqP E. rewrite -Hi' drop_accept.
       have -> : i'.+1 = j.-1 by rewrite E. apply IHp.
-      apply/negP. move/eqP/(f_equal (@nat_of_ord _)). by rewrite E.
+      by apply: contra_eq_neq E =>->.
   Qed.
 
   Lemma nfa2_of_correct : (w \in dfa_lang A) = (w \in nfa2_lang nfa2_of_dfa).

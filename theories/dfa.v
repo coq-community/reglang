@@ -30,10 +30,10 @@ Section DFA_Acceptance.
 Variable A : dfa.
 Implicit Types (p q : A) (x y : word).
 
-Fixpoint delta (p : A) x := 
+Fixpoint delta (p : A) x :=
   if x is a :: x' then delta (dfa_trans p a) x' else p.
 
-Lemma delta_cons p a x : delta (dfa_trans p a) x = delta p (a :: x). 
+Lemma delta_cons p a x : delta (dfa_trans p a) x = delta p (a :: x).
 Proof. by []. Qed.
 
 Lemma delta_cat p x y : delta p (x ++ y) = delta (delta p x) y.
@@ -44,10 +44,10 @@ Definition dfa_accept (p : A) x := delta p x \in dfa_fin A.
 Definition delta_s w := delta (dfa_s A) w.
 Definition dfa_lang := [pred x | dfa_accept (dfa_s A) x].
 
-Lemma accept_nil p : dfa_accept p [::] = (p \in dfa_fin A). 
+Lemma accept_nil p : dfa_accept p [::] = (p \in dfa_fin A).
 Proof. by []. Qed.
 
-Lemma accept_cons (x : A) a w : 
+Lemma accept_cons (x : A) a w :
   dfa_accept x (a :: w) = dfa_accept (dfa_trans x a) w.
 Proof. by []. Qed.
 
@@ -70,14 +70,14 @@ Definition regular (L : lang char) := { A : dfa | forall x, L x <-> x \in dfa_la
 Lemma regular_ext L1 L2 : regular L2 -> L1 =p L2 -> regular L1.
 Proof. case => A HA B. exists A => w. by rewrite B. Qed.
 
-(** ** Operations on DFAs 
+(** ** Operations on DFAs
 
 To prepare the translation from regular expresstions to DFAs, we show
 that finite automata are closed under all regular operations. We build
 the primitive automata, complement and boolean combinations using
 DFAs. *)
 
-Definition dfa_void := 
+Definition dfa_void :=
   {| dfa_s := tt; dfa_fin := set0 ; dfa_trans x a := tt |}.
 
 Lemma dfa_void_correct (x: dfa_void) w: ~~ dfa_accept x w.
@@ -111,7 +111,7 @@ Definition dfa_op  :=
 Lemma dfa_op_correct w :
   w \in dfa_lang dfa_op = op (w \in dfa_lang A1) (w \in dfa_lang A2).
 Proof.
-  rewrite !inE {2}/dfa_op /=. 
+  rewrite !inE {2}/dfa_op /=.
   elim: w (dfa_s A1) (dfa_s A2) => [| a w IHw] x y; by rewrite !accE ?inE /=.
 Qed.
 
@@ -135,19 +135,19 @@ Proof. exists (dfa0) => x. by rewrite dfa0_correct. Qed.
 Lemma regularU (L1 L2 : lang char) :
   regular L1 -> regular L2 -> regular (fun x => L1 x \/ L2 x).
 Proof.
-  move => [A1 acc_L1] [A2 acc_L2]. exists (dfa_op orb A1 A2) => x.  
-  by rewrite dfa_op_correct -(rwP orP) -acc_L1 -acc_L2. 
+  move => [A1 acc_L1] [A2 acc_L2]. exists (dfa_op orb A1 A2) => x.
+  by rewrite dfa_op_correct -(rwP orP) -acc_L1 -acc_L2.
 Qed.
 
-Lemma regular_bigU (T : eqType) (L : T -> lang char) (s : seq T) : 
-  (forall a, a \in s -> regular (L a)) -> regular (fun x => exists2 a, a \in s & L a x). 
+Lemma regular_bigU (T : eqType) (L : T -> lang char) (s : seq T) :
+  (forall a, a \in s -> regular (L a)) -> regular (fun x => exists2 a, a \in s & L a x).
 Proof.
-  elim: s => //. 
-  - move => _. apply: regular_ext regular0 _. by split => // [[a]]. 
-  - move => a s IH /forall_consT [H1 H2]. 
-    pose L' := (fun x => L a x \/ (fun x : word => exists2 a : T, a \in s & L a x) x). 
-    apply: (regular_ext (L2 := L')); first by apply: regularU => //; exact: IH. 
-    move => x. rewrite /L'. exact: exists_cons. 
+  elim: s => //.
+  - move => _. apply: regular_ext regular0 _. by split => // [[a]].
+  - move => a s IH /forall_consT [H1 H2].
+    pose L' := (fun x => L a x \/ (fun x : word => exists2 a : T, a \in s & L a x) x).
+    apply: (regular_ext (L2 := L')); first by apply: regularU => //; exact: IH.
+    move => x. rewrite /L'. exact: exists_cons.
 Qed.
 
 
@@ -188,7 +188,7 @@ Section CutOff.
         apply: (IHx (take i x ++ drop j x)); last by rewrite RC_rep.
         by rewrite size_cat size_take size_drop ltn_ord -ltn_subRL ltn_sub2l.
   Qed.
-    
+
   Lemma exseq_dec (p : pred rT) : decidable (exists x, p (f x)).
   Proof. apply: decP. exact: exseqP. Qed.
 
@@ -210,7 +210,7 @@ Section CutOff.
 
   Lemma surjective_image_fun : surjective (image_fun).
   Proof. move => [y Py]. case/dec_eq : (Py) => /= x ?. by exists x. Qed.
-  
+
 End CutOff.
 
 (** ** Decidability of Language Equivalence
@@ -225,16 +225,16 @@ Section Emptyness.
     delta s x = delta s y -> delta s (x ++ [::a]) = delta s (y ++ [::a]).
   Proof. by rewrite /= !delta_cat => <-. Qed.
 
-  Definition dfa_inhab : decidable (exists x, x \in dfa_lang A) := 
+  Definition dfa_inhab : decidable (exists x, x \in dfa_lang A) :=
     exseq_dec delta_rc (fun x => x \in dfa_fin A).
-  
+
   Lemma dfa_inhabP : reflect (exists x, x \in dfa_lang A) (dfa_inhab).
   Proof. apply: (iffP idP); by rewrite dec_eq. Qed.
 
   Definition dfa_empty := allseq_dec delta_rc (fun x => x \notin dfa_fin A).
-  
+
   Lemma dfa_emptyP : reflect (dfa_lang A =i pred0) (dfa_empty).
-  Proof. 
+  Proof.
     apply: (iffP idP) => [/dec_eq H x|H]; first by rewrite inE /dfa_accept (negbTE (H _)).
     apply/dec_eq => x. by rewrite -[_ \notin _]/(x \notin dfa_lang A) H.
   Qed.
@@ -256,7 +256,7 @@ Qed.
 
 Definition dfa_incl A1 A2 := dfa_empty (dfa_op (fun a b => a && ~~ b) A1 A2).
 
-Lemma dfa_incl_correct A1 A2 : 
+Lemma dfa_incl_correct A1 A2 :
   reflect {subset dfa_lang A1 <= dfa_lang A2} (dfa_incl A1 A2).
 Proof.
   apply: (iffP (dfa_emptyP _)) => H w.
@@ -283,7 +283,7 @@ Section Preimage.
 
   Lemma dfa_preimP A : dfa_lang (dfa_preim A) =i preim h (dfa_lang A).
   Proof using h_hom.
-    move => w. rewrite !inE /dfa_accept /dfa_preim /=. 
+    move => w. rewrite !inE /dfa_accept /dfa_preim /=.
     elim: w (dfa_s A) => [|a w IHw] x /= ; first by rewrite h0.
     by rewrite -[a :: w]cat1s h_hom !delta_cat -IHw.
   Qed.
@@ -324,7 +324,7 @@ Section RightQuotient.
     - rewrite inE /dfa_accept inE. case/dec_eq => y inL2.
       rewrite -delta_cat => H. exists y => //. by rewrite -acc_L1.
     - case => y y1 y2. rewrite inE /dfa_accept inE /= dec_eq.
-      exists y => //. by rewrite -delta_cat acc_L1. 
+      exists y => //. by rewrite -delta_cat acc_L1.
   Qed.
 
 End RightQuotient.
@@ -339,11 +339,11 @@ Proof.
   move => [A LA] reg2.
   suff dec_L1 q : decidable (exists2 y, L2 y & delta q y \in dfa_fin A).
   { exists (dfa_quot dec_L1) => x. apply: (rwP (dfa_quotP _ _ _)) => {x} x. by rewrite LA. }
-  case: reg2 => {LA} [B LB]. 
+  case: reg2 => {LA} [B LB].
   pose C := {| dfa_s := q ; dfa_fin := dfa_fin A ; dfa_trans := @dfa_trans _ A |}.
   pose dec := dfa_inhab (dfa_op andb B C).
   apply: (dec_iff dec); split.
-  - move => [x X1 X2]. exists x. rewrite dfa_op_correct. apply/andP;split => //. exact/LB. 
+  - move => [x X1 X2]. exists x. rewrite dfa_op_correct. apply/andP;split => //. exact/LB.
   - move => [x]. rewrite dfa_op_correct. case/andP => *. exists x => //. exact/LB.
 Qed.
 
@@ -370,30 +370,30 @@ Section LeftQuotient.
     pose S := [seq q | q <- enum A & dec_L1 q].
     pose L (q:A) := mem (dfa_lang (A_start q)).
     pose R x := exists2 a, a \in S & L a x.
-    suff: quotL =p R. 
+    suff: quotL =p R.
     { apply: regular_ext. apply: regular_bigU => q qS. by exists (A_start q). }
     move => y; split.
-    - case => x H1 /acc_L2 H2. exists (delta_s A x). 
-      + apply/mapP. exists (delta_s A x) => //. rewrite mem_filter mem_enum inE andbT. 
+    - case => x H1 /acc_L2 H2. exists (delta_s A x).
+      + apply/mapP. exists (delta_s A x) => //. rewrite mem_filter mem_enum inE andbT.
         apply/dec_eq. by exists x.
-      + by rewrite /L topredE -A_start_cat. 
+      + by rewrite /L topredE -A_start_cat.
     - case => ? /mapP [q]. rewrite mem_filter mem_enum inE andbT => /dec_eq [x L1_x <- ->].
-      rewrite /L topredE -A_start_cat => Hxy. exists x => //. exact/acc_L2. 
+      rewrite /L topredE -A_start_cat => Hxy. exists x => //. exact/acc_L2.
   Qed.
 End LeftQuotient.
 
 Lemma regular_quotL (char: finType) (L1 L2 : lang char) :
   regular L1 -> regular L2 -> regular (quotL L1 L2).
-Proof. 
-  move => [A acc_L1] [B acc_L2]. apply: regular_quotL_aux acc_L2 _ => q. 
+Proof.
+  move => [A acc_L1] [B acc_L2]. apply: regular_quotL_aux acc_L2 _ => q.
   pose B_q := {| dfa_s := dfa_s B; dfa_fin := [set q] ; dfa_trans := @dfa_trans _ B |}.
   have B_qP y : delta_s B y = q <-> y \in dfa_lang B_q.
   { rewrite -delta_lang inE. by split => ?; exact/eqP. }
-  pose dec := dfa_inhab (dfa_op andb A B_q). 
+  pose dec := dfa_inhab (dfa_op andb A B_q).
   apply: dec_iff dec _. split.
-  - move => [y] H1 Hq. exists y. rewrite dfa_op_correct. 
-    apply/andP;split; first exact/acc_L1. exact/B_qP. 
-  - move => [y]. rewrite dfa_op_correct => /andP [H1 H2]. exists y; first exact/acc_L1. 
+  - move => [y] H1 Hq. exists y. rewrite dfa_op_correct.
+    apply/andP;split; first exact/acc_L1. exact/B_qP.
+  - move => [y]. rewrite dfa_op_correct => /andP [H1 H2]. exists y; first exact/acc_L1.
     exact/B_qP.
 Qed.
 
@@ -401,20 +401,20 @@ Qed.
     can be embedded into languages, there are some languages that are regular
     iff we assume excluded middle. (take [P] to be any independent proposition) *)
 
-Lemma regular_det (char : finType) L (w : word char): 
+Lemma regular_det (char : finType) L (w : word char):
   inhabited (regular L) -> (L w) \/ (~ L w).
 Proof. case. case => A ->. by case: (w \in dfa_lang A); [left|right]. Qed.
 
-Lemma regular_xm (char : finType) : 
+Lemma regular_xm (char : finType) :
   (forall P, inhabited (regular (fun _ : word char => P))) <-> (forall P, P \/ ~ P).
 Proof.
   split => [H|H] P ; first exact: regular_det [::] (H P).
-  case: (H P) => HP; constructor. 
-  + exists (dfa_compl (dfa_void char)) => x. by rewrite dfa_compl_correct dfa_void_correct. 
+  case: (H P) => HP; constructor.
+  + exists (dfa_compl (dfa_void char)) => x. by rewrite dfa_compl_correct dfa_void_correct.
   + exists (dfa_void char) => w. by rewrite /dfa_lang inE (negbTE (dfa_void_correct _ _)).
 Qed.
 
-(** ** Residucal Criterion *)
+(** ** Residual Criterion *)
 
 Section NonRegular.
   Variables (char : finType) .
@@ -430,7 +430,7 @@ Section NonRegular.
     move => f_spec [[A E]].
     pose f' (n : 'I_#|A|.+1) := delta_s A (f n).
     suff: injective f' by move/card_leq_inj ; rewrite card_ord ltnn.
-    move => [n1 H1] [n2 H2]. rewrite /f' /delta_s /= => H. 
+    move => [n1 H1] [n2 H2]. rewrite /f' /delta_s /= => H.
     apply/eqP; change (n1 == n2); apply/eqP. apply: f_spec => w.
     by rewrite /residual !E !inE /dfa_accept !delta_cat H.
   Qed.
@@ -441,8 +441,8 @@ Section NonRegular.
   Definition Lab w := exists n, w = nseq n a ++ nseq n b.
 
   Lemma countL n1 n2 : count (pred1 a) (nseq n1 a ++ nseq n2 b) = n1.
-  Proof. 
-    by rewrite count_cat !count_nseq /= eqxx eq_sym (negbTE Hab) mul1n mul0n addn0. 
+  Proof.
+    by rewrite count_cat !count_nseq /= eqxx eq_sym (negbTE Hab) mul1n mul0n addn0.
   Qed.
 
   Lemma countR n1 n2 : count (pred1 b) (nseq n1 a ++ nseq n2 b) = n2.
@@ -467,7 +467,7 @@ End NonRegular.
 
 Section Pumping.
   Definition sub (T:eqType) i j (s : seq T) := take (j-i) (drop i s).
-  
+
   Definition rep (T : eqType) (s : seq T) n := iter n (cat s) [::].
 
   Variable char : finType.
@@ -485,8 +485,8 @@ Section Pumping.
       apply: contraL H2 => /injectiveP/card_leq_inj. by rewrite leqNgt card_ord.
     move => [i] [j] ij fij.
     wlog {ij} ij : i j fij / i < j. rewrite neq_ltn in ij. case/orP : ij => ij W; exact: W _ ij.
-    exists (take i y). exists (sub i j y). exists (drop j y). split => [||k].
-    - apply: contraL ij. 
+    exists (take i y), (sub i j y), (drop j y). split => [||k].
+    - apply: contraL ij.
       by rewrite /nilp size_take size_drop ltn_sub2r ?ltn_ord // subn_eq0 leqNgt.
     - by rewrite catA -takeD subnKC 1?ltnW // cat_take_drop.
     - rewrite inE /dfa_accept !delta_cat delta_rep.
@@ -513,7 +513,7 @@ Section Pumping.
   Example pump_Lab (a b : char) : a != b -> ~ inhabited (regular (Lab a b)).
   Proof.
     move => neq. apply: pumping => k.
-    exists [::]. exists (nseq k a). exists (nseq k b). repeat split.
+    exists [::], (nseq k a), (nseq k b). repeat split.
     - by rewrite size_nseq.
     - by exists k.
     - move => u [|c v] w // /eqP e _. exists 0 => /= H.
