@@ -19,8 +19,8 @@ decidability results and closure properties of regular languages."""
 build: ["dune" "build" "-p" name "-j" jobs]
 depends: [
   "dune" {>= "2.5"}
-  "coq" {(>= "8.10" & < "8.17~") | (= "dev")}
-  "coq-mathcomp-ssreflect" {(>= "1.11" & < "1.16~") | (= "dev")}
+  "coq" {(>= "8.10" & < "8.18~") | (= "dev")}
+  "coq-mathcomp-ssreflect" {(>= "1.11" & < "1.17~") | (= "dev")}
 ]
 
 tags: [
