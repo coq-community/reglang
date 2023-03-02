@@ -280,7 +280,7 @@ Proof. by rewrite inE. Qed.
 Lemma enfa_f_None : None \in enfa_f enfa_star.
 Proof. by rewrite inE. Qed.
 
-Hint Resolve enfa_s_None enfa_f_None : core.
+#[local] Hint Resolve enfa_s_None enfa_f_None : core.
 
 Lemma enfa_star_cat x1 x2 (p : enfa_star) :
   enfa_accept p x1 -> enfa_lang enfa_star x2 -> enfa_accept p (x1 ++ x2).
