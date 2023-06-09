@@ -81,21 +81,17 @@
 
     "master".coqPackages = {
       coq.override.version = "master";
+      coq-elpi.override.version = "coq-master";
+      hierarchy-builder.override.version = "proux01:coq-master";
+      mathcomp.override.version = "master";
     };
     "8.17".coqPackages = {
       coq.override.version = "8.17";
+      mathcomp.override.version = "2.0.0";
     };
     "8.16".coqPackages = {
       coq.override.version = "8.16";
-    };
-    "8.15".coqPackages = {
-      coq.override.version = "8.15";
-    };
-    "8.14".coqPackages = {
-      coq.override.version = "8.14";
-    };
-    "8.13".coqPackages = {
-      coq.override.version = "8.13";
+      mathcomp.override.version = "2.0.0";
     };
   };
 

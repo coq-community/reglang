@@ -49,9 +49,10 @@ decidability results and closure properties of regular languages.
   - Christian Doczkal ([**@chdoc**](https://github.com/chdoc))
   - Karl Palmskog ([**@palmskog**](https://github.com/palmskog))
 - License: [CeCILL-B](LICENSE)
-- Compatible Coq versions: 8.10 or later (use releases for other Coq versions)
+- Compatible Coq versions: 8.16 or later (use releases for other Coq versions)
 - Additional dependencies:
-  - [MathComp](https://math-comp.github.io) 1.11.0 or later (`ssreflect` suffices)
+  - [MathComp](https://math-comp.github.io) 2.0 or later (`ssreflect` suffices)
+  - [Dune](https://dune.build) 2.5 or later
 - Coq namespace: `RegLang`
 - Related publication(s):
   - [Regular Language Representations in the Constructive Type Theory of Coq](https://hal.archives-ouvertes.fr/hal-01832031/document) doi:[10.1007/s10817-018-9460-x](https://doi.org/10.1007/s10817-018-9460-x)
@@ -71,8 +72,8 @@ To instead build and install manually, do:
 ``` shell
 git clone https://github.com/coq-community/reglang.git
 cd reglang
-make   # or make -j <number-of-cores-on-your-machine> 
-make install
+dune build
+dune install
 ```
 
 

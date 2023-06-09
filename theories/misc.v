@@ -126,8 +126,7 @@ Qed.
 
 Lemma cardT_eq (T : finType) (p : pred T) : #|{: { x | p x}}| = #|T| -> p =1 predT.
 Proof.
-  (* backwards compatible fix for mathcomp PR #626 - mathcomp-1.12.0 *)
-  move=> eq_pT; have [|g g1 g2 x] := @inj_card_bij [finType of (sig p)] T _ val_inj.
+  move=> eq_pT; have [|g g1 g2 x] := @inj_card_bij (sig p) T _ val_inj.
     by rewrite eq_pT.
   rewrite -(g2 x); exact: valP.
 Qed.

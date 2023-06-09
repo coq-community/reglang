@@ -1,5 +1,6 @@
 (* Authors: Christian Doczkal and Jan-Oliver Kaiser *)
 (* Distributed under the terms of CeCILL-B. *)
+From HB Require Import structures.
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq choice.
 From mathcomp Require Import fintype path fingraph finfun finset generic_quotient.
 From RegLang Require Import misc languages dfa.
@@ -191,12 +192,9 @@ Section Collapse.
 
   Definition collapse_state := {eq_quot collb_equiv}.
 
-  Canonical min_quotType := [quotType of collapse_state].
-  Canonical min_subType := [subType collapse_state of A by %/].
-  Canonical min_eqType := EqType _ [eqMixin of collapse_state by <:%/].
-  Canonical min_choiceType := ChoiceType _ [choiceMixin of collapse_state by <:%/].
-  Canonical min_finType := FinType _ [finMixin of min_eqType by <:%/].
-  Canonical min_subFinType := [subFinType of collapse_state].
+  HB.instance Definition _ := Quotient.on collapse_state.
+  HB.instance Definition _ := [Sub collapse_state of A by %/].
+  HB.instance Definition _ := [Finite of collapse_state by <:%/].
 
   Definition collapse : dfa := {|
     dfa_s := \pi_(collapse_state) (dfa_s A);
