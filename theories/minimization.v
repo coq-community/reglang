@@ -131,7 +131,7 @@ Section Prune.
     by rewrite (eqP (IHx (Sub (delta_s A x) X) _)).
   Qed.
 
-  Hint Resolve dfa_prune_connected : core.
+  #[local] Hint Resolve dfa_prune_connected : core.
 
   Lemma dfa_prune_size : #|dfa_prune| <= #|A|.
   Proof. by rewrite card_sig subset_leq_card // subset_predT. Qed.
@@ -259,7 +259,7 @@ Proof. apply collapse_connected. exact: dfa_prune_connected. Qed.
 Lemma minimize_correct (A : dfa) : dfa_lang (minimize A) =i dfa_lang A.
 Proof. move => x. by rewrite collapse_correct dfa_prune_correct. Qed.
 
-Hint Resolve minimize_size minimize_collapsed minimize_connected : core.
+#[local] Hint Resolve minimize_size minimize_collapsed minimize_connected : core.
 
 Lemma minimize_minimal A : minimal (minimize A).
 Proof. apply: abstract_minimization => B. auto using minimize_correct. (* and hints *) Qed.

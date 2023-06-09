@@ -5,7 +5,6 @@ Follow the instructions on https://github.com/coq-community/templates to regener
 # Regular Language Representations in Coq
 
 [![Docker CI][docker-action-shield]][docker-action-link]
-[![Nix CI][nix-action-shield]][nix-action-link]
 [![Contributing][contributing-shield]][contributing-link]
 [![Code of Conduct][conduct-shield]][conduct-link]
 [![Zulip][zulip-shield]][zulip-link]
@@ -14,9 +13,6 @@ Follow the instructions on https://github.com/coq-community/templates to regener
 
 [docker-action-shield]: https://github.com/coq-community/reglang/workflows/Docker%20CI/badge.svg?branch=master
 [docker-action-link]: https://github.com/coq-community/reglang/actions?query=workflow:"Docker%20CI"
-
-[nix-action-shield]: https://github.com/coq-community/reglang/workflows/Nix%20CI/badge.svg?branch=master
-[nix-action-link]: https://github.com/coq-community/reglang/actions?query=workflow:"Nix%20CI"
 
 [contributing-shield]: https://img.shields.io/badge/contributions-welcome-%23f7931e.svg
 [contributing-link]: https://github.com/coq-community/manifesto/blob/master/CONTRIBUTING.md
@@ -52,7 +48,6 @@ decidability results and closure properties of regular languages.
 - Compatible Coq versions: 8.16 or later (use releases for other Coq versions)
 - Additional dependencies:
   - [MathComp](https://math-comp.github.io) 2.0 or later (`ssreflect` suffices)
-  - [Dune](https://dune.build) 2.5 or later
 - Coq namespace: `RegLang`
 - Related publication(s):
   - [Regular Language Representations in the Constructive Type Theory of Coq](https://hal.archives-ouvertes.fr/hal-01832031/document) doi:[10.1007/s10817-018-9460-x](https://doi.org/10.1007/s10817-018-9460-x)
@@ -72,8 +67,8 @@ To instead build and install manually, do:
 ``` shell
 git clone https://github.com/coq-community/reglang.git
 cd reglang
-dune build
-dune install
+make   # or make -j <number-of-cores-on-your-machine> 
+make install
 ```
 
 
