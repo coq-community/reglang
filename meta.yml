@@ -4,7 +4,7 @@ shortname: reglang
 organization: coq-community
 community: true
 action: true
-nix: true
+nix: false
 coqdoc: true
 dune: true
 doi: 10.1007/s10817-018-9460-x
@@ -57,12 +57,6 @@ dependencies:
     version: '{(>= "1.11" & < "1.17~") | (= "dev")}'
   description: |-
     [MathComp](https://math-comp.github.io) 1.11.0 or later (`ssreflect` suffices)
-
-tested_coq_nix_versions:
-- coq_version: '8.16'
-- coq_version: '8.15'
-- coq_version: '8.14'
-- coq_version: '8.13'
 
 tested_coq_opam_versions:
 - version: 'coq-dev'
