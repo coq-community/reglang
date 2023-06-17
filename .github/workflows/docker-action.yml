@@ -19,6 +19,7 @@ jobs:
     strategy:
       matrix:
         image:
+          - 'mathcomp/mathcomp-dev:coq-dev'
           - 'mathcomp/mathcomp:2.0.0-coq-8.17'
           - 'mathcomp/mathcomp:2.0.0-coq-8.16'
       fail-fast: false
