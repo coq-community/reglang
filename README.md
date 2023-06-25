@@ -48,6 +48,7 @@ decidability results and closure properties of regular languages.
 - Compatible Coq versions: 8.16 or later (use releases for other Coq versions)
 - Additional dependencies:
   - [MathComp](https://math-comp.github.io) 2.0 or later (`ssreflect` suffices)
+  - [Hierarchy Builder](https://github.com/math-comp/hierarchy-builder) 1.4.0 or later
 - Coq namespace: `RegLang`
 - Related publication(s):
   - [Regular Language Representations in the Constructive Type Theory of Coq](https://hal.archives-ouvertes.fr/hal-01832031/document) doi:[10.1007/s10817-018-9460-x](https://doi.org/10.1007/s10817-018-9460-x)

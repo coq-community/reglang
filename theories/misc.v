@@ -1,6 +1,5 @@
 (* Authors: Christian Doczkal and Jan-Oliver Kaiser *)
 (* Distributed under the terms of CeCILL-B. *)
-Require Import mathcomp.ssreflect.ssreflect.
 From mathcomp Require Import all_ssreflect.
 
 Set Default Proof Using "Type".
