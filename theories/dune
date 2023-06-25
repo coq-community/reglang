@@ -2,4 +2,5 @@
  (name RegLang)
  (package coq-reglang)
  (synopsis "Representations of regular languages (i.e., regexps, various types of automata, and WS1S) with equivalence proofs, in Coq and MathComp")
- (flags :standard -w -notation-overridden -w -duplicate-clear -w -notation-incompatible-format -w -deprecated-instance-without-locality -w -redundant-canonical-projection))
+ (flags :standard -w -notation-overridden -w -duplicate-clear -w -redundant-canonical-projection)
+ (theories mathcomp.ssreflect HB elpi))
