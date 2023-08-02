@@ -94,15 +94,6 @@ Lemma sub_exists (T : finType) (P1 P2 : pred T) :
   subpred P1 P2 -> [exists x, P1 x] -> [exists x, P2 x].
 Proof. move => H. case/existsP => x /H ?. apply/existsP. by exists x. Qed.
 
-Lemma card_leq_inj (T T' : finType) (f : T -> T') : injective f -> #|T| <= #|T'|.
-Proof. move => inj_f. by rewrite -(card_imset predT inj_f) max_card. Qed.
-
-Lemma bij_card {X Y : finType} (f : X->Y): bijective f -> #|X| = #|Y|.
-Proof.
-  case => g /can_inj Hf /can_inj Hg. apply/eqP.
-  by rewrite eqn_leq (card_leq_inj Hf) (card_leq_inj Hg).
-Qed.
-
 Lemma cardT_eq (T : finType) (p : pred T) : #|{: { x | p x}}| = #|T| -> p =1 predT.
 Proof.
   move=> eq_pT; have [|g g1 g2 x] := @inj_card_bij (sig p) T _ val_inj.

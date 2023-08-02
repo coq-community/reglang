@@ -359,7 +359,7 @@ Section DFA2toAFA.
     apply: (@leq_trans #|{: table'}|); last by rewrite card_prod card_ffun !card_option expnS.
     pose f (x : image_type (@Tab_rc _ M)) : table' :=
       let (b,_) := x in ([pick q | q \in b.1],[ffun p => [pick q | (p,q) \in b.2]]).
-    suff : injective f by apply: card_leq_inj.
+    suff : injective f by apply: leq_card.
     move => [[a1 a2] Ha] [[b1 b2] Hb] [E1 /ffunP E2]. apply: val_inj => /=.
     move: Ha Hb => /dec_eq /= [x Hx] /dec_eq [y Hy].
     rewrite [Tab M x]surjective_pairing [Tab M y]surjective_pairing !xpair_eqE in Hx Hy.
