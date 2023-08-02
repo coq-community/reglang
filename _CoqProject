@@ -1,6 +1,5 @@
 -Q theories RegLang
 -arg -w -arg -notation-overridden
--arg -w -arg -duplicate-clear
 -arg -w -arg -redundant-canonical-projection
 theories/misc.v
 theories/setoid_leq.v

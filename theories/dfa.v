@@ -338,7 +338,7 @@ Lemma regular_quotR (char : finType) (L1 L2 : lang char) :
 Proof.
   move => [A LA] reg2.
   suff dec_L1 q : decidable (exists2 y, L2 y & delta q y \in dfa_fin A).
-  { exists (dfa_quot dec_L1) => x. apply: (rwP (dfa_quotP _ _ _)) => {x} x. by rewrite LA. }
+  { exists (dfa_quot dec_L1) => x. apply: (rwP (dfa_quotP _ _ _)) => {} x. by rewrite LA. }
   case: reg2 => {LA} [B LB].
   pose C := {| dfa_s := q ; dfa_fin := dfa_fin A ; dfa_trans := @dfa_trans _ A |}.
   pose dec := dfa_inhab (dfa_op andb B C).
