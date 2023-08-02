@@ -11,14 +11,14 @@ Set Implicit Arguments.
 Unset Printing Implicit Defensive.
 Unset Strict Implicit.
 
-Local Open Scope quotient_scope.
+#[local] Open Scope quotient_scope.
 
 (** * DFA Minimization *)
 
 Section Minimization.
 Variable (char : finType).
-Local Notation word := (word char).
-Local Notation dfa := (dfa char).
+#[local] Notation word := (word char).
+#[local] Notation dfa := (dfa char).
 
 Definition coll (A : dfa) x y := forall w, (delta x w \in dfa_fin A) = (delta y w \in dfa_fin A).
 

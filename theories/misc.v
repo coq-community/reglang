@@ -121,7 +121,7 @@ Proof. rewrite -!cardsT -powersetT. exact: card_powerset. Qed.
 
 (** Miscellaneous *)
 
-Local Open Scope quotient_scope.
+#[local] Open Scope quotient_scope.
 Lemma epiK {T:choiceType} (e : equiv_rel T) x : e (repr (\pi_{eq_quot e} x)) x.
 Proof. by rewrite -eqmodE reprK. Qed.
 
