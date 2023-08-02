@@ -67,10 +67,6 @@ Proof.
   - rewrite inE. case/orS => [/eqP -> //|]. exact: B. 
 Qed.
 
-Lemma bigmax_seq_sup (T : eqType) (s:seq T) (P : pred T) F k m :
-  k \in s -> P k -> m <= F k -> m <= \max_(i <- s | P i) F i.
-Proof. move => A B C. by rewrite (big_rem k) //= B leq_max C. Qed.
-
 Lemma max_mem n0 (s : seq nat) : n0 \in s -> \max_(i <- s) i \in s.
 Proof. 
   case: s => // a s _. rewrite big_cons big_seq.
