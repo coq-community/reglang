@@ -56,22 +56,6 @@ Lemma index_take (T : eqType) (a : T) n (s : seq T) :
   a \in take n s -> index a (take n s) = index a s.
 Proof. move => H. by rewrite -{2}[s](cat_take_drop n) index_cat H. Qed.
 
-(* from mathcomp-1.13 *)
-Lemma forall_cons {T : eqType} {P : T -> Prop} {a s} :
-  {in a::s, forall x, P x} <-> P a /\ {in s, forall x, P x}.
-Proof.
-split=> [A|[A B]]; last by move => x /predU1P [-> //|]; apply: B.
-by split=> [|b Hb]; apply: A; rewrite !inE ?eqxx ?Hb ?orbT.
-Qed.
-
-(* from mathcomp-1.13 *)
-Lemma exists_cons {T : eqType} {P : T -> Prop} {a s} :
-  (exists2 x, x \in a::s & P x) <-> P a \/ exists2 x, x \in s & P x.
-Proof.
-split=> [[x /predU1P[->|x_s] Px]|]; [by left| by right; exists x|].
-by move=> [?|[x x_s ?]]; [exists a|exists x]; rewrite ?inE ?eqxx ?x_s ?orbT.
-Qed.
-
 Lemma orS (b1 b2 : bool) : b1 || b2 -> {b1} + {b2}.
 Proof. by case: b1 => /= [_|H]; [left|right]. Qed.
 
