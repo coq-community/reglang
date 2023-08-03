@@ -11,7 +11,7 @@ Unset Strict Implicit.
 
 Section NFA.
 Variable char : finType.
-Local Notation word := (word char).
+#[local] Notation word := (word char).
 
 (** * Nondeterministic Finite Automata.
 

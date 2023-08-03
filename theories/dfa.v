@@ -11,7 +11,7 @@ Unset Strict Implicit.
 
 Section FA.
 Variable char : finType.
-Local Notation word := (word char).
+#[local] Notation word := (word char).
 
 (** * Deterministic Finite Automata *)
 
@@ -157,7 +157,7 @@ Qed.
 Section CutOff.
   Variables (aT rT : finType) (f : seq aT -> rT).
   Hypothesis RC_f : forall x y a, f x = f y -> f (x++[::a]) = f (y++[::a]).
-  Local Set Default Proof Using "RC_f".
+  #[local] Set Default Proof Using "RC_f".
 
   Lemma RC_seq x y z : f x = f y -> f (x++z) = f (y++z).
   Proof.
@@ -436,7 +436,7 @@ Section NonRegular.
   Qed.
 
   Hypothesis (a b : char) (Hab : a != b).
-  Local Set Default Proof Using "Hab".
+  #[local] Set Default Proof Using "Hab".
 
   Definition Lab w := exists n, w = nseq n a ++ nseq n b.
 

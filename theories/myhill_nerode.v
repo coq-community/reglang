@@ -20,7 +20,7 @@ exist most general classifiers corresponding to minimal automata. *)
 Section Clasifiers.
 
 Variable char: finType.
-Local Notation word := (word char).
+#[local] Notation word := (word char).
 
 Record classifier := Classifier {
   classifier_classes : finType;

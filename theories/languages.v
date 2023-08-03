@@ -49,7 +49,7 @@ Section HomDef.
 
   Definition homomorphism := forall w1 w2, h (w1 ++ w2) = h w1 ++ h w2.
   Hypothesis h_hom : homomorphism.
-  Local Set Default Proof Using "h_hom".
+  #[local] Set Default Proof Using "h_hom".
 
   Lemma h0 : h [::] = [::].
   Proof.
