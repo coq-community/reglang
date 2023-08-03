@@ -181,7 +181,7 @@ Section CutOff.
       case H: (size x < #|rT|.+1).
       + apply/existsP. exists (Ordinal H). apply/existsP. by exists (in_tuple x).
       + have: ~ injective (fun i : 'I_(size x) => f (take i x)).
-        { move/card_leq_inj. by rewrite -ltnS /= card_ord H. }
+        { move/leq_card. by rewrite -ltnS /= card_ord H. }
         move/injectiveP/injectivePn => [i [j]] Hij.
         wlog ltn_ij : i j {Hij} / i < j => [W|] E.
         { move: Hij. rewrite neq_ltn. case/orP => l; exact: W l _. }
@@ -429,7 +429,7 @@ Section NonRegular.
   Proof.
     move => f_spec [[A E]].
     pose f' (n : 'I_#|A|.+1) := delta_s A (f n).
-    suff: injective f' by move/card_leq_inj ; rewrite card_ord ltnn.
+    suff: injective f' by move/leq_card; rewrite card_ord ltnn.
     move => [n1 H1] [n2 H2]. rewrite /f' /delta_s /= => H.
     apply/eqP; change (n1 == n2); apply/eqP. apply: f_spec => w.
     by rewrite /residual !E !inE /dfa_accept !delta_cat H.
@@ -482,7 +482,7 @@ Section Pumping.
   Proof.
     rewrite -delta_lang => H1 H2.
     have/injectivePn : ~~ injectiveb (fun i : 'I_(size y) => delta (delta_s A x) (take i y)).
-      apply: contraL H2 => /injectiveP/card_leq_inj. by rewrite leqNgt card_ord.
+      apply: contraL H2 => /injectiveP/leq_card. by rewrite leqNgt card_ord.
     move => [i] [j] ij fij.
     wlog {ij} ij : i j fij / i < j. rewrite neq_ltn in ij. case/orP : ij => ij W; exact: W _ ij.
     exists (take i y), (sub i j y), (drop j y). split => [||k].

@@ -56,22 +56,6 @@ Lemma index_take (T : eqType) (a : T) n (s : seq T) :
   a \in take n s -> index a (take n s) = index a s.
 Proof. move => H. by rewrite -{2}[s](cat_take_drop n) index_cat H. Qed.
 
-(* from mathcomp-1.13 *)
-Lemma forall_cons {T : eqType} {P : T -> Prop} {a s} :
-  {in a::s, forall x, P x} <-> P a /\ {in s, forall x, P x}.
-Proof.
-split=> [A|[A B]]; last by move => x /predU1P [-> //|]; apply: B.
-by split=> [|b Hb]; apply: A; rewrite !inE ?eqxx ?Hb ?orbT.
-Qed.
-
-(* from mathcomp-1.13 *)
-Lemma exists_cons {T : eqType} {P : T -> Prop} {a s} :
-  (exists2 x, x \in a::s & P x) <-> P a \/ exists2 x, x \in s & P x.
-Proof.
-split=> [[x /predU1P[->|x_s] Px]|]; [by left| by right; exists x|].
-by move=> [?|[x x_s ?]]; [exists a|exists x]; rewrite ?inE ?eqxx ?x_s ?orbT.
-Qed.
-
 Lemma orS (b1 b2 : bool) : b1 || b2 -> {b1} + {b2}.
 Proof. by case: b1 => /= [_|H]; [left|right]. Qed.
 
@@ -82,10 +66,6 @@ Proof.
   - by split => [|b b_s]; apply: A; rewrite inE ?b_s ?orbT ?eqxx.
   - rewrite inE. case/orS => [/eqP -> //|]. exact: B. 
 Qed.
-
-Lemma bigmax_seq_sup (T : eqType) (s:seq T) (P : pred T) F k m :
-  k \in s -> P k -> m <= F k -> m <= \max_(i <- s | P i) F i.
-Proof. move => A B C. by rewrite (big_rem k) //= B leq_max C. Qed.
 
 Lemma max_mem n0 (s : seq nat) : n0 \in s -> \max_(i <- s) i \in s.
 Proof. 
@@ -113,15 +93,6 @@ Proof. move => sub /forallP H. apply/forallP => x. exact: sub. Qed.
 Lemma sub_exists (T : finType) (P1 P2 : pred T) :
   subpred P1 P2 -> [exists x, P1 x] -> [exists x, P2 x].
 Proof. move => H. case/existsP => x /H ?. apply/existsP. by exists x. Qed.
-
-Lemma card_leq_inj (T T' : finType) (f : T -> T') : injective f -> #|T| <= #|T'|.
-Proof. move => inj_f. by rewrite -(card_imset predT inj_f) max_card. Qed.
-
-Lemma bij_card {X Y : finType} (f : X->Y): bijective f -> #|X| = #|Y|.
-Proof.
-  case => g /can_inj Hf /can_inj Hg. apply/eqP.
-  by rewrite eqn_leq (card_leq_inj Hf) (card_leq_inj Hg).
-Qed.
 
 Lemma cardT_eq (T : finType) (p : pred T) : #|{: { x | p x}}| = #|T| -> p =1 predT.
 Proof.

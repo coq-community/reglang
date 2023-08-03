@@ -271,7 +271,7 @@ Proof.
   - rewrite I_of_glue0. case: (boolP (i < (\max_(k <- N) k).+1)) => ltn_max.
     + by rewrite (nth_map 0) ?size_iota // nth_iota.
     + rewrite nth_default ?size_map ?size_iota 1?leqNgt //.
-      apply: contraNF ltn_max => H. rewrite ltnS. exact: bigmax_seq_sup H _ _.
+      apply: contraNF ltn_max => H. rewrite ltnS. exact: bigmax_sup_seq H _ _.
   - rewrite I_of_glueS /= /I_of mem_filter mem_iota /= add0n.
     case: (ltnP i (size vs)) => H; first by rewrite andbT.
     rewrite andbF [nth _ _ i]nth_default //.
@@ -420,7 +420,7 @@ Proof.
           rewrite -addnS leq_add2l index_mem B andTb.
           rewrite nth_cat size_tk leqNgt leq_addr /= /i.
           by rewrite addnC -addnBA // subnn addn0 nth_index. }
-        have: i <= k by apply: bigmax_seq_sup i_in_X _ _.
+        have: i <= k by apply: bigmax_sup_seq i_in_X _ _.
         by rewrite /i addSn -ltn_subRL subnn.
     + move/hasPn => /= B. exists [::], v; split => // u in_v.
       apply/negbTE/negP => D.
@@ -457,7 +457,7 @@ Proof.
     by rewrite (nth_map (Ordinal lt_n)) ?size_enum_ord ?nth_enum_ord.
   + apply: contraNF A => A. rewrite ltnS. rewrite /lim.
     apply: bigmax_sup => //. instantiate (1 := Ordinal lt_n) => /=.
-    exact: bigmax_seq_sup A _ _ .
+    exact: bigmax_sup_seq A _ _ .
 Qed.
 
 Lemma vec_of_valP I s : satisfies I s <-> satisfies (I_of (vec_of_val I (bound s))) s.

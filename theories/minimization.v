@@ -68,7 +68,7 @@ Section Isomopism.
   Qed.
 
   Lemma dfa_iso_size : dfa_iso A B -> #|A| = #|B|.
-  Proof. move => [iso [H _ _ _]]. exact (bij_card H). Qed.
+  Proof. move => [iso [H _ _ _]]. exact (bij_eq_card H). Qed.
 End Isomopism.
 
 Lemma abstract_minimization A f :
