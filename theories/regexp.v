@@ -419,7 +419,7 @@ Section Image.
       + exists [::a] => //. by rewrite /atom inE.
       + by rewrite /atom inE => [[]] /eqP -> <-.
     - apply: (iffP idP) => [/starP [vv] /allP Hvv dev_v|].
-        have {Hvv IHe} Hvv v' : v' \in vv -> image h (re_lang e) v'.
+        have {IHe} Hvv v' : v' \in vv -> image h (re_lang e) v'.
           by move => /Hvv /= /andP [_ /IHe].
         subst v. elim: vv Hvv => [|v vv IHvv] Hvv /=; first by exists [::]; rewrite ?h0.
         case: (Hvv v (mem_head _ _)) => w [Hw1 Hw2].
