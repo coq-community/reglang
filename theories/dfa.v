@@ -306,7 +306,7 @@ Section RightQuotient.
 
   Variable (A : dfa char).
   Hypothesis acc_L1 : dfa_lang A =p L1.
-  Hypothesis dec_L2 : forall (q:A), decidable (exists2 y, L2 y & delta q y \in dfa_fin A).
+  Hypothesis dec_L2 : forall (q:A), decidable (exists2 y, L2 y & dfa_accept q y).
 
   (** It would be better to not make the DFA explicit and require
   decidabiliy of [(exists2 y, L2 y & L1 (x ++ y))] but that would
@@ -322,9 +322,9 @@ Section RightQuotient.
   Proof using acc_L1.
     apply: (iffP idP).
     - rewrite inE /dfa_accept inE. case/dec_eq => y inL2.
-      rewrite -delta_cat => H. exists y => //. by rewrite -acc_L1.
+      rewrite /dfa_accept -delta_cat => H. exists y => //. by rewrite -acc_L1.
     - case => y y1 y2. rewrite inE /dfa_accept inE /= dec_eq.
-      exists y => //. by rewrite -delta_cat acc_L1.
+      exists y => //. by rewrite /dfa_accept -delta_cat acc_L1.
   Qed.
 
 End RightQuotient.
