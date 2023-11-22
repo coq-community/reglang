@@ -82,7 +82,7 @@
     "master".coqPackages = {
       coq.override.version = "master";
       coq-elpi.override.version = "coq-master";
-      hierarchy-builder.override.version = "proux01:coq-master";
+      hierarchy-builder.override.version = "master";
       mathcomp.override.version = "master";
     };
     "8.17".coqPackages = {
