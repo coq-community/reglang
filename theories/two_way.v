@@ -130,7 +130,8 @@ Section DFA2.
   Proof.
     rewrite /read.
     case: (ord2P _) => [||i] _;apply cards_lt1; rewrite ?cardsX ?cards1 ?muln1;
-      by auto using detL, detC, detR, dfa2_det.
+      [auto using detL, detC, detR, dfa2_det..|].
+    exact/detC/dfa2_det.
   Qed.
 
   Lemma step_fun x : functional (step M x).
