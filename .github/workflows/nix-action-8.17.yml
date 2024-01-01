@@ -40,8 +40,8 @@ jobs:
       name: Checking presence of CI target coq
       run: "nb_dry_run=$(NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr\
         \ bundle \"8.17\" --argstr job \"coq\" \\\n   --dry-run 2>&1 > /dev/null)\n\
-        echo $nb_dry_run\necho ::set-output name=status::$(echo $nb_dry_run | grep\
-        \ \"built:\" | sed \"s/.*/built/\")\n"
+        echo $nb_dry_run\necho status=$(echo $nb_dry_run | grep \"built:\" | sed \"\
+        s/.*/built/\") >> $GITHUB_OUTPUT\n"
     - if: steps.stepCheck.outputs.status == 'built'
       name: Building/fetching current CI target
       run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "8.17" --argstr
@@ -88,8 +88,8 @@ jobs:
       name: Checking presence of CI target mathcomp
       run: "nb_dry_run=$(NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr\
         \ bundle \"8.17\" --argstr job \"mathcomp\" \\\n   --dry-run 2>&1 > /dev/null)\n\
-        echo $nb_dry_run\necho ::set-output name=status::$(echo $nb_dry_run | grep\
-        \ \"built:\" | sed \"s/.*/built/\")\n"
+        echo $nb_dry_run\necho status=$(echo $nb_dry_run | grep \"built:\" | sed \"\
+        s/.*/built/\") >> $GITHUB_OUTPUT\n"
     - if: steps.stepCheck.outputs.status == 'built'
       name: 'Building/fetching previous CI target: coq'
       run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "8.17" --argstr
@@ -168,8 +168,8 @@ jobs:
       name: Checking presence of CI target reglang
       run: "nb_dry_run=$(NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr\
         \ bundle \"8.17\" --argstr job \"reglang\" \\\n   --dry-run 2>&1 > /dev/null)\n\
-        echo $nb_dry_run\necho ::set-output name=status::$(echo $nb_dry_run | grep\
-        \ \"built:\" | sed \"s/.*/built/\")\n"
+        echo $nb_dry_run\necho status=$(echo $nb_dry_run | grep \"built:\" | sed \"\
+        s/.*/built/\") >> $GITHUB_OUTPUT\n"
     - if: steps.stepCheck.outputs.status == 'built'
       name: 'Building/fetching previous CI target: coq'
       run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "8.17" --argstr
@@ -186,8 +186,10 @@ name: Nix CI for bundle 8.17
 'on':
   pull_request:
     paths:
-    - .github/workflows/**
+    - .github/workflows/nix-action-8.17.yml
   pull_request_target:
+    paths-ignore:
+    - .github/workflows/nix-action-8.17.yml
     types:
     - opened
     - synchronize
