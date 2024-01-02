@@ -79,11 +79,14 @@
     ## Run on push on following branches (default [ "master" ])
     # push-branches = [ "master" "branch2" ];
 
-    "master".coqPackages = {
-      coq.override.version = "master";
-      coq-elpi.override.version = "coq-master";
-      hierarchy-builder.override.version = "master";
-      mathcomp.override.version = "master";
+    "master" = {
+      coqPackages = {
+        coq.override.version = "master";
+        coq-elpi.override.version = "coq-master";
+        hierarchy-builder.override.version = "master";
+        mathcomp.override.version = "master";
+      };
+      ocamlPackages.elpi.override.version = "v1.18.1";
     };
     "8.17".coqPackages = {
       coq.override.version = "8.17";
