@@ -66,6 +66,10 @@ dependencies:
 tested_coq_opam_versions:
 - version: 'coq-dev'
   repo: 'mathcomp/mathcomp-dev'
+- version: '2.2.0-coq-8.19'
+  repo: 'mathcomp/mathcomp'
+- version: '2.2.0-coq-8.18'
+  repo: 'mathcomp/mathcomp'
 - version: '2.1.0-coq-8.18'
   repo: 'mathcomp/mathcomp'
 - version: '2.1.0-coq-8.17'
