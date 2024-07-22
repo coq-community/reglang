@@ -485,3 +485,64 @@ Qed.
 Lemma regular_rev (char : finType) (L : lang char) :
   regular L -> regular (fun x => L (rev x)).
 Proof. case/regularP => e H. apply/regularP. exists (Rev e) => x. by rewrite Rev_correct. Qed.
+
+(** ** Derivative of a regular expression *)
+
+Fixpoint has_eps (char : eqType) (e : regexp char) :=
+  match e with
+  | Void => false
+  | Eps => true
+  | Atom x => false
+  | Star e1 => true
+  | Plus e1 e2 => has_eps e1 || has_eps e2
+  | Conc e1 e2 => has_eps e1 && has_eps e2
+  end.
+
+Lemma has_epsE (char : eqType) (e : regexp char) :
+ has_eps e = ([::] \in e).
+Proof.
+  elim: e => //= [r hc1 c2 hc2|r hc1 c2 hc2]; first by rewrite hc1 hc2.
+  rewrite hc1 hc2 => //. rewrite -[xx in _ = xx] topredE /=.
+  by apply/idP/existsP; [exists ord0| case].
+Qed.
+
+Fixpoint der (char: eqType) x (e : regexp char) :=
+  match e with
+  | Void => Void
+  | Eps => Void
+  | Atom y => if x == y then Eps else Void
+  | Star e1 => Conc (der x e1) (Star e1)
+  | Plus e1 e2 => Plus (der x e1) (der x e2)
+  | Conc e1 e2 => if has_eps e1
+     then Plus (Conc (der x e1) e2) (der x e2)
+     else Conc (der x e1) e2
+  end.
+
+Lemma derE (char : finType) (x : char) (e : regexp char) :
+  der x e =i residual x (mem e).
+Proof.
+  elim: e => //= [y|e IHe|e1 IHe1 e2 IHe2|e1 IHe1 e2 IHe2] u.
+  - by rewrite 2!fun_if /=.
+  - by apply/concP/concP=> [] [v e_v]; exists v; rewrite // IHe in e_v *.
+  - by rewrite !inE IHe1 IHe2.
+  - case he: (has_eps e1).
+    + apply/orP/concP=> [[] | [[|y v]]] /=; rewrite -/re_lang.
+      * move/concP=> [w1 [w2 uw]].
+        move: uw; rewrite IHe1 in_residual; move => [uw [w1e w2e]].
+        by exists (x :: w1), w2; rewrite uw.
+      * move => hu. exists [::]. rewrite -has_epsE.
+        exists (x::u) => //. by rewrite -in_residual -IHe2.
+      * case=> w [def_w [_ e2w]]; right.
+        by rewrite IHe2 !inE def_w.
+      * case=> w [[xy uvw] [e1w e2w]]; left; apply/concP.
+        by exists v, w; rewrite IHe1 xy in_residual.
+    + apply/concP/concP => [[v] | ] /=; rewrite -/re_lang.
+      case=> w [uw [e1w e2w]].
+      by exists (x :: v), w; rewrite uw -in_residual -IHe1.
+    + case; case => [|y v]; case => /= w [hv [he1 he2]].
+        by move: he; rewrite has_epsE he1.
+      move/eqP: hv.
+      rewrite eqseq_cons. case/andP.
+      move/eqP => hx. move/eqP => hu. exists v.
+      by rewrite IHe1 in_residual hx; exists w.
+Qed.
