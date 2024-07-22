@@ -421,10 +421,10 @@ Section NonRegular.
 
   Implicit Types (L : lang char).
 
-  Definition residual_cat L x := fun y => L (x ++ y).
+  Definition residual_lang L x := fun y => L (x ++ y).
 
-  Lemma residual_catP (f : nat -> word char) (L : lang char) :
-    (forall n1 n2, residual_cat L (f n1) =p residual_cat L (f n2) -> n1 = n2) ->
+  Lemma residual_langP (f : nat -> word char) (L : lang char) :
+    (forall n1 n2, residual_lang L (f n1) =p residual_lang L (f n2) -> n1 = n2) ->
     ~ inhabited (regular L).
   Proof.
     move => f_spec [[A E]].
@@ -432,7 +432,7 @@ Section NonRegular.
     suff: injective g by move/leq_card; rewrite card_ord ltnn.
     move => [n1 H1] [n2 H2]. rewrite /g /delta_s /= => H.
     apply/eqP; change (n1 == n2); apply/eqP. apply: f_spec => w.
-    by rewrite /residual_cat !E !inE /dfa_accept !delta_cat H.
+    by rewrite /residual_lang !E !inE /dfa_accept !delta_cat H.
   Qed.
 
   Hypothesis (a b : char) (Hab : a != b).
@@ -457,7 +457,7 @@ Section NonRegular.
   Lemma Lab_not_regular : ~ inhabited (regular Lab).
   Proof.
     pose f n := nseq n a.
-    apply: (@residual_catP f) => n1 n2. move/(_ (nseq n2 b)) => H.
+    apply: (@residual_langP f) => n1 n2. move/(_ (nseq n2 b)) => H.
     apply: Lab_eq. apply/H. by exists n2.
   Qed.
 
