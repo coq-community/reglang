@@ -518,7 +518,7 @@ Fixpoint der (char: eqType) x (e : regexp char) :=
      else Conc (der x e1) e2
   end.
 
-Lemma derE (char : finType) (x : char) (e : regexp char) :
+Lemma derE (char : eqType) (x : char) (e : regexp char) :
   der x e =i residual x (mem e).
 Proof.
   elim: e => //= [y|e IHe|e1 IHe1 e2 IHe2|e1 IHe1 e2 IHe2] u.
@@ -546,3 +546,10 @@ Proof.
       move/eqP => hx. move/eqP => hu. exists v.
       by rewrite IHe1 in_residual hx; exists w.
 Qed.
+
+Fixpoint mem_der (char : eqType) (e : regexp char) w :=
+  if w is x :: v then mem_der (der x e) v else has_eps e.
+
+Lemma mem_derE (char : eqType) w (e : regexp char) :
+  mem_der e w = (w \in e).
+Proof. by elim: w e => [|x w IHu] e /=; rewrite ?has_epsE // IHu derE. Qed.
