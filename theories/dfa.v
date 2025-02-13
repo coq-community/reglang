@@ -1,5 +1,6 @@
 (* Authors: Christian Doczkal and Jan-Oliver Kaiser *)
 (* Distributed under the terms of CeCILL-B. *)
+From Coq Require Import Setoid.
 From mathcomp Require Import all_ssreflect.
 From RegLang Require Import misc languages.
 

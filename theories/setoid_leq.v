@@ -1,7 +1,7 @@
 (* Author: Christian Doczkal  *)
 (* Distributed under the terms of CeCILL-B. *)
 
-From Coq Require Import Basics Setoid Morphisms.
+From Coq Require Import Basics Setoid Morphisms BinPos.
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat.
 
 Set Implicit Arguments.
