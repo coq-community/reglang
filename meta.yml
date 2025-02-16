@@ -64,8 +64,10 @@ dependencies:
     [Hierarchy Builder](https://github.com/math-comp/hierarchy-builder) 1.4.0 or later
 
 tested_coq_opam_versions:
-- version: 'coq-dev'
+- version: 'rocq-prover-dev'
   repo: 'mathcomp/mathcomp-dev'
+- version: '2.3.0-coq-8.20'
+  repo: 'mathcomp/mathcomp'
 - version: '2.2.0-coq-8.19'
   repo: 'mathcomp/mathcomp'
 - version: '2.2.0-coq-8.18'
