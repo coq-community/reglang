@@ -3,6 +3,7 @@
 From Coq Require Import Lia.
 From mathcomp Require Import all_ssreflect.
 From RegLang Require Import misc setoid_leq languages dfa myhill_nerode two_way.
+Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
 
 Set Default Proof Using "Type".
 
