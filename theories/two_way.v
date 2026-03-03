@@ -2,6 +2,7 @@
 (* Distributed under the terms of CeCILL-B. *)
 From mathcomp Require Import all_ssreflect.
 From RegLang Require Import misc languages dfa regexp myhill_nerode.
+Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
 
 Set Default Proof Using "Type".
 
